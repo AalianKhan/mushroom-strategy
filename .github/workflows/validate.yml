@@ -4,14 +4,16 @@ on:
         branches:
             - main
 jobs:
-    validate:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: "actions/checkout@v3"
-            #- uses: "home-assistant/actions/hassfest@master"
-            #- name: Checkout
-            #  uses: actions/checkout@v2
-            - name: HACS validation
-              uses: "hacs/action@main"
-              with:
-                  category: "plugin"
+  validate:
+    runs-on: "ubuntu-latest"
+    steps:
+        - uses: "actions/checkout@v3"
+        - uses: "home-assistant/actions/hassfest@master"
+  hacs:
+    name: HACS Action
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: HACS Action
+        uses: "hacs/action@main"
+        with:
+          category: "plugin"
