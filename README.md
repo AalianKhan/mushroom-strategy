@@ -7,7 +7,7 @@
 
 ![Views](./docs/views.png)
 
-![customizable](./docs/Customizable.png)
+![customizable](./docs/customizable.png)
 
 ## What is Mushroom dashboard strategy ?
 
