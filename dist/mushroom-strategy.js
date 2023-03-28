@@ -110,7 +110,8 @@ const createPlatformCard = (entities, entity_config, defaultCard, titleCard, dou
   if (titleCard != null) {
     platformCards.push(titleCard);
   }
-
+  
+  entitiesLoop:
   for (const entity of entities)
   {
     // Entity config does not exist then push defualt card, otherwise loop to find matching entity
@@ -148,35 +149,37 @@ const createPlatformCard = (entities, entity_config, defaultCard, titleCard, dou
               ...config
             },
           );
-            
-        } else
+          continue entitiesLoop;
+        } 
+      }
+        
+      if (doubleTapActionConfig != null)
+      {
+        var doubleTapAction = 
         {
-          if (doubleTapActionConfig != null) {
-            var doubleTapAction = 
+          double_tap_action:
+          {
+            target:
             {
-              double_tap_action:
-              {
-                target:
-                {
-                  entity_id: entity.entity_id
-                },
-                ...doubleTapActionConfig
-              }
-            }
+              entity_id: entity.entity_id
+            },
+            ...doubleTapActionConfig
           }
-          platformCards.push
-          (
-            {
-              entity: entity.entity_id,
-              ...defaultCard,
-              ...doubleTapAction
-            }
-          )
         }
       }
-    }
 
+      platformCards.push
+      (
+        {
+          entity: entity.entity_id,
+          ...defaultCard,
+          ...doubleTapAction
+        }
+      )
+        
     }
+  }
+
   return platformCards;
 }
 
