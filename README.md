@@ -15,7 +15,7 @@ Mushroom dashboard strategy provides a strategy for Home assistant to automatica
 
 My goal is to propose a way to create powerful dashaboards without the need of spending hours manualy creating them.
 
-**Note:** This is my first javascript code. Any recomendations are always welcome 
+**Note:** This is my first javascript code and github repository. Any recomendations are always welcome 
 
 ### Features
 
@@ -44,7 +44,7 @@ Mushroom dashboard strategy is available in [HACS][hacs] (Home Assistant Communi
 
 ### Manual
 
-1. Download `mushroom-strategy.js` file from the [latest-release].
+1. Download `mushroom-strategy.js` file from the [`dist`](https://github.com/AalianKhan/mushroom-strategy/tree/main/dist) directory.
 2. Put `mushroom-strategy.js` file into your `config/www` folder.
 3. Add reference to `mushroom-strategy.js` in Dashboard. There's two way to do that:
     - **Using UI:** _Settings_ → _Dashboards_ → _More Options icon_ → _Resources_ → _Add Resource_ → Set _Url_ as `/local/mushroom-strategy.js` → Set _Resource type_ as `JavaScript Module`.
