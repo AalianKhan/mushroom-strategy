@@ -77,6 +77,8 @@ When first creating this dashboard, you probably have many entities that you don
 
 You can easily hide these entities by holding the entity > Click the `cog icon` at the top right corner of the popup > Click `Advanced settings` > Set `entity status` to `hidden`
 
+![Views](./docs/Hidden.png)
+
 ### Adding devices to areas
 
 You can easiy add devices to an area by going to `Settings` found at the bottom of the sidebar > Click `Devices and integration` > Select the integration of your device > Click the device you wish to add > Click the `pencil icon` found at the top right corner > Enter an area in area field. You can also set an entity of that device to a different area by going to advanced settings of that entity.
