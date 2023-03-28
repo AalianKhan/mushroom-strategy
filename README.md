@@ -3,6 +3,8 @@
 [![hacs][hacs-badge]][hacs-url]
 [![release][release-badge]][release-url]
 
+![Automatic](./docs/preview.gif)
+
 ![Automatic](./docs/auto.png)
 
 ![Views](./docs/views.png)
