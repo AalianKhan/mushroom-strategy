@@ -68,6 +68,59 @@ strategy:
 views: []
 ```
 
+## Strategy options
+
+| Name                 | Type                   | Default                 | Description                                                    | 
+|:---------------------|:-----------------------|:------------------------|:---------------------------------------------------------------|
+| `areas`              | list                   | Optional                | One or more areas in a list, see areas object                  |
+| `entity_config`      | list                   | Optional                | Custom card defination for an entity, see entity_config object |
+| `views`              | object                 | All views enabled       | Setting which pre-built views to show, see available views     |
+| `chips`              | object                 | All count chips enabled | Setting which pre-built chips to show, see available chips     |
+| `quick_access_cards` | list of cards          | Optional                | List of cards to show below welcome card and above rooms cards |
+| `extra_cards`        | list of cards          | Optional                | List of cards to show below room cards                         |
+| `extra_chips`        | list of mushroom chips | Optional                | List of chips to show on home view                             |
+
+### Area object
+The area object includes all options from the template mushroom card and `extra_cards` which is a list of cards to show at the top of the area subview
+
+| Name                  | Type            | Default     | Description                                                                                                                         |
+| :-------------------- | :-------------- | :---------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `icon`                | string          | Optional    | Icon to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                              |
+| `icon_color`          | string          | Optional    | Icon color to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                        |
+| `primary`             | string          | Optional    | Primary info to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                      |
+| `secondary`           | string          | Optional    | Secondary info to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                    |
+| `badge_icon`          | string          | Optional    | Badge icon to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                        |
+| `badge_color`         | string          | Optional    | Badge icon color to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                  |
+| `picture`             | string          | Optional    | Picture to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                           |
+| `multiline_secondary` | boolean         | `false`     | Enables support for multiline text for the secondary info.                                                                          |
+| `layout`              | string          | Optional    | Layout of the card. Vertical, horizontal and default layout are supported                                                           |
+| `fill_container`      | boolean         | `false`     | Fill container or not. Useful when card is in a grid, vertical or horizontal layout                                                 |
+| `tap_action`          | action          | `none`      | Home assistant action to perform on tap                                                                                             |
+| `hold_action`         | action          | `none`      | Home assistant action to perform on hold                                                                                            |
+| `entity_id`           | `string` `list` | Optional    | Only reacts to the state changes of these entities. This can be used if the automatic analysis fails to find all relevant entities. |
+| `double_tap_action`   | action          | `more-info` | Home assistant action to perform on double_tap                                                                                      |
+| `extra_cards`         | list of cards   | Optional    | A list of cards to show on the top of the area subview                                                                              |
+
+#### Example
+```yaml
+areas:
+  - name: Family Room
+    icon: mdi:television
+    icon_color: green
+    extra_cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: entity
+            entity: sensor.family_room_temperature
+            icon: mdi:thermometer
+            icon_color: pink
+        alignment: center
+  - name: Kitchen
+    icon: mdi:silverware-fork-knife
+    icon_color: red
+```
+
+
 ## Credits
 
 * The cards used are from [Mushroom][mushroom], [Mini graph card][mini-graph] and [Web RTC][webrtc]
