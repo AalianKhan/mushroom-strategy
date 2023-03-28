@@ -21,6 +21,13 @@ My goal is to propose a way to create powerful dashaboards without the need of s
 -   😍 Built-in Views for device specific controls
 -   🎨 Many options to customize to your needs
 
+## Preresquisites
+
+You need to install these cards first before using this strategy
+- [Mushroom cards][mushroom]
+- [Mini graph card][mini-graph]
+- [Web RTC][webrtc]
+
 ## Installation
 
 ### HACS
@@ -46,12 +53,6 @@ Mushroom dashboard strategy is available in [HACS][hacs] (Home Assistant Communi
             - url: /local/mushroom-strategy.js
               type: module
         ```
-## Preresquisites
-
-You need to install these cards first before using this strategy
-- [Mushroom cards][mushroom]
-- [Mini graph card][mini-graph]
-- [Web RTC][webrtc]
 
 ## Usage
 
@@ -73,18 +74,21 @@ views: []
 | Name                 | Type                   | Default                 | Description                                                    | 
 |:---------------------|:-----------------------|:------------------------|:---------------------------------------------------------------|
 | `areas`              | list                   | Optional                | One or more areas in a list, see areas object                  |
-| `entity_config`      | list                   | Optional                | Custom card defination for an entity, see entity_config object |
+| `entity_config`      | list of cards          | Optional                | Card defination for an specific entity, see entity_config      |
 | `views`              | object                 | All views enabled       | Setting which pre-built views to show, see available views     |
 | `chips`              | object                 | All count chips enabled | Setting which pre-built chips to show, see available chips     |
 | `quick_access_cards` | list of cards          | Optional                | List of cards to show below welcome card and above rooms cards |
 | `extra_cards`        | list of cards          | Optional                | List of cards to show below room cards                         |
 | `extra_chips`        | list of mushroom chips | Optional                | List of chips to show on home view                             |
+| `extra_views`        | list of view           | Optional                | List of views to add to the dashboard                          |
 
-### Area object
-The area object includes all options from the template mushroom card and `extra_cards` which is a list of cards to show at the top of the area subview
+### Area Object
+
+The area object includes all options from the template mushroom card and `extra_cards` which is a list of cards to show at the top of the area subview. The order of defination is used to sort the rooms and pre-built views
 
 | Name                  | Type            | Default     | Description                                                                                                                         |
 | :-------------------- | :-------------- | :---------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                | string          | Required    | The name of the area                                                                                                                |
 | `icon`                | string          | Optional    | Icon to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                              |
 | `icon_color`          | string          | Optional    | Icon color to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                        |
 | `primary`             | string          | Optional    | Primary info to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                      |
@@ -102,6 +106,7 @@ The area object includes all options from the template mushroom card and `extra_
 | `extra_cards`         | list of cards   | Optional    | A list of cards to show on the top of the area subview                                                                              |
 
 #### Example
+
 ```yaml
 areas:
   - name: Family Room
@@ -118,6 +123,168 @@ areas:
   - name: Kitchen
     icon: mdi:silverware-fork-knife
     icon_color: red
+```
+
+### Entity Config Object
+
+The `entity_config` is a list of cards that enables you to give a specific entity any card you wish. 
+
+#### Example
+```yaml
+entity_config:
+  - entity: fan.master_bedroom_fan
+    type: custom:mushroom-fan-card
+```
+
+### Pre-built views
+
+Mushroom strategy includes pre-built views to control/view specific domains. Only the devices that are in an area and is also defined in `areas` are shown. By default, all views are shown
+
+| Availible views | type | Description |
+|:----------------|:-----|:------------|
+| `lights` | boolean | View to control all lights and lights of each area |
+| `fans` | boolean | View to control all fans and fans of each area |
+| `covers` | boolean | View to control all covers and covers of each area |
+| `switches` | boolean | View to control all switches and switches of each area |
+| `climates` | boolean | View to control climate devices such as thermostates. Seperated by each area |
+| `cameras` | boolean | View to show all cameras using WebRTC cards. Seperated by each area | 
+
+#### Example
+
+```yaml
+views:
+  lights: true
+  switches: true
+  covers: false
+  cameras: true
+  thermostats: false
+```
+
+### Pre-built chips
+
+Mushroom strategy has chips that count the number of devices active for a specific domain. Only the devices that are in an area and is also defined in `areas` are counted. By default, all chips are enabled
+
+| Availible chips | type    | Description                                                                                                   |
+|:----------------|:--------|:--------------------------------------------------------------------------------------------------------------|
+| `light_count`     | boolean | chip to display the number of lights on, tapping turns off all lights, holding navigates to lights view       |
+| `fan_count`       | boolean | chip to display the number of fans on, tapping turns off all fans, holding navigates to fans view             |
+| `cover_count`     | boolean | chip to display the number of covers not closed, tapping navigates to covers view                             |
+| `switch_count`    | boolean | chip to display the number of switches on, tapping turns off all switches, holding navigates to switches view |
+| `climate_count`   | boolean | chip to display the number of climate not off, tapping naviagetes to climates view                            |
+
+#### Example
+
+```yaml
+chips:
+  climate_count: false
+  cover_count: false
+```
+
+## Full Example
+
+```yaml
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    views:
+      lights: true
+      switches: true
+      covers: false
+      cameras: true
+      thermostats: false
+    chips:
+      climate_count: false
+      cover_count: false
+    areas:
+      - name: Family Room
+        icon: mdi:television
+        icon_color: green
+        extra_cards:
+          - type: custom:mushroom-chips-card
+            chips:
+              - type: entity
+                entity: sensor.family_room_temperature
+                icon: mdi:thermometer
+                icon_color: pink
+            alignment: center
+      - name: Kitchen
+        icon: mdi:silverware-fork-knife
+        icon_color: red
+      - name: Master Bedroom
+        icon: mdi:bed-king
+        icon_color: blue
+      - name: Abia's Bedroom
+        icon: mdi:flower-tulip
+        icon_color: green
+      - name: Aalian's Bedroom
+        icon: mdi:rocket-launch
+        icon_color: yellow
+      - name: Rohaan's Bedroom
+        icon: mdi:controller
+        icon_color: red
+      - name: Hallway
+      - name: Living Room
+        icon: mdi:sofa
+      - name: Front Door
+        icon: mdi:door-closed
+    entity_config:
+      - entity: fan.master_bedroom_fan
+        type: custom:mushroom-fan-card
+    quick_access_cards:
+      - type: custom:mushroom-title-card
+        title: Security
+      - type: custom:mushroom-cover-card
+        entity: cover.garage_door
+        show_buttons_control: true
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-lock-card
+            entity: lock.front_door
+          - type: custom:mushroom-entity-card
+            entity: sensor.front_door_lock_battery
+            name: Battery
+    extra_chips:
+      - type: conditional
+        conditions:
+          - entity: lock.front_door
+            state: unlocked
+        chip:
+          type: entity
+          entity: lock.front_door
+          icon_color: red
+          content_info: none
+          icon: ''
+          use_entity_picture: false
+          tap_action:
+            action: toggle
+      - type: conditional
+        conditions:
+          - entity: cover.garage_door
+            state_not: closed
+        chip:
+          type: entity
+          entity: cover.garage_door
+          icon_color: red
+          content_info: none
+          tap_action:
+            action: toggle
+    extra_cards:
+      - type: custom:xiaomi-vacuum-map-card
+        map_source:
+          camera: camera.xiaomi_cloud_map_extractor
+        calibration_source:
+          camera: true
+        entity: vacuum.robot_vacuum
+        vacuum_platform: default
+    extra_views:
+      - theme: Backend-selected
+        title: cool view
+        path: cool-view
+        icon: mdi:emoticon-cool
+        badges: []
+        cards:
+          - type: markdown
+            content: I am cool
 ```
 
 
