@@ -15,6 +15,8 @@ Mushroom dashboard strategy provides a strategy for Home assistant to automatica
 
 My goal is to propose a way to create powerful dashaboards without the need of spending hours manualy creating them.
 
+**Note:** This is my first javascript code. Any recomendations are always welcome 
+
 ### Features
 
 -   🛠 Automatically create dashboard with 3 lines of yaml
