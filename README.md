@@ -78,7 +78,7 @@ views: []
 
 When first creating this dashboard, you probably have many entities that you don't want to see. 
 
-You can easily hide these entities by holding the entity > Click the `cog icon` at the top right corner of the popup > Click `Advanced settings` > Set `entity status` to `hidden`
+You can easily hide these entities by holding the entity > Click the `cog icon` at the top right corner of the popup > Click `Advanced settings` > Set `entity status` to `hidden`. Refresh the page and it should update
 
 ![Views](./docs/Hidden.png)
 
@@ -89,18 +89,31 @@ You can easiy add devices to an area by going to `Settings` found at the bottom 
 If you created a entity in your `configuratation.yaml` you may need to enter a `unique_id` first before you set an area to it. See [docs](https://www.home-assistant.io/faq/unique_id/)
 
 ## Strategy options
+You can set strategy options to further customize the dashboard. It has the following availible options
 
-| Name                 | Type                   | Default                 | Description                                                    | 
-|:---------------------|:-----------------------|:------------------------|:---------------------------------------------------------------|
-| `areas`              | list                   | Optional                | One or more areas in a list, see areas object                  |
-| `entity_config`      | list of cards          | Optional                | Card defination for an specific entity, see entity_config      |
-| `views`              | object                 | All views enabled       | Setting which pre-built views to show, see available views     |
-| `chips`              | object                 | All count chips enabled | Setting which pre-built chips to show, see available chips     |
-| `quick_access_cards` | list of cards          | Optional                | List of cards to show below welcome card and above rooms cards |
-| `extra_cards`        | list of cards          | Optional                | List of cards to show below room cards                         |
-| `extra_chips`        | list of mushroom chips | Optional                | List of chips to show on home view                             |
-| `extra_views`        | list of view           | Optional                | List of views to add to the dashboard                          |
+| Name                 | Type                   | Default                 | Description                                                                              | 
+|:---------------------|:-----------------------|:------------------------|:-----------------------------------------------------------------------------------------|
+| `areas`              | list                   | Optional                | One or more areas in a list, see [areas object](#area-object)                            |
+| `entity_config`      | list of cards          | Optional                | Card defination for an entity, see [entity config](#entity-config)                       |
+| `views`              | object                 | All views enabled       | Setting which pre-built views to show, see available [Pre-built views](#pre-built-views) |
+| `chips`              | object                 | All count chips enabled | Setting which pre-built chips to show, see available [chips](#pre-built-chips)           |
+| `quick_access_cards` | list of cards          | Optional                | List of cards to show between welcome card and rooms cards                               |
+| `extra_cards`        | list of cards          | Optional                | List of cards to show below room cards                                                   |
+| `extra_chips`        | list of mushroom chips | Optional                | List of chips to show on home view                                                       |
+| `extra_views`        | list of view           | Optional                | List of views to add to the dashboard                                                    |
 
+#### Example 
+
+```yaml
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    areas:
+      - name: Family Room
+        icon: mdi:sofa
+        icon_color: green
+views: []
+```
 ### Area Object
 
 The area object includes all options from the template mushroom card and `extra_cards` which is a list of cards to show at the top of the area subview. The order of defination is used to sort the rooms and pre-built views
@@ -144,9 +157,9 @@ areas:
     icon_color: red
 ```
 
-### Entity Config Object
+### Entity Config
 
-The `entity_config` is a list of cards that enables you to give a specific entity any card you wish. 
+The `entity_config` essentially enables you to give a specific entity any card you wish. 
 
 #### Example
 ```yaml
