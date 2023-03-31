@@ -418,7 +418,7 @@ class MushroomStrategy {
     }
 
     // Cover count
-    const coverCountTemplate = "{% set covers = [" + createListOfFilteredStates(entities, devices, definedAreas, "cover.") + "]%} {{ covers | selectattr('state','ne','closed') | list | count }}"
+    const coverCountTemplate = "{% set covers = [" + createListOfFilteredStates(entities, devices, definedAreas, "cover.") + "]%} {{ covers | selectattr('state','eq','open') | list | count }}"
     if (strategyOptions.chips == null || (strategyOptions.chips != null && strategyOptions.chips.cover_count != false))
     {
       chips.push
@@ -1105,6 +1105,7 @@ class MushroomStrategy {
           subtitle: "Sensors"
         },
       );
+      sensorsLoop:
       for (const sensor of sensors)
       {
         // Find the state obj that matches with current sensor
@@ -1144,7 +1145,7 @@ class MushroomStrategy {
             );
           }
         } else 
-        {
+        {          
           for (const config of entity_config)
           {
             if (sensor.entity_id == config.entity_id)
@@ -1154,33 +1155,35 @@ class MushroomStrategy {
                 {
                   ...config
                 },
-                );
-                
-            } if (sensorStateObj.attributes.unit_of_measurement != null) 
-            {
-              sensorCards.push
-              (
-                {
-                  type: "custom:mini-graph-card",
-                  entities:
-                  [
-                    sensor.entity_id
-                  ],
-                  animate: true,
-                  line_color: "green"
-                },
-              );  
-            } else 
-            {
-              sensorCards.push
-              (
-                {
-                  type: "custom:mushroom-entity-card",
-                  entity: sensor.entity_id,
-                  icon_color: "green"
-                },
               );
-            }
+              continue sensorsLoop;  
+            } 
+          }
+            
+          if (sensorStateObj.attributes.unit_of_measurement != null) 
+          {
+            sensorCards.push
+            (
+              {
+                type: "custom:mini-graph-card",
+                entities:
+                [
+                  sensor.entity_id
+                ],
+                animate: true,
+                line_color: "green"
+              },
+            );  
+          } else 
+          {
+            sensorCards.push
+            (
+              {
+                type: "custom:mushroom-entity-card",
+                entity: sensor.entity_id,
+                icon_color: "green"
+              },
+            );
           }
         }
       }
