@@ -211,7 +211,7 @@ const createListOfFilteredStates = (entities, devices, definedAreas, startsWith)
   {
     statesList.push
     (
-      "states." + entity.entity_id
+      "states['" + entity.entity_id + "']"
     );
   }
   return statesList
