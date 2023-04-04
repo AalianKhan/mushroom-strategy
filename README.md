@@ -89,7 +89,7 @@ You can easiy add devices to an area by going to `Settings` found at the bottom 
 If you created a entity in your `configuratation.yaml` you may need to enter a `unique_id` first before you set an area to it. See [docs](https://www.home-assistant.io/faq/unique_id/)
 
 ## Strategy options
-You can set strategy options to further customize the dashboard. It has the following availible options
+You can set strategy options to further customize the dashboard. It has the following available options
 
 | Name                 | Type                   | Default                                                 | Description                                                                              | 
 |:---------------------|:-----------------------|:--------------------------------------------------------|:-----------------------------------------------------------------------------------------|
@@ -99,7 +99,6 @@ You can set strategy options to further customize the dashboard. It has the foll
 | `chips`              | object                 | All count chips enabled with auto selected weather card | See [chips](#pre-built-chips)                                                            |
 | `quick_access_cards` | list of cards          | Optional                                                | List of cards to show between welcome card and rooms cards                               |
 | `extra_cards`        | list of cards          | Optional                                                | List of cards to show below room cards                                                   |
-| `extra_chips`        | list of mushroom chips | Optional                                                | List of chips to show on home view                                                       |
 | `extra_views`        | list of view           | Optional                                                | List of views to add to the dashboard                                                    |
 
 #### Example 
@@ -172,7 +171,7 @@ entity_config:
 
 Mushroom strategy includes pre-built views to control/view specific domains. Only the devices that are in an area and is also defined in `areas` are shown. By default, all views are shown
 
-| Availible views | type | Description |
+| Available views | type | Description |
 |:----------------|:-----|:------------|
 | `lights` | boolean | View to control all lights and lights of each area |
 | `fans` | boolean | View to control all fans and fans of each area |
@@ -197,7 +196,7 @@ views:
 Mushroom strategy has chips that count the number of devices active for a specific domain. Only the devices that are in an area and is also defined in `areas` are counted. By default, all chips are enabled. You can also configure a weather entity to use. There is also an option to add more [Mushroom Chips][mushroom-chips]  
 ##### Note setting the status to hidden for the unwanted weather entity is recomended
 
-| Availible chips | type    | Description                                                                                                       |
+| Available chips | type    | Description                                                                                                       |
 |:----------------|:--------|:------------------------------------------------------------------------------------------------------------------|
 | `light_count`     | Boolean   | Chip to display the number of lights on, tapping turns off all lights, holding navigates to lights view       |
 | `fan_count`       | Boolean   | Chip to display the number of fans on, tapping turns off all fans, holding navigates to fans view             |
