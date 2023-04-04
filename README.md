@@ -194,7 +194,8 @@ views:
 
 ### Pre-built chips
 
-Mushroom strategy has chips that count the number of devices active for a specific domain. Only the devices that are in an area and is also defined in `areas` are counted. By default, all chips are enabled
+Mushroom strategy has chips that count the number of devices active for a specific domain. Only the devices that are in an area and is also defined in `areas` are counted. By default, all chips are enabled. You can also configure a weather entity to use. There is also an option to add more [Mushroom Chips][mushroom-chips]  
+##### Note setting the status to hidden for the unwanted weather entity is recomended
 
 | Availible chips | type    | Description                                                                                                       |
 |:----------------|:--------|:------------------------------------------------------------------------------------------------------------------|
