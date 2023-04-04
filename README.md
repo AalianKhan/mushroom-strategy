@@ -91,16 +91,16 @@ If you created a entity in your `configuratation.yaml` you may need to enter a `
 ## Strategy options
 You can set strategy options to further customize the dashboard. It has the following availible options
 
-| Name                 | Type                   | Default                 | Description                                                                              | 
-|:---------------------|:-----------------------|:------------------------|:-----------------------------------------------------------------------------------------|
-| `areas`              | list                   | Optional                | One or more areas in a list, see [areas object](#area-object)                            |
-| `entity_config`      | list of cards          | Optional                | Card defination for an entity, see [entity config](#entity-config)                       |
-| `views`              | object                 | All views enabled       | Setting which pre-built views to show, see available [Pre-built views](#pre-built-views) |
-| `chips`              | object                 | All count chips enabled | Setting which pre-built chips to show, see available [chips](#pre-built-chips)           |
-| `quick_access_cards` | list of cards          | Optional                | List of cards to show between welcome card and rooms cards                               |
-| `extra_cards`        | list of cards          | Optional                | List of cards to show below room cards                                                   |
-| `extra_chips`        | list of mushroom chips | Optional                | List of chips to show on home view                                                       |
-| `extra_views`        | list of view           | Optional                | List of views to add to the dashboard                                                    |
+| Name                 | Type                   | Default                                                 | Description                                                                              | 
+|:---------------------|:-----------------------|:--------------------------------------------------------|:-----------------------------------------------------------------------------------------|
+| `areas`              | list                   | Optional                                                | One or more areas in a list, see [areas object](#area-object)                            |
+| `entity_config`      | list of cards          | Optional                                                | Card defination for an entity, see [entity config](#entity-config)                       |
+| `views`              | object                 | All views enabled                                       | Setting which pre-built views to show, see available [Pre-built views](#pre-built-views) |
+| `chips`              | object                 | All count chips enabled with auto selected weather card | See [chips](#pre-built-chips)                                                            |
+| `quick_access_cards` | list of cards          | Optional                                                | List of cards to show between welcome card and rooms cards                               |
+| `extra_cards`        | list of cards          | Optional                                                | List of cards to show below room cards                                                   |
+| `extra_chips`        | list of mushroom chips | Optional                                                | List of chips to show on home view                                                       |
+| `extra_views`        | list of view           | Optional                                                | List of views to add to the dashboard                                                    |
 
 #### Example 
 
@@ -196,13 +196,15 @@ views:
 
 Mushroom strategy has chips that count the number of devices active for a specific domain. Only the devices that are in an area and is also defined in `areas` are counted. By default, all chips are enabled
 
-| Availible chips | type    | Description                                                                                                   |
-|:----------------|:--------|:--------------------------------------------------------------------------------------------------------------|
-| `light_count`     | boolean | chip to display the number of lights on, tapping turns off all lights, holding navigates to lights view       |
-| `fan_count`       | boolean | chip to display the number of fans on, tapping turns off all fans, holding navigates to fans view             |
-| `cover_count`     | boolean | chip to display the number of covers not closed, tapping navigates to covers view                             |
-| `switch_count`    | boolean | chip to display the number of switches on, tapping turns off all switches, holding navigates to switches view |
-| `climate_count`   | boolean | chip to display the number of climate not off, tapping naviagetes to climates view                            |
+| Availible chips | type    | Description                                                                                                       |
+|:----------------|:--------|:------------------------------------------------------------------------------------------------------------------|
+| `light_count`     | Boolean   | Chip to display the number of lights on, tapping turns off all lights, holding navigates to lights view       |
+| `fan_count`       | Boolean   | Chip to display the number of fans on, tapping turns off all fans, holding navigates to fans view             |
+| `cover_count`     | Boolean   | Chip to display the number of covers not closed, tapping navigates to covers view                             |
+| `switch_count`    | Boolean   | Chip to display the number of switches on, tapping turns off all switches, holding navigates to switches view |
+| `climate_count`   | Boolean   | Chip to display the number of climate not off, tapping naviagetes to climates view                            |
+| `weather_entity`  | Entity ID | Entity ID for the weather chip to use, accepts `weather.` only                                                |
+| `extra_chips`     | List      | List of extra chips to display, see [Mushroom Chips][mushroom-chips]                                          |
 
 #### Example
 
@@ -210,6 +212,21 @@ Mushroom strategy has chips that count the number of devices active for a specif
 chips:
   climate_count: false
   cover_count: false
+  weather_entity: weather.forecast_home
+  extra_chips:
+    - type: conditional
+      conditions:
+        - entity: lock.front_door
+          state: unlocked
+      chip:
+        type: entity
+        entity: lock.front_door
+        icon_color: red
+        content_info: none
+        icon: ''
+        use_entity_picture: false
+        tap_action:
+          action: toggle
 ```
 
 ## Full Example
@@ -225,8 +242,34 @@ strategy:
       cameras: true
       thermostats: false
     chips:
+      weather_entity: weather.forecast_home
       climate_count: false
       cover_count: false
+      extra_chips:
+        - type: conditional
+          conditions:
+            - entity: lock.front_door
+              state: unlocked
+          chip:
+            type: entity
+            entity: lock.front_door
+            icon_color: red
+            content_info: none
+            icon: ''
+            use_entity_picture: false
+            tap_action:
+              action: toggle
+        - type: conditional
+          conditions:
+            - entity: cover.garage_door
+              state_not: closed
+          chip:
+            type: entity
+            entity: cover.garage_door
+            icon_color: red
+            content_info: none
+            tap_action:
+              action: toggle
     areas:
       - name: Family Room
         icon: mdi:television
@@ -275,31 +318,6 @@ strategy:
           - type: custom:mushroom-entity-card
             entity: sensor.front_door_lock_battery
             name: Battery
-    extra_chips:
-      - type: conditional
-        conditions:
-          - entity: lock.front_door
-            state: unlocked
-        chip:
-          type: entity
-          entity: lock.front_door
-          icon_color: red
-          content_info: none
-          icon: ''
-          use_entity_picture: false
-          tap_action:
-            action: toggle
-      - type: conditional
-        conditions:
-          - entity: cover.garage_door
-            state_not: closed
-        chip:
-          type: entity
-          entity: cover.garage_door
-          icon_color: red
-          content_info: none
-          tap_action:
-            action: toggle
     extra_cards:
       - type: custom:xiaomi-vacuum-map-card
         map_source:
@@ -339,6 +357,7 @@ strategy:
 [home-assitant-theme-docs]: https://www.home-assistant.io/integrations/frontend/#defining-themes
 [hacs]: https://hacs.xyz
 [mushroom]: https://github.com/piitaya/lovelace-mushroom
+[mushroom-chips]: https://github.com/piitaya/lovelace-mushroom/blob/main/docs/cards/chips.md
 [mini-graph]: https://github.com/kalkih/mini-graph-card
 [webrtc]: https://github.com/AlexxIT/WebRTC
 [balloobBattery]: https://gist.github.com/balloob/4a70c83287ddba4e9085cb578ffb161f
