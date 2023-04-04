@@ -3,7 +3,7 @@
 [![hacs][hacs-badge]][hacs-url]
 [![release][release-badge]][release-url]
 
-![Automatic](./docs/preview.gif)
+![Preview GIF](./docs/preview.gif)
 
 ![Automatic](./docs/auto.png)
 
@@ -96,7 +96,7 @@ You can set strategy options to further customize the dashboard. It has the foll
 | `areas`              | list                   | Optional                                                | One or more areas in a list, see [areas object](#area-object)                            |
 | `entity_config`      | list of cards          | Optional                                                | Card defination for an entity, see [entity config](#entity-config)                       |
 | `views`              | object                 | All views enabled                                       | Setting which pre-built views to show, see available [Pre-built views](#pre-built-views) |
-| `chips`              | object                 | All count chips enabled with auto selected weather card | See [chips](#pre-built-chips)                                                            |
+| `chips`              | object                 | All count chips enabled with auto selected weather card | See [chips](#chips)                                                            |
 | `quick_access_cards` | list of cards          | Optional                                                | List of cards to show between welcome card and rooms cards                               |
 | `extra_cards`        | list of cards          | Optional                                                | List of cards to show below room cards                                                   |
 | `extra_views`        | list of view           | Optional                                                | List of views to add to the dashboard                                                    |
@@ -169,7 +169,9 @@ entity_config:
 
 ### Pre-built views
 
-Mushroom strategy includes pre-built views to control/view specific domains. Only the devices that are in an area and is also defined in `areas` are shown. By default, all views are shown
+![Light Views](./docs/light_view.png)
+
+Mushroom strategy includes pre-built views to control/view specific domains. Only the devices that are in an area defined in `areas` are shown. If `areas` is not defined then devices in all areas are shown. By default, all views are shown
 
 | Available views | type | Description |
 |:----------------|:-----|:------------|
@@ -191,10 +193,13 @@ views:
   thermostats: false
 ```
 
-### Pre-built chips
+### Chips
 
-Mushroom strategy has chips that count the number of devices active for a specific domain. Only the devices that are in an area and is also defined in `areas` are counted. By default, all chips are enabled. You can also configure a weather entity to use. There is also an option to add more [Mushroom Chips][mushroom-chips]  
-##### Note setting the status to hidden for the unwanted weather entity is recomended
+
+![Chips](./docs/chips.png)
+
+Mushroom strategy has chips that count the number of devices active for a specific domain. Only the devices that are defined in `areas` are counted. if `areas` is not defined then devices in all areas are counted. By default, all chips are enabled. You can also manually configure a weather entity to use. There is also an option to add more [Mushroom Chips][mushroom-chips] using `extra_chips`
+##### Note: setting the status to hidden for the unwanted weather entity is recomended
 
 | Available chips | type    | Description                                                                                                       |
 |:----------------|:--------|:------------------------------------------------------------------------------------------------------------------|
