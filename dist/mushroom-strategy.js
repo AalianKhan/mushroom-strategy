@@ -361,15 +361,19 @@ class MushroomStrategy {
     } else 
     {
       const weatherEntity = entities.find(entity => entity.entity_id.startsWith("weather.") && entity.disabled_by == null)
-      chips.push
-      (
-        {
-          type: "weather",
-          entity: weatherEntity.entity_id,
-          show_temperature: true,
-          show_conditions: true
-        }
-      )
+      if (weatherEntity != null)
+      {
+        chips.push
+        (
+          {
+            type: "weather",
+            entity: weatherEntity.entity_id,
+            show_temperature: true,
+            show_conditions: true
+          }
+        )
+      }
+      
     }
     
     
