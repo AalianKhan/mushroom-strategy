@@ -347,15 +347,31 @@ class MushroomStrategy {
     const chips = []
     
     // weather 
-    chips.push
-    (
-      {
-        type: "weather",
-        entity: "weather.forecast_home",
-        show_temperature: true,
-        show_conditions: true
-      },
-    )
+    if (strategyOptions.chips != null && strategyOptions.chips.weather_entity != null)
+    {
+      chips.push
+      (
+        {
+          type: "weather",
+          entity: strategyOptions.chips.weather_entity,
+          show_temperature: true,
+          show_conditions: true
+        }
+      )
+    } else 
+    {
+      const weatherEntity = entities.find(entity => entity.entity_id.startsWith("weather.") && entity.disabled_by == null)
+      chips.push
+      (
+        {
+          type: "weather",
+          entity: weatherEntity.entity_id,
+          show_temperature: true,
+          show_conditions: true
+        }
+      )
+    }
+    
     
     // Light count
     const lightCountTemplate = "{% set lights = [" + createListOfFilteredStates(entities, devices, definedAreas, "light.") + "] %} {{ lights | selectattr('state','eq','on') | list | count }}";
@@ -489,10 +505,10 @@ class MushroomStrategy {
     }
 
     // Extra cards
-    if (strategyOptions.extra_chips != null) {
+    if (strategyOptions.chips != null && strategyOptions.chips.extra_chips != null) {
       chips.push
       (
-        ...strategyOptions.extra_chips
+        ...strategyOptions.chips.extra_chips
       )
     }
         
