@@ -1,5 +1,17 @@
-const getFilteredEntitiesFromEntityRegistry = (entities, devices, area, startsWith) => {
-  // Find all devices linked to this area
+/**
+ * Get a set of device entities, filtered by area and by entity-id, starting with string.
+ *
+ * The set excludes hidden and disabled entities.
+ *
+ * @param {Object[]} entities Registered Hass entities.
+ * @param {Object[]} devices Registered devices entities.
+ * @param {Object} area Area entity.
+ * @param {string} startsWith Starting string of the entity-id.
+ *
+ * @return {Set<object>} Set of device entities.
+ */
+function getDeviceEntitiesFromRegistry(entities, devices, area, startsWith) {
+  // Get the id of the devices which are linked to given area.
   const areaDevices = new Set();
 
   for (const device of devices) {
@@ -8,13 +20,12 @@ const getFilteredEntitiesFromEntityRegistry = (entities, devices, area, startsWi
     }
   }
 
-  // Filter entities
+  // Filter entities.
   const filteredEntities = new Set();
 
   for (const entity of entities) {
     if (
-        (areaDevices.has(entity.device_id) || entity.area_id === area.area_id
-        )
+        (areaDevices.has(entity.device_id) || entity.area_id === area.area_id)
         && entity.entity_id.startsWith(startsWith)
         && entity.hidden_by == null && entity.disabled_by == null) {
       filteredEntities.add(entity);
@@ -22,9 +33,22 @@ const getFilteredEntitiesFromEntityRegistry = (entities, devices, area, startsWi
   }
 
   return filteredEntities;
-};
+}
 
-const getFilteredEntitiesFromStates = (info, entities, devices, area, startsWith) => {
+/**
+ * Get a set of states, filtered by area and by entity-id, starting with string.
+ *
+ * The set excludes hidden and disabled entities.
+ *
+ * @param {Object.<Object>} info Strategy information object.
+ * @param {Object[]} entities Registered Hass entities.
+ * @param {Object[]} devices Registered devices entities.
+ * @param {Object} area Area entity.
+ * @param {string} startsWith Starting string of the entity-id.
+ *
+ * @return {Set<object>} Set of state entities.
+ */
+const getFilteredStates = (info, entities, devices, area, startsWith) => {
   const entityLookup = Object.fromEntries(entities.map((ent) => [ent.entity_id, ent]));
   const deviceLookup = Object.fromEntries(devices.map((dev) => [dev.id, dev]));
 
@@ -61,65 +85,99 @@ const getFilteredEntitiesFromStates = (info, entities, devices, area, startsWith
   return areaEntities;
 };
 
-const createTitleWithControls = (title, subtitle, offService, onService, iconOff, iconOn, area_id) => (
-    {
-      type: "horizontal-stack",
-      cards: [
-        {
-          type: "custom:mushroom-title-card",
-          title: title,
-          subtitle: subtitle,
-        },
-        {
-          type: "horizontal-stack",
-          cards: [
-            {
-              type: "custom:mushroom-template-card",
-              icon: iconOff,
-              layout: "vertical",
-              icon_color: "red",
-              tap_action: {
-                action: "call-service",
-                service: offService,
-                target: {
-                  area_id: area_id,
-                },
-                data: {},
+/**
+ * Create a title card with controls to switch the entities of given areas.
+ *
+ * A title card is...
+ * TODO: Correct/Complete function description.
+ *
+ * @param {string} title Title of the card.
+ * @param {string} subtitle Subtitle of the card.
+ * @param {string} offService Name of service to switch off the group.
+ * @param {string} onService Name of service to switch on the group.
+ * @param {string} iconOff Icon to set when group is switched off.
+ * @param {string} iconOn Icon to set when group is switched on.
+ * @param {string|string[]} area_id Id of the areas(s) to switch.
+ *
+ * @return {Object} A title card object.
+ */
+function createTitleCard(title, subtitle, offService, onService, iconOff, iconOn, area_id) {
+  return {
+    type: "horizontal-stack",
+    cards: [
+      {
+        type: "custom:mushroom-title-card",
+        title: title,
+        subtitle: subtitle,
+      },
+      {
+        type: "horizontal-stack",
+        cards: [
+          {
+            type: "custom:mushroom-template-card",
+            icon: iconOff,
+            layout: "vertical",
+            icon_color: "red",
+            tap_action: {
+              action: "call-service",
+              service: offService,
+              target: {
+                area_id: area_id,
               },
+              data: {},
             },
-            {
-              type: "custom:mushroom-template-card",
-              icon: iconOn,
-              layout: "vertical",
-              icon_color: "amber",
-              tap_action: {
-                action: "call-service",
-                service: onService,
-                target: {
-                  area_id: area_id,
-                },
-                data: {},
+          },
+          {
+            type: "custom:mushroom-template-card",
+            icon: iconOn,
+            layout: "vertical",
+            icon_color: "amber",
+            tap_action: {
+              action: "call-service",
+              service: onService,
+              target: {
+                area_id: area_id,
               },
+              data: {},
             },
-          ],
-        },
-      ],
-    }
-);
+          },
+        ],
+      },
+    ],
+  };
+}
 
-const createPlatformCard = (entities, entity_config, defaultCard, titleCard, doubleTapActionConfig) => {
+/**
+ * Create a platform card for each given entity.
+ *
+ * A platform card is a... and consists of an optional title-card and an entity-card.
+ * TODO: Correct/Complete function description.
+ *
+ * Double-tapping opens the more-info popup of home assistant, unless given a custom double-tap configuration.
+ *
+ * @param {Set<Object>} entities Registered Hass entities.
+ * @param {Object} entity_config Custom card-configuration for the entity on a platform card.
+ * @param {Object} defaultCard Default card-configuration for the entity on a platform card.
+ * @param {Object} titleCard Optional title card.
+ * @param {Object} doubleTapActionConfig Custom configuration for the card's double-tap action.
+ *
+ * @return {Object[]} A platform card object.
+ */
+function createPlatformCard(entities, entity_config, defaultCard, titleCard, doubleTapActionConfig) {
   const platformCards = [];
 
   if (titleCard != null) {
     platformCards.push(titleCard);
   }
 
+  let doubleTapAction;
+
   entitiesLoop:
       for (const entity of entities) {
         // Entity config does not exist then push default card, otherwise loop to find matching entity
         if (entity_config == null) {
           if (doubleTapActionConfig != null) {
-            var doubleTapAction = {
+            doubleTapAction = {
               double_tap_action: {
                 target: {
                   entity_id: entity.entity_id,
@@ -144,7 +202,7 @@ const createPlatformCard = (entities, entity_config, defaultCard, titleCard, dou
           }
 
           if (doubleTapActionConfig != null) {
-            var doubleTapAction = {
+            doubleTapAction = {
               double_tap_action: {
                 target: {
                   entity_id: entity.entity_id,
@@ -163,9 +221,24 @@ const createPlatformCard = (entities, entity_config, defaultCard, titleCard, dou
       }
 
   return platformCards;
-};
+}
 
-const createListOfFilteredStates = (entities, devices, definedAreas, startsWith) => {
+/**
+ * Get an array of entity state-entries, filtered by areas and by entity-id, starting with string.
+ *
+ * Each element contains a template-string which is used to access home assistant's state machine (state object) in a
+ * template. E.g. "states['light.kitchen']"
+ *
+ * The array excludes hidden and disabled entities.
+ *
+ * @param {Object[]} entities Registered Hass entities.
+ * @param {Object[]} devices Registered devices entities.
+ * @param {Set<Object>} definedAreas Set of user defined areas.
+ * @param {string} startsWith Starting string of the entity-id.
+ *
+ * @return {string[]} Array of entity states.
+ */
+function getFilteredStatesEntries(entities, devices, definedAreas, startsWith) {
   const filteredEntities = new Set();
 
   for (const area of definedAreas) {
@@ -199,13 +272,27 @@ const createListOfFilteredStates = (entities, devices, definedAreas, startsWith)
   }
 
   return statesList;
-};
+}
 
 class MushroomStrategy {
+  /**
+   * Generate a dashboard.
+   *
+   * The object passed to the info parameter contains the following properties:
+   * ```
+   * Key    Description
+   * config User supplied dashboard configuration, if any.
+   * hass   The Home Assistant object.
+   * narrow If the current user interface is rendered in narrow mode or not.
+   * ```
+   *
+   * @param {Object} info Dashboard strategy information object.
+   * @return {Promise<{views: Object[]}>}
+   */
   static async generateDashboard(info) {
     const strategyOptions = info.config.strategy.options || {};
 
-    // Query all data we need. We will make it availableto views by storing it in strategy options.
+    // Query all data we need. We will make it available to views by storing it in strategy options.
     const [areas, devices, entities] = await Promise.all([
       info.hass.callWS({type: "config/area_registry/list"}),
       info.hass.callWS({type: "config/device_registry/list"}),
@@ -328,7 +415,7 @@ class MushroomStrategy {
     // Light count
     const lightCountTemplate =
               "{% set lights = ["
-              + createListOfFilteredStates(entities, devices, definedAreas, "light.")
+              + getFilteredStatesEntries(entities, devices, definedAreas, "light.")
               + "] %} {{ lights | selectattr('state','eq','on') | list | count }}";
 
     if (
@@ -358,7 +445,7 @@ class MushroomStrategy {
     // Fan count
     const fanCountTemplate =
               "{% set fans = ["
-              + createListOfFilteredStates(entities, devices, definedAreas, "fan.")
+              + getFilteredStatesEntries(entities, devices, definedAreas, "fan.")
               + "] %} {{ fans | selectattr('state','eq','on') | list | count }}";
 
     if (
@@ -388,7 +475,7 @@ class MushroomStrategy {
     // Cover count
     const coverCountTemplate =
               "{% set covers = ["
-              + createListOfFilteredStates(entities, devices, definedAreas, "cover.") +
+              + getFilteredStatesEntries(entities, devices, definedAreas, "cover.") +
               "]%} {{ covers | selectattr('state','eq','open') | list | count }}";
 
     if (
@@ -410,7 +497,7 @@ class MushroomStrategy {
     // Switch count
     const switchCountTemplate =
               "{% set switches = ["
-              + createListOfFilteredStates(entities, devices, definedAreas, "switch.")
+              + getFilteredStatesEntries(entities, devices, definedAreas, "switch.")
               + "] %} {{ switches | selectattr('state','eq','on') | list | count }}";
 
     if (
@@ -440,7 +527,7 @@ class MushroomStrategy {
     // Thermostat count
     const thermostatCountTemplate =
               "{% set thermostats = ["
-              + createListOfFilteredStates(entities, devices, definedAreas, "climate.")
+              + getFilteredStatesEntries(entities, devices, definedAreas, "climate.")
               + "]%} {{ thermostats | selectattr('state','ne','off') | list | count }}";
     if (
         strategyOptions.chips == null
@@ -531,7 +618,7 @@ class MushroomStrategy {
       const lightViewCards = [];
 
       lightViewCards.push(
-          createTitleWithControls(
+          createTitleCard(
               "All Lights",
               lightCountTemplate + " lights on",
               "light.turn_off",
@@ -543,7 +630,7 @@ class MushroomStrategy {
       );
 
       for (const area of definedAreas) {
-        const lights = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "light.");
+        const lights = getDeviceEntitiesFromRegistry(entities, devices, area, "light.");
 
         // If there are lights, create a title card and a light card for each lights
         if (lights.size > 0) {
@@ -558,7 +645,7 @@ class MushroomStrategy {
                   show_color_control: true,
                   use_light_color: true,
                 },
-                createTitleWithControls(
+                createTitleCard(
                     area.name,
                     null,
                     "light.turn_off",
@@ -593,7 +680,7 @@ class MushroomStrategy {
       const fanViewCards = [];
 
       fanViewCards.push(
-          createTitleWithControls(
+          createTitleCard(
               "All Fans",
               fanCountTemplate + " fans on",
               "fan.turn_off",
@@ -605,7 +692,7 @@ class MushroomStrategy {
       );
 
       for (const area of definedAreas) {
-        const fans = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "fan.");
+        const fans = getDeviceEntitiesFromRegistry(entities, devices, area, "fan.");
 
         if (fans.size > 0) {
           fanViewCards.push({
@@ -619,7 +706,7 @@ class MushroomStrategy {
                   show_oscillate_control: true,
                   icon_animation: true,
                 },
-                createTitleWithControls(
+                createTitleCard(
                     area.name,
                     null, "fan.turn_off",
                     "fan.turn_on",
@@ -646,7 +733,7 @@ class MushroomStrategy {
       const coverViewCards = [];
 
       coverViewCards.push(
-          createTitleWithControls(
+          createTitleCard(
               "All Covers",
               coverCountTemplate + " covers open",
               "cover.close_cover",
@@ -658,7 +745,7 @@ class MushroomStrategy {
       );
 
       for (const area of definedAreas) {
-        const covers = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "cover.");
+        const covers = getDeviceEntitiesFromRegistry(entities, devices, area, "cover.");
 
         if (covers.size > 0) {
           coverViewCards.push({
@@ -672,7 +759,7 @@ class MushroomStrategy {
                   show_position_control: true,
                   show_tilt_position_control: true,
                 },
-                createTitleWithControls(
+                createTitleCard(
                     area.name,
                     null,
                     "cover.close_cover",
@@ -700,7 +787,7 @@ class MushroomStrategy {
       const switchViewCards = [];
 
       switchViewCards.push(
-          createTitleWithControls(
+          createTitleCard(
               "All Switches",
               switchCountTemplate + " switches on",
               "switch.turn_off",
@@ -712,7 +799,7 @@ class MushroomStrategy {
       );
 
       for (const area of definedAreas) {
-        const switches = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "switch.");
+        const switches = getDeviceEntitiesFromRegistry(entities, devices, area, "switch.");
 
         if (switches.size > 0) {
           switchViewCards.push({
@@ -726,7 +813,7 @@ class MushroomStrategy {
                     action: "toggle",
                   },
                 },
-                createTitleWithControls(
+                createTitleCard(
                     area.name,
                     null,
                     "switch.turn_off",
@@ -760,7 +847,7 @@ class MushroomStrategy {
       });
 
       for (const area of definedAreas) {
-        const thermostats = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "climate.");
+        const thermostats = getDeviceEntitiesFromRegistry(entities, devices, area, "climate.");
 
         if (thermostats.size > 0) {
           thermostatViewCards.push({
@@ -807,7 +894,7 @@ class MushroomStrategy {
 
       for (const area of definedAreas) {
         const cameraAreaCard = [];
-        const cameras        = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "camera.");
+        const cameras        = getDeviceEntitiesFromRegistry(entities, devices, area, "camera.");
 
         // If there are cameras, create a title card and a camera card for each cameras
         if (cameras.size > 0) {
@@ -850,6 +937,20 @@ class MushroomStrategy {
     };
   }
 
+  /**
+   * Generate a view.
+   *
+   * The object passed to the info parameter contains the following properties:
+   * ```
+   * Key    Description
+   * view   View configuration.
+   * config User supplied dashboard configuration, if any.
+   * hass   The Home Assistant object.
+   * narrow If the current user interface is rendered in narrow mode or not.
+   * ```
+   * @param {Object} info View strategy information object.
+   * @return {Promise<{cards: Object[]}>}
+   */
   static async generateView(info) {
     // Get all required values.
     const area          = info.view.strategy.options.area;
@@ -869,7 +970,7 @@ class MushroomStrategy {
     }
 
     // Create light cards.
-    const lights = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "light.");
+    const lights = getDeviceEntitiesFromRegistry(entities, devices, area, "light.");
 
     if (lights.size > 0) {
       cards.push({
@@ -883,7 +984,7 @@ class MushroomStrategy {
               show_color_control: true,
               use_light_color: true,
             },
-            createTitleWithControls(
+            createTitleCard(
                 null,
                 "Lights",
                 "light.turn_off",
@@ -904,7 +1005,7 @@ class MushroomStrategy {
     }
 
     // Create fan cards.
-    const fans = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "fan.");
+    const fans = getDeviceEntitiesFromRegistry(entities, devices, area, "fan.");
 
     if (fans.size > 0) {
       cards.push({
@@ -918,7 +1019,7 @@ class MushroomStrategy {
                   show_oscillate_control: true,
                   icon_animation: true,
                 },
-                createTitleWithControls(
+                createTitleCard(
                     null,
                     "Fans",
                     "fan.turn_off",
@@ -933,7 +1034,7 @@ class MushroomStrategy {
     }
 
     // Create cover cards
-    const covers = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "cover.");
+    const covers = getDeviceEntitiesFromRegistry(entities, devices, area, "cover.");
     if (covers.size > 0) {
       cards.push({
         type: "vertical-stack",
@@ -946,7 +1047,7 @@ class MushroomStrategy {
               show_position_control: true,
               show_tilt_position_control: true,
             },
-            createTitleWithControls(
+            createTitleCard(
                 null, "Covers",
                 "cover.close_cover",
                 "cover.open_cover",
@@ -959,7 +1060,7 @@ class MushroomStrategy {
     }
 
     // Create switch cards.
-    const switches = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "switch.");
+    const switches = getDeviceEntitiesFromRegistry(entities, devices, area, "switch.");
 
     if (switches.size > 0) {
       cards.push({
@@ -973,7 +1074,7 @@ class MushroomStrategy {
                 action: "toggle",
               },
             },
-            createTitleWithControls(
+            createTitleCard(
                 null,
                 "Switches",
                 "switch.turn_off",
@@ -987,7 +1088,7 @@ class MushroomStrategy {
     }
 
     // Create climate cards.
-    const thermoststats = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "climate.");
+    const thermoststats = getDeviceEntitiesFromRegistry(entities, devices, area, "climate.");
 
     if (thermoststats.size > 0) {
       cards.push({
@@ -1014,7 +1115,7 @@ class MushroomStrategy {
     }
 
     // Create Media player cards.
-    const media_players = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "media_player.");
+    const media_players = getDeviceEntitiesFromRegistry(entities, devices, area, "media_player.");
 
     if (media_players.size > 0) {
       cards.push({
@@ -1045,8 +1146,8 @@ class MushroomStrategy {
     }
 
     // Create Sensor cards.
-    const sensorsStateObj = getFilteredEntitiesFromStates(info, entities, devices, area, "sensor.");
-    const sensors         = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "sensor.");
+    const sensorsStateObj = getFilteredStates(info, entities, devices, area, "sensor.");
+    const sensors         = getDeviceEntitiesFromRegistry(entities, devices, area, "sensor.");
 
     if (sensors.size > 0) {
       const sensorCards = [];
@@ -1115,7 +1216,7 @@ class MushroomStrategy {
     }
 
     // Create card for binary sensors.
-    const binary_sensors = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "binary_sensor.");
+    const binary_sensors = getDeviceEntitiesFromRegistry(entities, devices, area, "binary_sensor.");
     if (binary_sensors.size > 0) {
       const horizontalBinarySensorCards = [];
       const binarySensorCards           = createPlatformCard(
@@ -1206,7 +1307,7 @@ class MushroomStrategy {
 
     // Return cards.
     return {
-      cards,
+      cards: cards,
     };
   }
 }
