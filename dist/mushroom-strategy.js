@@ -1,38 +1,36 @@
 /**
- * Get a set of device entities, filtered by area and by entity-id, starting with string.
+ * Get a set of device entities from the entity registry, filtered by area and by entity-id, starting with string.
+ *
+ * The entity registry is a registry where Home Assistant keeps track of all entities.
+ * A device is represented in Home Assistant via one or more entities.
  *
  * The set excludes hidden and disabled entities.
  *
- * @param {Object[]} entities Registered Hass entities.
- * @param {Object[]} devices Registered devices entities.
- * @param {Object} area Area entity.
+ * @param {hassEntity[]} entities Registered Hass entities.
+ * @param {deviceEntity[]} devices Registered devices entities.
+ * @param {areaEntity} area Area entity.
  * @param {string} startsWith Starting string of the entity-id.
  *
  * @return {Set<object>} Set of device entities.
  */
 function getDeviceEntitiesFromRegistry(entities, devices, area, startsWith) {
   // Get the id of the devices which are linked to given area.
-  const areaDevices = new Set();
+  const areaDeviceIds = new Set();
 
   for (const device of devices) {
     if (device.area_id === area.area_id) {
-      areaDevices.add(device.id);
+      areaDeviceIds.add(device.id);
     }
   }
 
-  // Filter entities.
-  const filteredEntities = new Set();
-
-  for (const entity of entities) {
-    if (
-        (areaDevices.has(entity.device_id) || entity.area_id === area.area_id)
+  // Return a set of device entities which match the conditions as described.
+  return new Set(entities.filter(entity => {
+    return (
+        (areaDeviceIds.has(entity.device_id) || entity.area_id === area.area_id)
         && entity.entity_id.startsWith(startsWith)
-        && entity.hidden_by == null && entity.disabled_by == null) {
-      filteredEntities.add(entity);
-    }
-  }
-
-  return filteredEntities;
+        && entity.hidden_by == null && entity.disabled_by == null
+    );
+  }));
 }
 
 /**
@@ -40,13 +38,13 @@ function getDeviceEntitiesFromRegistry(entities, devices, area, startsWith) {
  *
  * The set excludes hidden and disabled entities.
  *
- * @param {Object.<Object>} info Strategy information object.
- * @param {Object[]} entities Registered Hass entities.
- * @param {Object[]} devices Registered devices entities.
- * @param {Object} area Area entity.
+ * @param {infoObject} info Strategy information object.
+ * @param {hassEntity[]} entities Registered Hass entities.
+ * @param {deviceEntity[]} devices Registered devices entities.
+ * @param {areaEntity} area Area entity.
  * @param {string} startsWith Starting string of the entity-id.
  *
- * @return {Set<object>} Set of state entities.
+ * @return {Set<stateObject>} Set of state entities.
  */
 const getFilteredStates = (info, entities, devices, area, startsWith) => {
   const entityLookup = Object.fromEntries(entities.map((ent) => [ent.entity_id, ent]));
@@ -88,16 +86,18 @@ const getFilteredStates = (info, entities, devices, area, startsWith) => {
 /**
  * Create a title card with controls to switch the entities of given areas.
  *
- * A title card is 3 cards horizontally stacked. The first is a mushroom title card which has a title 
- * and subtitle. The other 2 or mushroom template cards which call a service to switch on or off the area.
- * 
+ * A title card is horizontal-stack-card which includes:
+ * ```
+ * 1. A mushroom title card with title and subtitle (Both optional).
+ * 2. A card to switch on given areas.
+ * 3. A card to switch off given areas.
  *
  * @param {string} title Title of the card.
  * @param {string} subtitle Subtitle of the card.
  * @param {string} offService Name of service to switch off the group.
  * @param {string} onService Name of service to switch on the group.
- * @param {string} iconOff Icon to set when group is switched off.
- * @param {string} iconOn Icon to set when group is switched on.
+ * @param {string} iconOff Icon to set when given areas are switched off.
+ * @param {string} iconOn Icon to set when given areas are switched on.
  * @param {string|string[]} area_id Id of the areas(s) to switch.
  *
  * @return {Object} A title card object.
@@ -149,23 +149,22 @@ function createTitleCard(title, subtitle, offService, onService, iconOff, iconOn
 }
 
 /**
- * Create a platform card for each given entity.
+ * Get an array of cards to be included in a view.
  *
- * A platform card is a list of cards that are created for every entity from the given entities which are generally 
- * filtered for a specific platform and/or area and consists of an optional title-card and an entity-card.
- * 
+ * A card is created for each given entity and consists of an optional title-card and an entity-card.
+ * If set, the custom configuration overrides the default configuration of the entity-card.
  *
  * Double-tapping opens the more-info popup of home assistant, unless given a custom double-tap configuration.
  *
- * @param {Set<Object>} entities Registered Hass entities.
- * @param {Object} entity_config Custom card-configuration for the entity on a platform card.
- * @param {Object} defaultCard Default card-configuration for the entity on a platform card.
+ * @param {Set<hassEntity>} entities Registered Hass entities.
+ * @param {entityConfig[]} entity_config Custom card-configurations for an entity on a view.
+ * @param {Object} defaultCard Default card-configuration for the entities on a view.
  * @param {Object} titleCard Optional title card.
  * @param {Object} doubleTapActionConfig Custom configuration for the card's double-tap action.
  *
- * @return {Object[]} A platform card object.
+ * @return {Object[]} Array of view cards.
  */
-function createPlatformCard(entities, entity_config, defaultCard, titleCard, doubleTapActionConfig) {
+function createViewCards(entities, entity_config, defaultCard, titleCard, doubleTapActionConfig) {
   const platformCards = [];
 
   if (titleCard != null) {
@@ -233,9 +232,9 @@ function createPlatformCard(entities, entity_config, defaultCard, titleCard, dou
  *
  * The array excludes hidden and disabled entities.
  *
- * @param {Object[]} entities Registered Hass entities.
- * @param {Object[]} devices Registered devices entities.
- * @param {Set<Object>} definedAreas Set of user defined areas.
+ * @param {hassEntity[]} entities Registered Hass entities.
+ * @param {deviceEntity[]} devices Registered devices entities.
+ * @param {Set<areaEntity>} definedAreas Set of user defined areas.
  * @param {string} startsWith Starting string of the entity-id.
  *
  * @return {string[]} Array of entity states.
@@ -288,17 +287,24 @@ class MushroomStrategy {
    * narrow If the current user interface is rendered in narrow mode or not.
    * ```
    *
-   * @param {Object} info Dashboard strategy information object.
+   * @param {infoObject} info Dashboard strategy information object.
    * @return {Promise<{views: Object[]}>}
    */
   static async generateDashboard(info) {
     const strategyOptions = info.config.strategy.options || {};
 
+    /** @type hassEntity[] */
+    let entities;
+    /** @type deviceEntity[] */
+    let devices;
+    /** @type areaEntity[] */
+    let areas;
+
     // Query all data we need. We will make it available to views by storing it in strategy options.
-    const [areas, devices, entities] = await Promise.all([
-      info.hass.callWS({type: "config/area_registry/list"}),
-      info.hass.callWS({type: "config/device_registry/list"}),
+    [areas, devices, entities] = await Promise.all([
       info.hass.callWS({type: "config/entity_registry/list"}),
+      info.hass.callWS({type: "config/device_registry/list"}),
+      info.hass.callWS({type: "config/area_registry/list"}),
     ]);
 
     // Create People card for each person.
@@ -638,7 +644,7 @@ class MushroomStrategy {
         if (lights.size > 0) {
           lightViewCards.push({
             type: "vertical-stack",
-            cards: createPlatformCard(
+            cards: createViewCards(
                 lights,
                 entity_config,
                 {
@@ -699,7 +705,7 @@ class MushroomStrategy {
         if (fans.size > 0) {
           fanViewCards.push({
             type: "vertical-stack",
-            cards: createPlatformCard(
+            cards: createViewCards(
                 fans,
                 entity_config,
                 {
@@ -752,7 +758,7 @@ class MushroomStrategy {
         if (covers.size > 0) {
           coverViewCards.push({
             type: "vertical-stack",
-            cards: createPlatformCard(
+            cards: createViewCards(
                 covers,
                 entity_config,
                 {
@@ -806,7 +812,7 @@ class MushroomStrategy {
         if (switches.size > 0) {
           switchViewCards.push({
             type: "vertical-stack",
-            cards: createPlatformCard(
+            cards: createViewCards(
                 switches,
                 entity_config,
                 {
@@ -854,7 +860,7 @@ class MushroomStrategy {
         if (thermostats.size > 0) {
           thermostatViewCards.push({
             type: "vertical-stack",
-            cards: createPlatformCard(
+            cards: createViewCards(
                 thermostats,
                 entity_config,
                 {
@@ -898,7 +904,7 @@ class MushroomStrategy {
         const cameraAreaCard = [];
         const cameras        = getDeviceEntitiesFromRegistry(entities, devices, area, "camera.");
 
-        // If there are cameras, create a title card and a camera card for each cameras
+        // If there are cameras, create a title card and a camera card for each one.
         if (cameras.size > 0) {
           cameraAreaCard.push({
             type: "custom:mushroom-title-card",
@@ -977,7 +983,7 @@ class MushroomStrategy {
     if (lights.size > 0) {
       cards.push({
         type: "vertical-stack",
-        cards: createPlatformCard(
+        cards: createViewCards(
             lights,
             entity_config,
             {
@@ -1012,7 +1018,7 @@ class MushroomStrategy {
     if (fans.size > 0) {
       cards.push({
             type: "vertical-stack",
-            cards: createPlatformCard(
+            cards: createViewCards(
                 fans,
                 entity_config,
                 {
@@ -1040,7 +1046,7 @@ class MushroomStrategy {
     if (covers.size > 0) {
       cards.push({
         type: "vertical-stack",
-        cards: createPlatformCard(
+        cards: createViewCards(
             covers,
             entity_config,
             {
@@ -1067,7 +1073,7 @@ class MushroomStrategy {
     if (switches.size > 0) {
       cards.push({
         type: "vertical-stack",
-        cards: createPlatformCard(
+        cards: createViewCards(
             switches,
             entity_config,
             {
@@ -1090,13 +1096,13 @@ class MushroomStrategy {
     }
 
     // Create climate cards.
-    const thermoststats = getDeviceEntitiesFromRegistry(entities, devices, area, "climate.");
+    const thermostats = getDeviceEntitiesFromRegistry(entities, devices, area, "climate.");
 
-    if (thermoststats.size > 0) {
+    if (thermostats.size > 0) {
       cards.push({
         type: "vertical-stack",
-        cards: createPlatformCard(
-            thermoststats,
+        cards: createViewCards(
+            thermostats,
             entity_config,
             {
               type: "custom:mushroom-climate-card",
@@ -1122,7 +1128,7 @@ class MushroomStrategy {
     if (media_players.size > 0) {
       cards.push({
         type: "vertical-stack",
-        cards: createPlatformCard(
+        cards: createViewCards(
             media_players,
             entity_config,
             {
@@ -1221,7 +1227,7 @@ class MushroomStrategy {
     const binary_sensors = getDeviceEntitiesFromRegistry(entities, devices, area, "binary_sensor.");
     if (binary_sensors.size > 0) {
       const horizontalBinarySensorCards = [];
-      const binarySensorCards           = createPlatformCard(
+      const binarySensorCards           = createViewCards(
           binary_sensors,
           entity_config,
           {
@@ -1292,7 +1298,7 @@ class MushroomStrategy {
     if (others.size > 0) {
       cards.push({
         type: "vertical-stack",
-        cards: createPlatformCard(
+        cards: createViewCards(
             others,
             entity_config,
             {
@@ -1314,4 +1320,5 @@ class MushroomStrategy {
   }
 }
 
+// noinspection JSUnresolvedReference
 customElements.define("ll-strategy-mushroom-strategy", MushroomStrategy);
