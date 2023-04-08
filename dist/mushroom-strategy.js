@@ -234,7 +234,7 @@ function createViewCards(entities, entity_config, defaultCard, titleCard, double
  *
  * @param {hassEntity[]} entities Registered Hass entities.
  * @param {deviceEntity[]} devices Registered devices entities.
- * @param {Set<areaEntity>} definedAreas Set of user defined areas.
+ * @param {Set<areaEntity>} definedAreas Set of user-defined areas.
  * @param {string} startsWith Starting string of the entity-id.
  *
  * @return {string[]} Array of entity states.
@@ -329,7 +329,7 @@ class MushroomStrategy {
     const roomCards    = [];
     const definedAreas = new Set();
 
-    // Find all user defined areas and push the card, if not defined, create the room card for every area.
+    // Find all user-defined areas and push the card, if not defined, create the room card for every area.
     if (strategyOptions.areas != null) {
       for (const userDefinedArea of strategyOptions.areas) {
         for (const area of areas) {
@@ -387,7 +387,7 @@ class MushroomStrategy {
       }
     }
 
-    // Create list of area ids, used for turning off all devices via chips
+    // Create a list of area ids, used for turning off all devices via chips
     const areaIds = [];
 
     for (const area of definedAreas) {
@@ -559,9 +559,9 @@ class MushroomStrategy {
     }
 
     // Create Home view.
-    const homeViewcards = [];
+    const homeViewCards = [];
 
-    homeViewcards.push(
+    homeViewCards.push(
         {
           type: "custom:mushroom-chips-card",
           alignment: "center",
@@ -580,10 +580,10 @@ class MushroomStrategy {
     );
 
     if (strategyOptions.quick_access_cards != null) {
-      homeViewcards.push(...strategyOptions.quick_access_cards);
+      homeViewCards.push(...strategyOptions.quick_access_cards);
     }
 
-    homeViewcards.push(
+    homeViewCards.push(
         {
           type: "custom:mushroom-title-card",
           title: "Rooms",
@@ -595,17 +595,17 @@ class MushroomStrategy {
     );
 
     if (strategyOptions.extra_cards != null) {
-      homeViewcards.push(...strategyOptions.extra_cards);
+      homeViewCards.push(...strategyOptions.extra_cards);
     }
 
     const views = [];
     views.push({
       title: "Home",
       path: "home",
-      cards: homeViewcards,
+      cards: homeViewCards,
     });
 
-    // Create Subview for each user defined areas.
+    // Create Subview for each user-defined area.
     const entity_config = strategyOptions.entity_config;
     const defined_areas = strategyOptions.areas;
 
@@ -640,7 +640,7 @@ class MushroomStrategy {
       for (const area of definedAreas) {
         const lights = getDeviceEntitiesFromRegistry(entities, devices, area, "light.");
 
-        // If there are lights, create a title card and a light card for each lights
+        // If there are lights, create a title card and a light card for each one.
         if (lights.size > 0) {
           lightViewCards.push({
             type: "vertical-stack",
@@ -956,7 +956,7 @@ class MushroomStrategy {
    * hass   The Home Assistant object.
    * narrow If the current user interface is rendered in narrow mode or not.
    * ```
-   * @param {Object} info View strategy information object.
+   * @param {Object} info The view's strategy information object.
    * @return {Promise<{cards: Object[]}>}
    */
   static async generateView(info) {
