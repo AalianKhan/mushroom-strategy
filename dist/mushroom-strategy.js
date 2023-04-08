@@ -301,7 +301,7 @@ class MushroomStrategy {
     let areas;
 
     // Query all data we need. We will make it available to views by storing it in strategy options.
-    [areas, devices, entities] = await Promise.all([
+    [entities, devices, areas] = await Promise.all([
       info.hass.callWS({type: "config/entity_registry/list"}),
       info.hass.callWS({type: "config/device_registry/list"}),
       info.hass.callWS({type: "config/area_registry/list"}),
