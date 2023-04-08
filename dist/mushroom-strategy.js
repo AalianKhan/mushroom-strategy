@@ -88,8 +88,9 @@ const getFilteredStates = (info, entities, devices, area, startsWith) => {
 /**
  * Create a title card with controls to switch the entities of given areas.
  *
- * A title card is...
- * TODO: Correct/Complete function description.
+ * A title card is 3 cards horizontally stacked. The first is a mushroom title card which has a title 
+ * and subtitle. The other 2 or mushroom template cards which call a service to switch on or off the area.
+ * 
  *
  * @param {string} title Title of the card.
  * @param {string} subtitle Subtitle of the card.
@@ -150,8 +151,9 @@ function createTitleCard(title, subtitle, offService, onService, iconOff, iconOn
 /**
  * Create a platform card for each given entity.
  *
- * A platform card is a... and consists of an optional title-card and an entity-card.
- * TODO: Correct/Complete function description.
+ * A platform card is a list of cards that are created for every entity from the given entities which are generally 
+ * filtered for a specific platform and/or area and consists of an optional title-card and an entity-card.
+ * 
  *
  * Double-tapping opens the more-info popup of home assistant, unless given a custom double-tap configuration.
  *
