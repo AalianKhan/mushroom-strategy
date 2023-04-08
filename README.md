@@ -103,8 +103,12 @@ See [docs](https://www.home-assistant.io/faq/unique_id/)
 
 ## Strategy options
 
-[//]: # (TODO: Describe the default values of below table.)
-You can set strategy options to further customize the dashboard. The options are available:
+You can set strategy options to further customize the dashboard. 
+By default, all views are enabled which include lights, fans, covers, switches, climates and cameras. All chips are also 
+enabled which count the number of devices on for the platforms light, fan, cover and climate. It also auto-selects a 
+weather entity for the weather chip. 
+
+The options available are:
 
 | Name                 | Type                      | Default                                                 | Description                                                                               | 
 |:---------------------|:--------------------------|:--------------------------------------------------------|:------------------------------------------------------------------------------------------|
@@ -114,7 +118,7 @@ You can set strategy options to further customize the dashboard. The options are
 | `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                                                      |
 | `quick_access_cards` | array of cards (optional) | unset or empty                                          | List of cards to show between welcome card and rooms cards.                               |
 | `extra_cards`        | array of cards (optional  | unset or empty                                          | List of cards to show below room cards.                                                   |
-| `extra_views`        | array of view (optional)  | unset or empty                                          | List of views to add to the dashboard.                                                    |
+| `extra_views`        | array of views (optional) | unset or empty                                          | List of views to add to the dashboard.                                                    |
 
 #### Example
 
