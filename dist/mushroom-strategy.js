@@ -15,27 +15,22 @@
  */
 function getDeviceEntitiesFromRegistry(entities, devices, area, startsWith) {
   // Get the id of the devices which are linked to given area.
-  const areaDevices = new Set();
+  const areaDeviceIds = new Set();
 
   for (const device of devices) {
     if (device.area_id === area.area_id) {
-      areaDevices.add(device.id);
+      areaDeviceIds.add(device.id);
     }
   }
 
-  // Filter entities.
-  const filteredEntities = new Set();
-
-  for (const entity of entities) {
-    if (
-        (areaDevices.has(entity.device_id) || entity.area_id === area.area_id)
+  // Return a set of device entities which match the conditions as described.
+  return new Set(entities.filter(entity => {
+    return (
+        (areaDeviceIds.has(entity.device_id) || entity.area_id === area.area_id)
         && entity.entity_id.startsWith(startsWith)
-        && entity.hidden_by == null && entity.disabled_by == null) {
-      filteredEntities.add(entity);
-    }
-  }
-
-  return filteredEntities;
+        && entity.hidden_by == null && entity.disabled_by == null
+    );
+  }));
 }
 
 /**
