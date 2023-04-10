@@ -139,21 +139,25 @@ The area object includes all options from the template mushroom card and `extra_
 #### Example
 
 ```yaml
-areas:
-  - name: Family Room
-    icon: mdi:television
-    icon_color: green
-    extra_cards:
-      - type: custom:mushroom-chips-card
-        chips:
-          - type: entity
-            entity: sensor.family_room_temperature
-            icon: mdi:thermometer
-            icon_color: pink
-        alignment: center
-  - name: Kitchen
-    icon: mdi:silverware-fork-knife
-    icon_color: red
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    areas:
+    - name: Family Room
+      icon: mdi:television
+      icon_color: green
+      extra_cards:
+        - type: custom:mushroom-chips-card
+          chips:
+            - type: entity
+              entity: sensor.family_room_temperature
+              icon: mdi:thermometer
+              icon_color: pink
+          alignment: center
+    - name: Kitchen
+      icon: mdi:silverware-fork-knife
+      icon_color: red
+views: []
 ```
 
 ### Entity Config
@@ -162,9 +166,13 @@ The `entity_config` essentially enables you to give a specific entity any card y
 
 #### Example
 ```yaml
-entity_config:
-  - entity: fan.master_bedroom_fan
-    type: custom:mushroom-fan-card
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    entity_config:
+      - entity: fan.master_bedroom_fan
+        type: custom:mushroom-fan-card
+views: []
 ```
 
 ### Pre-built views
@@ -185,12 +193,16 @@ Mushroom strategy includes pre-built views to control/view specific domains. Onl
 #### Example
 
 ```yaml
-views:
-  lights: true
-  switches: true
-  covers: false
-  cameras: true
-  thermostats: false
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    views:
+      lights: true
+      switches: true
+      covers: false
+      cameras: true
+      thermostats: false
+views: []
 ```
 
 ### Chips
@@ -214,24 +226,25 @@ Mushroom strategy has chips that count the number of devices active for a specif
 #### Example
 
 ```yaml
-chips:
-  climate_count: false
-  cover_count: false
-  weather_entity: weather.forecast_home
-  extra_chips:
-    - type: conditional
-      conditions:
-        - entity: lock.front_door
-          state: unlocked
-      chip:
-        type: entity
-        entity: lock.front_door
-        icon_color: red
-        content_info: none
-        icon: ''
-        use_entity_picture: false
-        tap_action:
-          action: toggle
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    chips:
+      climate_count: false
+      cover_count: false
+      weather_entity: weather.forecast_home
+      extra_chips:
+        - type: conditional
+          conditions:
+            - entity: lock.front_door
+              state: unlocked
+          chip:
+            type: entity
+            entity: lock.front_door
+            icon_color: red
+            content_info: none
+            tap_action:
+              action: toggle
 ```
 
 ## Full Example
