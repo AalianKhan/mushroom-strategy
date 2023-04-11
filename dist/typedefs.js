@@ -7,8 +7,8 @@
  * @property {string} entity_id The id of this entity.
  * @property {string} device_id The id of the device to which this entity is linked.
  * @property {string} area_id The id of the area to which this entity is linked.
- * @property {string[]|null} hidden_by Indicates by what this entity is hidden.
  * @property {string[]|null} disabled_by Indicates by what this entity is disabled.
+ * @property {string[]|null} hidden_by Indicates by what this entity is hidden.
  * @memberof typedefs
  */
 
@@ -16,8 +16,8 @@
  * @typedef {Object} deviceEntity Device Entity.
  * @property {string} id The id of this entity.
  * @property {string} area_id The id of the area to which this entity is linked.
- * @property {string[]|null} hidden_by Indicates by what this entity is hidden.
  * @property {string[]|null} disabled_by Indicates by what this entity is disabled.
+ * @property {string[]|null} hidden_by Indicates by what this entity is hidden.
  * @memberof typedefs
  */
 
@@ -93,15 +93,19 @@
 
 /**
  * @typedef {Object} hassObject Home Assistant object.
+ * @property {Object<string, stateObject>} states The Home Assistant state object.
  * @property {function} callWS Call a WebSocket command on the backend.
- * @property {Object} states The Home Assistant state object.
  * @memberof typedefs
  */
 
 /**
  * @typedef {Object} stateObject Entity state object.
- * @property {string} entity_id The id of this object.
+ * @property {string} entity_id The id of this state.
+ * @property {string} state The current state.
  * @property {stateAttributes} attributes The state attributes.
+ * @property {Object} context The context of this state.
+ * @property {string} last_changed The date and time the state is last changed.
+ * @property {string} last_updated The date and time the state is last updated.
  * @memberof typedefs
  */
 

@@ -11,30 +11,33 @@
  * @param {areaEntity} area Area entity.
  * @param {string} startsWith Starting string of the entity-id.
  *
- * @return {Set<object>} Set of device entities.
+ * @return {hassEntity[]} Set of device entities.
+ * @todo: Create a lookup map for entities, just like at getStateEntities().
  */
 function getDeviceEntitiesFromRegistry(entities, devices, area, startsWith) {
-  // Get the id of the devices which are linked to given area.
-  const areaDeviceIds = new Set();
+  // Get the ID of the devices which are linked to the given area.
+  const areaDeviceIds = devices.filter(device => {
+    return device.area_id === area.area_id;
+  }).map(device => {
+    return device.id;
+  });
 
-  for (const device of devices) {
-    if (device.area_id === area.area_id) {
-      areaDeviceIds.add(device.id);
-    }
-  }
-
-  // Return a set of device entities which match the conditions as described.
-  return new Set(entities.filter(entity => {
+  // Return the states of which all conditions below are met:
+  // 1. The state is linked to a device which is linked to the given area,
+  //    or the state itself is linked to the given area.
+  // 2. The state's ID starts with the give string.
+  // 3. The state is not hidden and not disabled.
+  return entities.filter(entity => {
     return (
-        (areaDeviceIds.has(entity.device_id) || entity.area_id === area.area_id)
+        (areaDeviceIds.includes(entity.device_id) || entity.area_id === area.area_id)
         && entity.entity_id.startsWith(startsWith)
         && entity.hidden_by == null && entity.disabled_by == null
     );
-  }));
+  });
 }
 
 /**
- * Get a set of states, filtered by area and by entity-id, starting with string.
+ * Get a set of state entities, filtered by area and by entity-id, starting with string.
  *
  * The set excludes hidden and disabled entities.
  *
@@ -45,55 +48,52 @@ function getDeviceEntitiesFromRegistry(entities, devices, area, startsWith) {
  * @param {string} startsWith Starting string of the entity-id.
  *
  * @return {Set<stateObject>} Set of state entities.
+ * @todo: Apply a filter to stateEntities instead of iterating it manually.
  */
-const getFilteredStates = (info, entities, devices, area, startsWith) => {
-  const entityLookup = Object.fromEntries(entities.map((ent) => [ent.entity_id, ent]));
-  const deviceLookup = Object.fromEntries(devices.map((dev) => [dev.id, dev]));
+function getStateEntities(info, entities, devices, area, startsWith) {
+  const states = new Set;
 
-  let states = Object.values(info.hass.states).filter(
-      (stateObj) => stateObj.entity_id.startsWith(startsWith),
+  // Create a map for the hassEntities and devices {id: object} to improve lookup speed.
+  /** @type {Object<string, hassEntity>} */
+  const entityMap = Object.fromEntries(entities.map(entity => [entity.entity_id, entity]));
+  /** @type {Object<string, deviceEntity>} */
+  const deviceMap = Object.fromEntries(devices.map(device => [device.id, device]));
+
+  // Get states whose entity-id starts with the given string.
+  const stateEntities = Object.values(info.hass.states).filter(
+      state => state.entity_id.startsWith(startsWith),
   );
 
-  const areaEntities = new Set;
+  for (const state of stateEntities) {
+    const hassEntity = entityMap[state.entity_id];
+    const device     = deviceMap[hassEntity.device_id];
 
-  for (const stateObj of states) {
-    const entry = entityLookup[stateObj.entity_id];
-
-    if (!entry) {
-      continue;
+    // Collect states of which all conditions below are met:
+    // 1. The linked entity is linked to the given area or isn't linked to any area.
+    // 2. The linked device (if any) is assigned to the given area.
+    if (
+        (!hassEntity.area_id || hassEntity.area_id === area.area_id)
+        && (device && device.area_id === area.area_id)
+    ) {
+      states.add(state);
     }
-
-    if (entry.area_id) {
-      if (entry.area_id !== area.area_id) {
-        continue;
-      }
-    } else if (entry.device_id) {
-      const device = deviceLookup[entry.device_id];
-
-      if (!device || device.area_id !== area.area_id) {
-        continue;
-      }
-    } else {
-      continue;
-    }
-
-    areaEntities.add(stateObj);
   }
 
-  return areaEntities;
-};
+  return states;
+}
 
 /**
  * Create a title card with controls to switch the entities of given areas.
  *
- * A title card is horizontal-stack-card which includes:
+ * A title card is a horizontal-stack-card which includes:
  * ```
  * 1. A mushroom title card with title and subtitle (Both optional).
  * 2. A card to switch on given areas.
  * 3. A card to switch off given areas.
+ * ```
  *
- * @param {string} title Title of the card.
- * @param {string} subtitle Subtitle of the card.
+ * @param {string|null} title Title of the card.
+ * @param {string|null} subtitle Subtitle of the card.
  * @param {string} offService Name of service to switch off the group.
  * @param {string} onService Name of service to switch on the group.
  * @param {string} iconOff Icon to set when given areas are switched off.
@@ -156,72 +156,48 @@ function createTitleCard(title, subtitle, offService, onService, iconOff, iconOn
  *
  * Double-tapping opens the more-info popup of home assistant, unless given a custom double-tap configuration.
  *
- * @param {Set<hassEntity>} entities Registered Hass entities.
+ * @param {hassEntity[]} entities Registered Hass entities.
  * @param {entityConfig[]} entity_config Custom card-configurations for an entity on a view.
  * @param {Object} defaultCard Default card-configuration for the entities on a view.
  * @param {Object} titleCard Optional title card.
  * @param {Object} doubleTapActionConfig Custom configuration for the card's double-tap action.
  *
  * @return {Object[]} Array of view cards.
+ * @todo: Apply a filter to entities instead of iterating it manually.
  */
-function createViewCards(entities, entity_config, defaultCard, titleCard, doubleTapActionConfig) {
-  const platformCards = [];
+function createViewCards(entities, entity_config, defaultCard, titleCard, doubleTapActionConfig = null) {
+  const viewCards = [];
 
-  if (titleCard != null) {
-    platformCards.push(titleCard);
+  if (titleCard) {
+    viewCards.push(titleCard);
   }
 
-  let doubleTapAction;
+  for (const entity of entities) {
+    if ((entity.entity_id in (entity_config ?? {}))) {
+      // Custom configuration defined.
+      viewCards.push({...entity_config[entity.entity_id]});
 
-  entitiesLoop:
-      for (const entity of entities) {
-        // Entity config does not exist then push default card, otherwise loop to find matching entity
-        if (entity_config == null) {
-          if (doubleTapActionConfig != null) {
-            doubleTapAction = {
-              double_tap_action: {
-                target: {
-                  entity_id: entity.entity_id,
-                },
-                ...doubleTapActionConfig,
-              },
-            };
-          }
+      continue;
+    }
 
-          platformCards.push({
-            entity: entity.entity_id,
-            ...defaultCard,
-            ...doubleTapAction,
-          });
-        } else {
-          for (const config of entity_config) {
-            if (entity.entity_id == config.entity) {
-              platformCards.push({...config});
+    // No custom entity configuration.
+    let action = doubleTapActionConfig ? {
+      double_tap_action: {
+        target: {
+          entity_id: entity.entity_id,
+        },
+        ...doubleTapActionConfig,
+      },
+    } : null;
 
-              continue entitiesLoop;
-            }
-          }
+    viewCards.push({
+      entity: entity.entity_id,
+      ...defaultCard,
+      ...action,
+    });
+  }
 
-          if (doubleTapActionConfig != null) {
-            doubleTapAction = {
-              double_tap_action: {
-                target: {
-                  entity_id: entity.entity_id,
-                },
-                ...doubleTapActionConfig,
-              },
-            };
-          }
-
-          platformCards.push({
-            entity: entity.entity_id,
-            ...defaultCard,
-            ...doubleTapAction,
-          });
-        }
-      }
-
-  return platformCards;
+  return viewCards;
 }
 
 /**
@@ -238,41 +214,38 @@ function createViewCards(entities, entity_config, defaultCard, titleCard, double
  * @param {string} startsWith Starting string of the entity-id.
  *
  * @return {string[]} Array of entity states.
+ * @todo: Create lookup map like at getStateEntities().
  */
 function getFilteredStatesEntries(entities, devices, definedAreas, startsWith) {
-  const filteredEntities = new Set();
+  /** @type {string[]} */
+  const states = [];
 
+  // Get the ID of the devices which are linked to the given area.
   for (const area of definedAreas) {
-    const areaDevices = new Set();
+    const areaDeviceIds = devices.filter(device => {
+      return device.area_id === area.area_id;
+    }).map(device => {
+      return device.id;
+    });
 
-    // Find all devices linked to this area
-    for (const device of devices) {
-      if (device.area_id === area.area_id) {
-        areaDevices.add(device.id);
-      }
-    }
-
-    // Filter entities
+    // Collect entities of which all conditions below are met:
+    // 1. The entity is linked to a device which is linked to the given area,
+    //    or the entity itself is linked to the given area.
+    // 2. The entity's ID starts with the give string.
+    // 3. The entity is not hidden and not disabled.
     for (const entity of entities) {
       if (
-          (areaDevices.has(entity.device_id) || entity.area_id === area.area_id)
+          (areaDeviceIds.includes(entity.device_id) || entity.area_id === area.area_id)
           && entity.entity_id.startsWith(startsWith)
-          && entity.hidden_by == null
-          && entity.disabled_by == null
+          && entity.hidden_by == null && entity.disabled_by == null
       ) {
-        filteredEntities.add(entity);
+        states.push("states['" + entity.entity_id + "']");
       }
     }
   }
 
-  // create a list of states.light
-  var statesList = [];
-
-  for (const entity of filteredEntities) {
-    statesList.push("states['" + entity.entity_id + "']");
-  }
-
-  return statesList;
+  // Return the list of entity states.
+  return states;
 }
 
 class MushroomStrategy {
@@ -387,14 +360,14 @@ class MushroomStrategy {
       }
     }
 
-    // Create a list of area ids, used for turning off all devices via chips
+    // Create a list of area-ids, used for turning off all devices via chips
     const areaIds = [];
 
     for (const area of definedAreas) {
       areaIds.push(area.area_id);
     }
 
-    // Create chip to show how many are on for each platform if not disabled.
+    // Create a chip to show how many are on for each platform if not disabled.
     const chips = [];
 
     // weather
@@ -641,7 +614,7 @@ class MushroomStrategy {
         const lights = getDeviceEntitiesFromRegistry(entities, devices, area, "light.");
 
         // If there are lights, create a title card and a light card for each one.
-        if (lights.size > 0) {
+        if (lights.length > 0) {
           lightViewCards.push({
             type: "vertical-stack",
             cards: createViewCards(
@@ -702,7 +675,7 @@ class MushroomStrategy {
       for (const area of definedAreas) {
         const fans = getDeviceEntitiesFromRegistry(entities, devices, area, "fan.");
 
-        if (fans.size > 0) {
+        if (fans.length > 0) {
           fanViewCards.push({
             type: "vertical-stack",
             cards: createViewCards(
@@ -755,7 +728,7 @@ class MushroomStrategy {
       for (const area of definedAreas) {
         const covers = getDeviceEntitiesFromRegistry(entities, devices, area, "cover.");
 
-        if (covers.size > 0) {
+        if (covers.length > 0) {
           coverViewCards.push({
             type: "vertical-stack",
             cards: createViewCards(
@@ -809,7 +782,7 @@ class MushroomStrategy {
       for (const area of definedAreas) {
         const switches = getDeviceEntitiesFromRegistry(entities, devices, area, "switch.");
 
-        if (switches.size > 0) {
+        if (switches.length > 0) {
           switchViewCards.push({
             type: "vertical-stack",
             cards: createViewCards(
@@ -857,7 +830,7 @@ class MushroomStrategy {
       for (const area of definedAreas) {
         const thermostats = getDeviceEntitiesFromRegistry(entities, devices, area, "climate.");
 
-        if (thermostats.size > 0) {
+        if (thermostats.length > 0) {
           thermostatViewCards.push({
             type: "vertical-stack",
             cards: createViewCards(
@@ -905,7 +878,7 @@ class MushroomStrategy {
         const cameras        = getDeviceEntitiesFromRegistry(entities, devices, area, "camera.");
 
         // If there are cameras, create a title card and a camera card for each one.
-        if (cameras.size > 0) {
+        if (cameras.length > 0) {
           cameraAreaCard.push({
             type: "custom:mushroom-title-card",
             title: area.name,
@@ -980,7 +953,7 @@ class MushroomStrategy {
     // Create light cards.
     const lights = getDeviceEntitiesFromRegistry(entities, devices, area, "light.");
 
-    if (lights.size > 0) {
+    if (lights.length > 0) {
       cards.push({
         type: "vertical-stack",
         cards: createViewCards(
@@ -1015,7 +988,7 @@ class MushroomStrategy {
     // Create fan cards.
     const fans = getDeviceEntitiesFromRegistry(entities, devices, area, "fan.");
 
-    if (fans.size > 0) {
+    if (fans.length > 0) {
       cards.push({
             type: "vertical-stack",
             cards: createViewCards(
@@ -1043,7 +1016,7 @@ class MushroomStrategy {
 
     // Create cover cards
     const covers = getDeviceEntitiesFromRegistry(entities, devices, area, "cover.");
-    if (covers.size > 0) {
+    if (covers.length > 0) {
       cards.push({
         type: "vertical-stack",
         cards: createViewCards(
@@ -1070,7 +1043,7 @@ class MushroomStrategy {
     // Create switch cards.
     const switches = getDeviceEntitiesFromRegistry(entities, devices, area, "switch.");
 
-    if (switches.size > 0) {
+    if (switches.length > 0) {
       cards.push({
         type: "vertical-stack",
         cards: createViewCards(
@@ -1098,7 +1071,7 @@ class MushroomStrategy {
     // Create climate cards.
     const thermostats = getDeviceEntitiesFromRegistry(entities, devices, area, "climate.");
 
-    if (thermostats.size > 0) {
+    if (thermostats.length > 0) {
       cards.push({
         type: "vertical-stack",
         cards: createViewCards(
@@ -1125,7 +1098,7 @@ class MushroomStrategy {
     // Create Media player cards.
     const media_players = getDeviceEntitiesFromRegistry(entities, devices, area, "media_player.");
 
-    if (media_players.size > 0) {
+    if (media_players.length > 0) {
       cards.push({
         type: "vertical-stack",
         cards: createViewCards(
@@ -1154,10 +1127,10 @@ class MushroomStrategy {
     }
 
     // Create Sensor cards.
-    const sensorsStateObj = getFilteredStates(info, entities, devices, area, "sensor.");
+    const sensorsStateObj = getStateEntities(info, entities, devices, area, "sensor.");
     const sensors         = getDeviceEntitiesFromRegistry(entities, devices, area, "sensor.");
 
-    if (sensors.size > 0) {
+    if (sensors.length > 0) {
       const sensorCards = [];
 
       sensorCards.push({
@@ -1225,7 +1198,7 @@ class MushroomStrategy {
 
     // Create card for binary sensors.
     const binary_sensors = getDeviceEntitiesFromRegistry(entities, devices, area, "binary_sensor.");
-    if (binary_sensors.size > 0) {
+    if (binary_sensors.length > 0) {
       const horizontalBinarySensorCards = [];
       const binarySensorCards           = createViewCards(
           binary_sensors,
@@ -1295,7 +1268,7 @@ class MushroomStrategy {
       }
     }
 
-    if (others.size > 0) {
+    if (others.length > 0) {
       cards.push({
         type: "vertical-stack",
         cards: createViewCards(
