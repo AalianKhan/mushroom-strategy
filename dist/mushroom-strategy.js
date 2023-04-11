@@ -273,22 +273,22 @@ class MushroomStrategy {
     /** @type areaEntity[] */
     let areas;
 
-    // Query all data we need. We will make it available to views by storing it in strategy options.
+    // Query the registries of Home Assistant.
     [entities, devices, areas] = await Promise.all([
       info.hass.callWS({type: "config/entity_registry/list"}),
       info.hass.callWS({type: "config/device_registry/list"}),
       info.hass.callWS({type: "config/area_registry/list"}),
     ]);
 
-    // Create People card for each person.
-    const peopleCards = [];
+    // Create a card for each person.
+    const personCards = [];
 
     let people = Object.values(info.hass.states).filter((stateObj) =>
         stateObj.entity_id.startsWith("person."),
     );
 
     for (const person of people) {
-      peopleCards.push({
+      personCards.push({
         type: "custom:mushroom-person-card",
         layout: "vertical",
         primary_info: "none",
@@ -306,7 +306,7 @@ class MushroomStrategy {
     if (strategyOptions.areas != null) {
       for (const userDefinedArea of strategyOptions.areas) {
         for (const area of areas) {
-          if (userDefinedArea.name == area.name) {
+          if (userDefinedArea.name === area.name) {
             definedAreas.add(area);
             roomCards.push({
               type: "custom:mushroom-template-card",
@@ -399,10 +399,7 @@ class MushroomStrategy {
               + getFilteredStatesEntries(entities, devices, definedAreas, "light.")
               + "] %} {{ lights | selectattr('state','eq','on') | list | count }}";
 
-    if (
-        strategyOptions.chips == null
-        || (strategyOptions.chips != null && strategyOptions.chips.light_count != false)
-    ) {
+    if (strategyOptions.chips == null || strategyOptions.chips.light_count !== false) {
       chips.push({
         type: "template",
         icon: "mdi:lightbulb",
@@ -429,10 +426,7 @@ class MushroomStrategy {
               + getFilteredStatesEntries(entities, devices, definedAreas, "fan.")
               + "] %} {{ fans | selectattr('state','eq','on') | list | count }}";
 
-    if (
-        strategyOptions.chips == null
-        || (strategyOptions.chips != null && strategyOptions.chips.fan_count != false)
-    ) {
+    if (strategyOptions.chips == null || strategyOptions.chips.fan_count !== false) {
       chips.push({
         type: "template",
         icon: "mdi:fan",
@@ -459,10 +453,7 @@ class MushroomStrategy {
               + getFilteredStatesEntries(entities, devices, definedAreas, "cover.") +
               "]%} {{ covers | selectattr('state','eq','open') | list | count }}";
 
-    if (
-        strategyOptions.chips == null
-        || (strategyOptions.chips != null && strategyOptions.chips.cover_count != false)
-    ) {
+    if (strategyOptions.chips == null || strategyOptions.chips.cover_count !== false) {
       chips.push({
         type: "template",
         icon: "mdi:window-open",
@@ -481,10 +472,7 @@ class MushroomStrategy {
               + getFilteredStatesEntries(entities, devices, definedAreas, "switch.")
               + "] %} {{ switches | selectattr('state','eq','on') | list | count }}";
 
-    if (
-        strategyOptions.chips == null
-        || (strategyOptions.chips != null && strategyOptions.chips.switch_count != false)
-    ) {
+    if (strategyOptions.chips == null || strategyOptions.chips.switch_count !== false) {
       chips.push({
         type: "template",
         icon: "mdi:power-plug",
@@ -510,10 +498,8 @@ class MushroomStrategy {
               "{% set thermostats = ["
               + getFilteredStatesEntries(entities, devices, definedAreas, "climate.")
               + "]%} {{ thermostats | selectattr('state','ne','off') | list | count }}";
-    if (
-        strategyOptions.chips == null
-        || (strategyOptions.chips != null && strategyOptions.chips.climate_count != false)
-    ) {
+
+    if (strategyOptions.chips == null || strategyOptions.chips.climate_count !== false) {
       chips.push({
         type: "template",
         icon: "mdi:thermostat",
@@ -542,7 +528,7 @@ class MushroomStrategy {
         },
         {
           type: "horizontal-stack",
-          cards: peopleCards,
+          cards: personCards,
         },
         {
           type: "custom:mushroom-template-card",
@@ -595,7 +581,7 @@ class MushroomStrategy {
     }
 
     // Create Light view if enabled.
-    if (strategyOptions.views == null || (strategyOptions.views != null && strategyOptions.views.lights != false)) {
+    if (strategyOptions.views == null || strategyOptions.views.lights !== false) {
       const lightViewCards = [];
 
       lightViewCards.push(
@@ -657,7 +643,7 @@ class MushroomStrategy {
     }
 
     // Create Fan view if enabled.
-    if (strategyOptions.views == null || (strategyOptions.views != null && strategyOptions.views.fans != false)) {
+    if (strategyOptions.views == null || strategyOptions.views.fans !== false) {
       const fanViewCards = [];
 
       fanViewCards.push(
@@ -710,7 +696,7 @@ class MushroomStrategy {
     }
 
     // Create Covers view if enabled.
-    if (strategyOptions.views == null || (strategyOptions.views != null && strategyOptions.views.covers != false)) {
+    if (strategyOptions.views == null || strategyOptions.views.covers !== false) {
       const coverViewCards = [];
 
       coverViewCards.push(
@@ -764,7 +750,7 @@ class MushroomStrategy {
     }
 
     // Create Switches view if enabled.
-    if (strategyOptions.views == null || (strategyOptions.views != null && strategyOptions.views.switches != false)) {
+    if (strategyOptions.views == null || strategyOptions.views.switches !== false) {
       const switchViewCards = [];
 
       switchViewCards.push(
@@ -818,7 +804,7 @@ class MushroomStrategy {
     }
 
     // Create Climate view if enabled.
-    if (strategyOptions.views == null || (strategyOptions.views != null && strategyOptions.views.climates != false)) {
+    if (strategyOptions.views == null || strategyOptions.views.climates !== false) {
       const thermostatViewCards = [];
 
       thermostatViewCards.push({
@@ -865,7 +851,7 @@ class MushroomStrategy {
     }
 
     // Create camera view if enabled.
-    if (strategyOptions.views == null || (strategyOptions.views != null && strategyOptions.views.cameras != false)) {
+    if (strategyOptions.views == null || strategyOptions.views.cameras !== false) {
       const cameraViewCards = [];
 
       cameraViewCards.push({
@@ -944,7 +930,7 @@ class MushroomStrategy {
     // Add extra cards if defined.
     if (definedAreas != null) {
       for (const definedArea of definedAreas) {
-        if (definedArea.name == area.name && definedArea.extra_cards != null) {
+        if (definedArea.name === area.name && definedArea.extra_cards != null) {
           cards.push(...definedArea.extra_cards);
         }
       }
@@ -1127,7 +1113,7 @@ class MushroomStrategy {
     }
 
     // Create Sensor cards.
-    const sensorsStateObj = getStateEntities(info, entities, devices, area, "sensor.");
+    const sensorStatesObj = getStateEntities(info, entities, devices, area, "sensor.");
     const sensors         = getDeviceEntitiesFromRegistry(entities, devices, area, "sensor.");
 
     if (sensors.length > 0) {
@@ -1138,19 +1124,19 @@ class MushroomStrategy {
         subtitle: "Sensors",
       });
 
+      let sensorStateObj;
       sensorsLoop:
           for (const sensor of sensors) {
             // Find the state obj that matches with current sensor
-            let sensorStateObj;
 
-            for (const stateObj of sensorsStateObj) {
-              if (stateObj.entity_id == sensor.entity_id) {
+            for (const stateObj of sensorStatesObj) {
+              if (stateObj.entity_id === sensor.entity_id) {
                 sensorStateObj = stateObj;
               }
             }
 
             if (entity_config == null) {
-              if (sensorStateObj.attributes.unit_of_measurement != null) {
+              if (sensorStateObj && sensorStateObj.attributes.unit_of_measurement != null) {
                 sensorCards.push({
                   type: "custom:mini-graph-card",
                   entities: [sensor.entity_id],
@@ -1166,14 +1152,14 @@ class MushroomStrategy {
               }
             } else {
               for (const config of entity_config) {
-                if (sensor.entity_id == config.entity_id) {
+                if (sensor.entity_id === config.entity_id) {
                   sensorCards.push({...config});
 
                   continue sensorsLoop;
                 }
               }
 
-              if (sensorStateObj.attributes.unit_of_measurement != null) {
+              if (sensorStateObj && sensorStateObj.attributes.unit_of_measurement != null) {
                 sensorCards.push({
                   type: "custom:mini-graph-card",
                   entities: [sensor.entity_id],
@@ -1248,7 +1234,7 @@ class MushroomStrategy {
     }
 
     // Filter entities
-    const others = new Set();
+    const others = [];
 
     for (const entity of entities) {
       if (
@@ -1264,7 +1250,7 @@ class MushroomStrategy {
           && !entity.entity_id.startsWith("binary_sensor.")
           && !entity.entity_id.startsWith("media_player.")
       ) {
-        others.add(entity);
+        others.push(entity);
       }
     }
 
