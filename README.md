@@ -1,7 +1,7 @@
 # Mushroom dashboard strategy
 
-[![hacs][hacs-badge]][hacs-url]
-[![release][release-badge]][release-url]
+[![hacs][hacsBadge]][hacsUrl]
+[![release][releaseBadge]][releaseUrl]
 
 ![Preview GIF](./docs/preview.gif)
 
@@ -32,9 +32,9 @@ My goal is to propose a way to create powerful dashboards without the need of sp
 
 You need to install these cards before using this strategy:
 
-- [Mushroom cards][mushroom]
-- [Mini graph card][mini-graph]
-- [Web RTC][webrtc]
+- [Mushroom cards][mushroomUrl]
+- [Mini graph card][mini-graphUrl]
+- [Web RTC][webRtcUrl]
 
 ### HACS
 
@@ -54,15 +54,15 @@ Mushroom dashboard strategy is available in [HACS][hacs] (Home Assistant Communi
 2. Put `mushroom-strategy.js` file into your `config/www` folder.
 3. Add a reference to `mushroom-strategy.js` in Dashboard.  
    There are two ways to do that:
-   - **Using UI:** _Settings_ → _Dashboards_ → _More Options icon_ → _Resources_ → _Add Resource_ → Set _Url_
-     as `/local/mushroom-strategy.js` → Set _Resource type_ as `JavaScript Module`.  
-     **Note:** If you do not see the Resources menu, you will need to enable _Advanced Mode_ in your _User Profile_
-   - **Using YAML:** Add following code to the `lovelace` section.
-       ```yaml
-       resources:
-           - url: /local/mushroom-strategy.js
-             type: module
-       ```
+    - **Using UI:** _Settings_ → _Dashboards_ → _More Options icon_ → _Resources_ → _Add Resource_ → Set _Url_
+      as `/local/mushroom-strategy.js` → Set _Resource type_ as `JavaScript Module`.  
+      **Note:** If you do not see the Resources menu, you will need to enable _Advanced Mode_ in your _User Profile_
+    - **Using YAML:** Add following code to the `lovelace` section.
+        ```yaml
+        resources:
+            - url: /local/mushroom-strategy.js
+              type: module
+        ```
 
 ## Usage
 
@@ -76,7 +76,7 @@ All the rounded cards can be configured using Dashboard UI editor.
 
 ```yaml
 strategy:
-   type: custom:mushroom-strategy
+  type: custom:mushroom-strategy
 views: [ ]
 ```
 
@@ -103,10 +103,10 @@ See [docs](https://www.home-assistant.io/faq/unique_id/)
 
 ## Strategy options
 
-You can set strategy options to further customize the dashboard. 
-By default, all views are enabled which include lights, fans, covers, switches, climates and cameras. All chips are also 
-enabled which count the number of devices on for the platforms light, fan, cover and climate. It also auto-selects a 
-weather entity for the weather chip. 
+You can set strategy options to further customize the dashboard.
+By default, all views are enabled which include lights, fans, covers, switches, climates and cameras. All chips are also
+enabled which count the number of devices on for the platforms light, fan, cover and climate. It also auto-selects a
+weather entity for the weather chip.
 
 The options available are:
 
@@ -124,12 +124,12 @@ The options available are:
 
 ```yaml
 strategy:
-   type: custom:mushroom-strategy
-   options:
-      areas:
-         - name: Family Room
-           icon: mdi:sofa
-           icon_color: green
+  type: custom:mushroom-strategy
+  options:
+    areas:
+      - name: Family Room
+        icon: mdi:sofa
+        icon_color: green
 views: [ ]
 ```
 
@@ -138,7 +138,6 @@ views: [ ]
 The area object includes all options from the template mushroom card and `extra_cards` which is a list of cards to show
 at the top of the area subview.
 The order of definition is used to sort the rooms and pre-built views
-
 
 | Name                  | Type              | Default        | Description                                                                                                                         |
 |:----------------------|:------------------|:---------------|:------------------------------------------------------------------------------------------------------------------------------------|
@@ -165,20 +164,20 @@ The order of definition is used to sort the rooms and pre-built views
 
 ```yaml
 areas:
-   - name: Family Room
-     icon: mdi:television
-     icon_color: green
-     extra_cards:
-        - type: custom:mushroom-chips-card
-          chips:
-             - type: entity
-               entity: sensor.family_room_temperature
-               icon: mdi:thermometer
-               icon_color: pink
-          alignment: center
-   - name: Kitchen
-     icon: mdi:silverware-fork-knife
-     icon_color: red
+  - name: Family Room
+    icon: mdi:television
+    icon_color: green
+    extra_cards:
+      - type: custom:mushroom-chips-card
+        chips:
+          - type: entity
+            entity: sensor.family_room_temperature
+            icon: mdi:thermometer
+            icon_color: pink
+        alignment: center
+  - name: Kitchen
+    icon: mdi:silverware-fork-knife
+    icon_color: red
 ```
 
 ### Entity Config
@@ -189,8 +188,8 @@ The `entity_config` essentially enables you to give a specific entity any card y
 
 ```yaml
 entity_config:
-   - entity: fan.master_bedroom_fan
-     type: custom:mushroom-fan-card
+  - entity: fan.master_bedroom_fan
+    type: custom:mushroom-fan-card
 ```
 
 ### Pre-built views
@@ -216,11 +215,11 @@ By default, all views are shown.
 
 ```yaml
 views:
-   lights: true
-   switches: true
-   covers: false
-   cameras: true
-   climates: false
+  lights: true
+  switches: true
+  covers: false
+  cameras: true
+  climates: false
 ```
 
 ### Chips
@@ -233,7 +232,7 @@ If `areas` is not defined then the devices in all areas are counted.
 By default, all chips are enabled.
 
 You can manually configure a weather entity-id to use and there's also an option to add
-more [Mushroom Chips][mushroom-chips] using `extra_chips`.
+more [Mushroom Chips][mushroom-chipsUrl] using `extra_chips`.
 
 **Note: To hide the weather chip, you should hide or disable the entity itself.**
 
@@ -245,172 +244,163 @@ more [Mushroom Chips][mushroom-chips] using `extra_chips`.
 | `switch_count`   | boolean           | Chip to display the number of switches on, tapping turns off all switches, holding navigates to switches view. |
 | `climate_count`  | boolean           | Chip to display the number of climate not off, tapping navigates to climates view.                             |
 | `weather_entity` | string (optional) | Entity ID for the weather chip to use, accepts `weather.` only.                                                |
-| `extra_chips`    | array (optional)  | List of extra chips to display, see [Mushroom Chips][mushroom-chips].                                          |
+| `extra_chips`    | array (optional)  | List of extra chips to display, see [Mushroom Chips][mushroom-chipsUrl].                                       |
 
 #### Example
 
 ```yaml
 chips:
-   climate_count: false
-   cover_count: false
-   weather_entity: weather.forecast_home
-   extra_chips:
-      - type: conditional
-        conditions:
-           - entity: lock.front_door
-             state: unlocked
-        chip:
-           type: entity
-           entity: lock.front_door
-           icon_color: red
-           content_info: none
-           icon: ''
-           use_entity_picture: false
-           tap_action:
-              action: toggle
+  climate_count: false
+  cover_count: false
+  weather_entity: weather.forecast_home
+  extra_chips:
+    - type: conditional
+      conditions:
+        - entity: lock.front_door
+          state: unlocked
+      chip:
+        type: entity
+        entity: lock.front_door
+        icon_color: red
+        content_info: none
+        icon: ''
+        use_entity_picture: false
+        tap_action:
+          action: toggle
 ```
 
 ## Full Example
 
 ```yaml
 strategy:
-   type: custom:mushroom-strategy
-   options:
-      views:
-         lights: true
-         switches: true
-         covers: false
-         cameras: true
-         thermostats: false
-      chips:
-         weather_entity: weather.forecast_home
-         climate_count: false
-         cover_count: false
-         extra_chips:
-            - type: conditional
-              conditions:
-                 - entity: lock.front_door
-                   state: unlocked
-              chip:
-                 type: entity
-                 entity: lock.front_door
-                 icon_color: red
-                 content_info: none
-                 icon: ''
-                 use_entity_picture: false
-                 tap_action:
-                    action: toggle
-            - type: conditional
-              conditions:
-                 - entity: cover.garage_door
-                   state_not: closed
-              chip:
-                 type: entity
-                 entity: cover.garage_door
-                 icon_color: red
-                 content_info: none
-                 tap_action:
-                    action: toggle
-      areas:
-         - name: Family Room
-           icon: mdi:television
-           icon_color: green
-           extra_cards:
-              - type: custom:mushroom-chips-card
-                chips:
-                   - type: entity
-                     entity: sensor.family_room_temperature
-                     icon: mdi:thermometer
-                     icon_color: pink
-                alignment: center
-         - name: Kitchen
-           icon: mdi:silverware-fork-knife
-           icon_color: red
-         - name: Master Bedroom
-           icon: mdi:bed-king
-           icon_color: blue
-         - name: Abia's Bedroom
-           icon: mdi:flower-tulip
-           icon_color: green
-         - name: Aalian's Bedroom
-           icon: mdi:rocket-launch
-           icon_color: yellow
-         - name: Rohaan's Bedroom
-           icon: mdi:controller
-           icon_color: red
-         - name: Hallway
-         - name: Living Room
-           icon: mdi:sofa
-         - name: Front Door
-           icon: mdi:door-closed
-      entity_config:
-         - entity: fan.master_bedroom_fan
-           type: custom:mushroom-fan-card
-      quick_access_cards:
-         - type: custom:mushroom-title-card
-           title: Security
-         - type: custom:mushroom-cover-card
-           entity: cover.garage_door
-           show_buttons_control: true
-         - type: horizontal-stack
-           cards:
-              - type: custom:mushroom-lock-card
-                entity: lock.front_door
-              - type: custom:mushroom-entity-card
-                entity: sensor.front_door_lock_battery
-                name: Battery
-      extra_cards:
-         - type: custom:xiaomi-vacuum-map-card
-           map_source:
-              camera: camera.xiaomi_cloud_map_extractor
-           calibration_source:
-              camera: true
-           entity: vacuum.robot_vacuum
-           vacuum_platform: default
-      extra_views:
-         - theme: Backend-selected
-           title: cool view
-           path: cool-view
-           icon: mdi:emoticon-cool
-           badges: [ ]
-           cards:
-              - type: markdown
-                content: I am cool
+  type: custom:mushroom-strategy
+  options:
+    views:
+      lights: true
+      switches: true
+      covers: false
+      cameras: true
+      thermostats: false
+    chips:
+      weather_entity: weather.forecast_home
+      climate_count: false
+      cover_count: false
+      extra_chips:
+        - type: conditional
+          conditions:
+            - entity: lock.front_door
+              state: unlocked
+          chip:
+            type: entity
+            entity: lock.front_door
+            icon_color: red
+            content_info: none
+            icon: ''
+            use_entity_picture: false
+            tap_action:
+              action: toggle
+        - type: conditional
+          conditions:
+            - entity: cover.garage_door
+              state_not: closed
+          chip:
+            type: entity
+            entity: cover.garage_door
+            icon_color: red
+            content_info: none
+            tap_action:
+              action: toggle
+    areas:
+      - name: Family Room
+        icon: mdi:television
+        icon_color: green
+        extra_cards:
+          - type: custom:mushroom-chips-card
+            chips:
+              - type: entity
+                entity: sensor.family_room_temperature
+                icon: mdi:thermometer
+                icon_color: pink
+            alignment: center
+      - name: Kitchen
+        icon: mdi:silverware-fork-knife
+        icon_color: red
+      - name: Master Bedroom
+        icon: mdi:bed-king
+        icon_color: blue
+      - name: Abia's Bedroom
+        icon: mdi:flower-tulip
+        icon_color: green
+      - name: Aalian's Bedroom
+        icon: mdi:rocket-launch
+        icon_color: yellow
+      - name: Rohaan's Bedroom
+        icon: mdi:controller
+        icon_color: red
+      - name: Hallway
+      - name: Living Room
+        icon: mdi:sofa
+      - name: Front Door
+        icon: mdi:door-closed
+    entity_config:
+      - entity: fan.master_bedroom_fan
+        type: custom:mushroom-fan-card
+    quick_access_cards:
+      - type: custom:mushroom-title-card
+        title: Security
+      - type: custom:mushroom-cover-card
+        entity: cover.garage_door
+        show_buttons_control: true
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-lock-card
+            entity: lock.front_door
+          - type: custom:mushroom-entity-card
+            entity: sensor.front_door_lock_battery
+            name: Battery
+    extra_cards:
+      - type: custom:xiaomi-vacuum-map-card
+        map_source:
+          camera: camera.xiaomi_cloud_map_extractor
+        calibration_source:
+          camera: true
+        entity: vacuum.robot_vacuum
+        vacuum_platform: default
+    extra_views:
+      - theme: Backend-selected
+        title: cool view
+        path: cool-view
+        icon: mdi:emoticon-cool
+        badges: [ ]
+        cards:
+          - type: markdown
+            content: I am cool
 ```
 
 ## Credits
 
-* The cards used are from [Mushroom][mushroom], [Mini graph card][mini-graph] and [WebRTC][webrtc]
-* Took inspiration from [Balloob battery strategy][balloobBattery]
+* The cards used are from [Mushroom][mushroomUrl], [Mini graph card][mini-graphUrl] and [WebRTC][webrtc]
+* Took inspiration from [Balloob battery strategy][balloobBatteryUrl]
 
-<!-- Badges -->
+<!-- Badges References -->
 
-[hacs-url]: https://github.com/hacs/integration
+[hacsBadge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg
 
-[hacs-badge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg
+[releaseBadge]: https://img.shields.io/github/v/release/AalianKhan/mushroom-strategy
 
-[release-badge]: https://img.shields.io/github/v/release/lovelace-rounded/ui?style=flat-square
+<!-- Other References -->
 
-[downloads-badge]: https://img.shields.io/github/downloads/lovelace-rounded/ui/total?style=flat-square
+[hacsUrl]: https://hacs.xyz
 
-[build-badge]: https://img.shields.io/github/actions/workflow/status/lovelace-rounded/ui/build.yml?branch=main&style=flat-square
+[releaseUrl]: https://github.com/AalianKhan/mushroom-strategy/releases
 
-<!-- References -->
+[mushroomUrl]: https://github.com/piitaya/lovelace-mushroom
 
-[home-assistant]: https://www.home-assistant.io/
+[mushroom-chipsUrl]: https://github.com/piitaya/lovelace-mushroom/blob/main/docs/cards/chips.md
 
-[home-assitant-theme-docs]: https://www.home-assistant.io/integrations/frontend/#defining-themes
+[mini-graphUrl]: https://github.com/kalkih/mini-graph-card
 
-[hacs]: https://hacs.xyz
+[webRtcUrl]: https://github.com/AlexxIT/WebRTC
 
-[mushroom]: https://github.com/piitaya/lovelace-mushroom
+[balloobBatteryUrl]: https://gist.github.com/balloob/4a70c83287ddba4e9085cb578ffb161f
 
-[mushroom-chips]: https://github.com/piitaya/lovelace-mushroom/blob/main/docs/cards/chips.md
-
-[mini-graph]: https://github.com/kalkih/mini-graph-card
-
-[webrtc]: https://github.com/AlexxIT/WebRTC
-
-[balloobBattery]: https://gist.github.com/balloob/4a70c83287ddba4e9085cb578ffb161f
-
-[release-url]: https://github.com/AalianKhan/mushroom-strategy/releases
