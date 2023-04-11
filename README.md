@@ -139,7 +139,6 @@ The area object includes all options from the template mushroom card and `extra_
 at the top of the area subview.
 The order of definition is used to sort the rooms and pre-built views
 
-[//]: # (TODO: Describe the default values of below table.)
 
 | Name                  | Type              | Default        | Description                                                                                                                         |
 |:----------------------|:------------------|:---------------|:------------------------------------------------------------------------------------------------------------------------------------|
