@@ -151,42 +151,44 @@ function createTitleCard(title, subtitle, offService, onService, iconOff, iconOn
 /**
  * Get an array of cards to be included in a view.
  *
- * A card is created for each given entity and consists of an optional title-card and an entity-card.
- * If set, the custom configuration overrides the default configuration of the entity-card.
- *
+ * A default card is created for each given entity and consists of an optional title-card and an entity-card.
  * Double-tapping opens the more-info popup of home assistant, unless given a custom double-tap configuration.
  *
+ * If a custom card configuration is defined for an entity, it will override the default card and double-tap action.
+ *
  * @param {hassEntity[]} entities Registered Hass entities.
- * @param {entityConfig[]} entity_config Custom card-configurations for an entity on a view.
+ * @param {entityConfig[]} customEntityCards Custom card-configurations for an entity on a view.
  * @param {Object} defaultCard Default card-configuration for the entities on a view.
  * @param {Object} titleCard Optional title card.
- * @param {Object} doubleTapActionConfig Custom configuration for the card's double-tap action.
+ * @param {Object} action Custom configuration for the card's double-tap action.
  *
  * @return {Object[]} Array of view cards.
- * @todo: Apply a filter to entities instead of iterating it manually.
  */
-function createViewCards(entities, entity_config, defaultCard, titleCard, doubleTapActionConfig = null) {
+function createViewCards(entities, customEntityCards, defaultCard, titleCard, action = null) {
   const viewCards = [];
+  let customCard;
 
+  // If a title card is defined, add it.
   if (titleCard) {
     viewCards.push(titleCard);
   }
 
   for (const entity of entities) {
-    if ((entity.entity_id in (entity_config ?? {}))) {
-      // Custom configuration defined.
-      viewCards.push({...entity_config[entity.entity_id]});
+    // If a custom card configuration is defined, add the custom card.
+    customCard = (customEntityCards ?? []).find(config => config.entity === entity.entity_id);
+    if (customCard) {
+      viewCards.push(customCard);
 
       continue;
     }
 
-    // No custom entity configuration.
-    let action = doubleTapActionConfig ? {
+    // No custom card configuration; Add the given default card with given double-tap action.
+    action = action ? {
       double_tap_action: {
         target: {
           entity_id: entity.entity_id,
         },
-        ...doubleTapActionConfig,
+        ...action,
       },
     } : null;
 
@@ -915,7 +917,7 @@ class MushroomStrategy {
    * hass   The Home Assistant object.
    * narrow If the current user interface is rendered in narrow mode or not.
    * ```
-   * @param {Object} info The view's strategy information object.
+   * @param {infoObject} info The view's strategy information object.
    * @return {Promise<{cards: Object[]}>}
    */
   static async generateView(info) {
