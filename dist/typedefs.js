@@ -38,7 +38,7 @@
  */
 
 /**
- * @typedef {dashboardConfig} dashboardConfig User supplied dashboard configuration.
+ * @typedef {Object} dashboardConfig User supplied dashboard configuration.
  * @property {Object} strategy User supplied dashboard configuration.
  * @memberof typedefs
  */
