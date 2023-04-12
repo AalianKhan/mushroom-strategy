@@ -41,7 +41,7 @@ function getDeviceEntitiesFromRegistry(entities, devices, area, startsWith) {
  *
  * The set excludes hidden and disabled entities.
  *
- * @param {infoObject} info Strategy information object.
+ * @param {hassObject["states"]} hassStates Hass entity states.
  * @param {hassEntity[]} entities Registered Hass entities.
  * @param {deviceEntity[]} devices Registered devices entities.
  * @param {areaEntity} area Area entity.
@@ -50,7 +50,7 @@ function getDeviceEntitiesFromRegistry(entities, devices, area, startsWith) {
  * @return {Set<stateObject>} Set of state entities.
  * @todo: Apply a filter to stateEntities instead of iterating it manually.
  */
-function getStateEntities(info, entities, devices, area, startsWith) {
+function getStateEntities(hassStates, entities, devices, area, startsWith) {
   const states = new Set;
 
   // Create a map for the hassEntities and devices {id: object} to improve lookup speed.
@@ -60,7 +60,7 @@ function getStateEntities(info, entities, devices, area, startsWith) {
   const deviceMap = Object.fromEntries(devices.map(device => [device.id, device]));
 
   // Get states whose entity-id starts with the given string.
-  const stateEntities = Object.values(info.hass.states).filter(
+  const stateEntities = Object.values(hassStates).filter(
       state => state.entity_id.startsWith(startsWith),
   );
 
@@ -1115,7 +1115,7 @@ class MushroomStrategy {
     }
 
     // Create Sensor cards.
-    const sensorStatesObj = getStateEntities(info, entities, devices, area, "sensor.");
+    const sensorStatesObj = getStateEntities(info.hass.states, entities, devices, area, "sensor.");
     const sensors         = getDeviceEntitiesFromRegistry(entities, devices, area, "sensor.");
 
     if (sensors.length > 0) {
