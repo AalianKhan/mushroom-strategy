@@ -300,66 +300,38 @@ class MushroomStrategy {
       });
     }
 
-    // Create Room cards for each area in Home view.
-    const roomCards    = [];
+    // Create Area cards.
+    const areaCards    = [];
     const definedAreas = new Set();
 
-    // Find all user-defined areas and push the card, if not defined, create the room card for every area.
-    if (strategyOptions.areas != null) {
-      for (const userDefinedArea of strategyOptions.areas) {
-        for (const area of areas) {
-          if (userDefinedArea.name === area.name) {
-            definedAreas.add(area);
-            roomCards.push({
-              type: "custom:mushroom-template-card",
-              primary: area.name,
-              icon: "mdi:texture-box",
-              icon_color: "blue",
-              tap_action: {
-                action: "navigate",
-                navigation_path: area.area_id,
-              },
-              ...userDefinedArea,
-            });
-          }
-        }
-      }
-    } else {
-      for (const area of areas) {
-        definedAreas.add(area);
-        roomCards.push({
+    for (const area of areas) {
+      // Override Home assistant properties of the with custom properties.
+      const customConfiguration = {...area, ...strategyOptions.areas?.[area.area_id]}
+
+      if (customConfiguration.hidden !== true) {
+        dashboardAreas.push(area);
+        areaCards.push({
           type: "custom:mushroom-template-card",
-          primary: area.name,
+          primary: customConfiguration.name,
           icon: "mdi:texture-box",
           icon_color: "blue",
           tap_action: {
             action: "navigate",
-            navigation_path: area.area_id,
+            navigation_path: customConfiguration.area_id,
           },
+          ...customConfiguration,
         });
       }
     }
 
-    // Horizontally stack the room cards, 2 per row.
-    const horizontalRoomCards = [];
+    // Create a two-card horizontal stack of area cards.
+    const horizontalAreaCards = [];
 
-    for (let i = 0; i < roomCards.length; i = i + 2) {
-      if (roomCards[i + 1] == null) {
-        horizontalRoomCards.push({
-          type: "horizontal-stack",
-          cards: [
-            roomCards[i],
-          ],
-        });
-      } else {
-        horizontalRoomCards.push({
-          type: "horizontal-stack",
-          cards: [
-            roomCards[i],
-            roomCards[i + 1],
-          ],
-        });
-      }
+    for (let i = 0; i < areaCards.length; i += 2) {
+      horizontalAreaCards.push({
+        type: "horizontal-stack",
+        cards: areaCards.slice(i, i + 2),
+      });
     }
 
     // Create a list of area-ids, used for turning off all devices via chips
