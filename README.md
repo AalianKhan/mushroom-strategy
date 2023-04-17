@@ -382,6 +382,9 @@ strategy:
 * The cards used are from [Mushroom][mushroomUrl], [Mini graph card][mini-graphUrl] and [WebRTC][webrtc]
 * Took inspiration from [Balloob battery strategy][balloobBatteryUrl]
 
+## Contributors
+* [DigiLive](https://github.com/DigiLive)
+
 <!-- Badges References -->
 
 [hacsBadge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg
