@@ -42,12 +42,17 @@ class MushroomStrategy {
   static #hassStates;
 
   /**
-   * Get a template string to define the number of a given domain's entities with a state other than "off".
+   * Get a template string to define the number of a given domain's entities with a certain state.
+   *
+   * States are compared against a given value by a given operator.
    *
    * @param {string} domain The domain of the entities.
-   * @return {string} The template string
+   * @param {string} operator The Comparison operator between state and value.
+   * @param {string} value The value to which the state is compared against.
+   *
+   * @return {string} The template string.
    */
-  static #GetNotOffCountTemplate(domain) {
+  static #GetCountTemplate(domain, operator, value) {
     // noinspection JSMismatchedCollectionQueryUpdate (False positive per 17-04-2023)
     /**
      * Array of entity state-entries, filtered by domain.
@@ -86,7 +91,7 @@ class MushroomStrategy {
       }
     }
 
-    return `{% set entities = [${states}] %} {{ entities | selectattr('state','ne','off') | list | count }}`;
+    return `{% set entities = [${states}] %} {{ entities | selectattr('state','${operator}','${value}') | list | count }}`;
   }
 
   /**
@@ -380,7 +385,7 @@ class MushroomStrategy {
         type: "template",
         icon: "mdi:lightbulb-group",
         icon_color: "amber",
-        content: this.#GetNotOffCountTemplate("light"),
+        content: this.#GetCountTemplate("light", "eq", "on"),
         tap_action: {
           action: "call-service",
           service: "light.turn_off",
@@ -402,7 +407,7 @@ class MushroomStrategy {
         type: "template",
         icon: "mdi:fan",
         icon_color: "green",
-        content: this.#GetNotOffCountTemplate("fan"),
+        content: this.#GetCountTemplate("fan", "eq", "on"),
         tap_action: {
           action: "call-service",
           service: "fan.turn_off",
@@ -424,7 +429,7 @@ class MushroomStrategy {
         type: "template",
         icon: "mdi:window-open",
         icon_color: "cyan",
-        content: this.#GetNotOffCountTemplate("cover"),
+        content: this.#GetCountTemplate("cover", "eq", "open"),
         tap_action: {
           action: "navigate",
           navigation_path: "covers",
@@ -438,7 +443,7 @@ class MushroomStrategy {
         type: "template",
         icon: "mdi:dip-switch",
         icon_color: "blue",
-        content: this.#GetNotOffCountTemplate("switch"),
+        content: this.#GetCountTemplate("switch", "eq", "on"),
         tap_action: {
           action: "call-service",
           service: "switch.turn_off",
@@ -460,7 +465,7 @@ class MushroomStrategy {
         type: "template",
         icon: "mdi:thermostat",
         icon_color: "orange",
-        content: this.#GetNotOffCountTemplate("climate"),
+        content: this.#GetCountTemplate("climate", "ne", "off"),
         tap_action: {
           action: "navigate",
           navigation_path: "thermostats",
@@ -531,7 +536,7 @@ class MushroomStrategy {
       lightViewCards.push(
           this.#createTitleCard(
               "All Lights",
-              this.#GetNotOffCountTemplate("light") + " lights on",
+              this.#GetCountTemplate("light", "eq", "on") + " lights on",
               "light.turn_off",
               "light.turn_on",
               "mdi:lightbulb-off",
@@ -593,7 +598,7 @@ class MushroomStrategy {
       fanViewCards.push(
           this.#createTitleCard(
               "All Fans",
-              this.#GetNotOffCountTemplate("fan") + " fans on",
+              this.#GetCountTemplate("fan", "eq", "on") + " fans on",
               "fan.turn_off",
               "fan.turn_on",
               "mdi:fan-off",
@@ -646,7 +651,7 @@ class MushroomStrategy {
       coverViewCards.push(
           this.#createTitleCard(
               "All Covers",
-              this.#GetNotOffCountTemplate("cover") + " covers open",
+              this.#GetCountTemplate("cover", "eq", "open") + " covers open",
               "cover.close_cover",
               "cover.open_cover",
               "mdi:arrow-down",
@@ -700,7 +705,7 @@ class MushroomStrategy {
       switchViewCards.push(
           this.#createTitleCard(
               "All Switches",
-              this.#GetNotOffCountTemplate("switch") + " switches on",
+              this.#GetCountTemplate("switch", "eq", "on") + " switches on",
               "switch.turn_off",
               "switch.turn_on",
               "mdi:power-plug-off",
@@ -754,7 +759,7 @@ class MushroomStrategy {
       climateViewCards.push({
         type: "custom:mushroom-title-card",
         title: "Climates",
-        subtitle: this.#GetNotOffCountTemplate("climate") + " climates on",
+        subtitle: this.#GetCountTemplate("climate", "ne", "off") + " climates on",
       });
 
       for (const area of this.#areas) {
