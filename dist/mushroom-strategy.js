@@ -1104,7 +1104,7 @@ class MushroomStrategy {
         }
 
         if (entityConfig) {
-          card = entityConfig.find(config => config.entity_id === sensor.entity_id);
+          card = entityConfig.find(config => config.entity_id === sensor.entity_id) ?? card;
         }
 
         sensorCards.push(card);
