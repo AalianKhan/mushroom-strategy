@@ -43,9 +43,8 @@ Mushroom dashboard strategy is available in [HACS][hacs] (Home Assistant Communi
 1. Install HACS if you don't have it already.
 2. Open HACS in Home Assistant.
 3. Go to the "Frontend" section.
-4. Click on the 3 dots on top right and custom repository.
-5. Add `https://github.com/AalianKhan/mushroom-strategy` with category `Lovelace`.
-6. Search for "Mushroom dashboard strategy" and install.
+4. Click button with "+" icon
+6. Search for "Mushroom dashboard" and install.
 
 ### Manual
 
@@ -163,21 +162,25 @@ The order of definition is used to sort the rooms and pre-built views
 #### Example
 
 ```yaml
-areas:
-  - name: Family Room
-    icon: mdi:television
-    icon_color: green
-    extra_cards:
-      - type: custom:mushroom-chips-card
-        chips:
-          - type: entity
-            entity: sensor.family_room_temperature
-            icon: mdi:thermometer
-            icon_color: pink
-        alignment: center
-  - name: Kitchen
-    icon: mdi:silverware-fork-knife
-    icon_color: red
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    areas:
+    - name: Family Room
+      icon: mdi:television
+      icon_color: green
+      extra_cards:
+        - type: custom:mushroom-chips-card
+          chips:
+            - type: entity
+              entity: sensor.family_room_temperature
+              icon: mdi:thermometer
+              icon_color: pink
+          alignment: center
+    - name: Kitchen
+      icon: mdi:silverware-fork-knife
+      icon_color: red
+views: []
 ```
 
 ### Entity Config
@@ -187,9 +190,13 @@ The `entity_config` essentially enables you to give a specific entity any card y
 #### Example
 
 ```yaml
-entity_config:
-  - entity: fan.master_bedroom_fan
-    type: custom:mushroom-fan-card
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    entity_config:
+      - entity: fan.master_bedroom_fan
+        type: custom:mushroom-fan-card
+views: []
 ```
 
 ### Pre-built views
@@ -214,12 +221,16 @@ By default, all views are shown.
 #### Example
 
 ```yaml
-views:
-  lights: true
-  switches: true
-  covers: false
-  cameras: true
-  climates: false
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    views:
+      lights: true
+      switches: true
+      covers: false
+      cameras: true
+      thermostats: false
+views: []
 ```
 
 ### Chips
@@ -249,24 +260,25 @@ more [Mushroom Chips][mushroom-chipsUrl] using `extra_chips`.
 #### Example
 
 ```yaml
-chips:
-  climate_count: false
-  cover_count: false
-  weather_entity: weather.forecast_home
-  extra_chips:
-    - type: conditional
-      conditions:
-        - entity: lock.front_door
-          state: unlocked
-      chip:
-        type: entity
-        entity: lock.front_door
-        icon_color: red
-        content_info: none
-        icon: ''
-        use_entity_picture: false
-        tap_action:
-          action: toggle
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    chips:
+      climate_count: false
+      cover_count: false
+      weather_entity: weather.forecast_home
+      extra_chips:
+        - type: conditional
+          conditions:
+            - entity: lock.front_door
+              state: unlocked
+          chip:
+            type: entity
+            entity: lock.front_door
+            icon_color: red
+            content_info: none
+            tap_action:
+              action: toggle
 ```
 
 ## Full Example
@@ -387,7 +399,7 @@ strategy:
 
 <!-- Badges References -->
 
-[hacsBadge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg
+[hacsBadge]: https://img.shields.io/badge/HACS-Default-41BDF5.svg
 
 [releaseBadge]: https://img.shields.io/github/v/release/AalianKhan/mushroom-strategy
 
