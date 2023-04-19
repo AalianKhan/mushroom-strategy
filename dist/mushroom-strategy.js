@@ -856,12 +856,8 @@ class MushroomStrategy {
         strategy: {
           type: "custom:mushroom-strategy",
           options: {
-            // TODO: Check necessity of below variables.
             area,
-            "defined_areas": strategyOptions.areas,
             "entity_config": strategyOptions.entity_config,
-            devices: this.#devices,
-            entities: this.#entities,
           },
         },
       });
@@ -882,13 +878,13 @@ class MushroomStrategy {
    * @return {Promise<{cards: Object[]}>}
    */
   static async generateView(info) {
+    const cards           = [];
+
     // Get all required values.
-    // TODO: Check necessity of below variables.
-    const area         = info.view.strategy.options.area;
-    const devices      = info.view.strategy.options.devices;
-    const entities     = info.view.strategy.options.entities;
-    const entityConfig = info.view.strategy.options.entity_config;
-    const cards        = [];
+    const area            = info.view.strategy.options.area;
+    const strategyOptions = {
+      entityConfig: info.view.strategy.options.entity_config,
+    };
 
     // Add extra cards if defined.
     cards.push(...(area.extra_cards ?? []));
@@ -901,7 +897,7 @@ class MushroomStrategy {
         type: "vertical-stack",
         cards: this.#createViewCards(
             lights,
-            entityConfig,
+            strategyOptions.entityConfig,
             {
               type: "custom:mushroom-light-card",
               show_brightness_control: true,
@@ -936,7 +932,7 @@ class MushroomStrategy {
             type: "vertical-stack",
             cards: this.#createViewCards(
                 fans,
-                entityConfig,
+                strategyOptions.entityConfig,
                 {
                   type: "custom:mushroom-fan-card",
                   show_percentage_control: true,
@@ -965,7 +961,7 @@ class MushroomStrategy {
         type: "vertical-stack",
         cards: this.#createViewCards(
             covers,
-            entityConfig,
+            strategyOptions.entityConfig,
             {
               type: "custom:mushroom-cover-card",
               show_buttons_control: true,
@@ -992,7 +988,7 @@ class MushroomStrategy {
         type: "vertical-stack",
         cards: this.#createViewCards(
             switches,
-            entityConfig,
+            strategyOptions.entityConfig,
             {
               type: "custom:mushroom-entity-card",
               tap_action: {
@@ -1020,7 +1016,7 @@ class MushroomStrategy {
         type: "vertical-stack",
         cards: this.#createViewCards(
             climates,
-            entityConfig,
+            strategyOptions.entityConfig,
             {
               type: "custom:mushroom-climate-card",
               hvac_modes: [
@@ -1047,7 +1043,7 @@ class MushroomStrategy {
         type: "vertical-stack",
         cards: this.#createViewCards(
             mediaPlayers,
-            entityConfig,
+            strategyOptions.entityConfig,
             {
               type: "custom:mushroom-media-player-card",
               use_media_info: true,
@@ -1103,9 +1099,8 @@ class MushroomStrategy {
           };
         }
 
-        if (entityConfig) {
-          card = entityConfig.find(config => config.entity_id === sensor.entity_id) ?? card;
-        }
+        // Custom card configuration.
+        card = (strategyOptions.entityConfig?.find(config => config.entity_id === sensor.entity_id)) ?? card;
 
         sensorCards.push(card);
       }
@@ -1131,7 +1126,7 @@ class MushroomStrategy {
       // Create a card for each binary sensor.
       const binarySensorCards = this.#createViewCards(
           sensors,
-          entityConfig,
+          strategyOptions.entityConfig,
           {
             type: "custom:mushroom-entity-card",
             icon_color: "green",
@@ -1165,15 +1160,15 @@ class MushroomStrategy {
     ];
 
     // Collect device entities of the current area.
-    const areaDevices = devices
-        .filter(device => device.area_id === area.area_id)
-        .map(device => device.id);
+    const areaDevices = this.#devices
+                            .filter(device => device.area_id === area.area_id)
+                            .map(device => device.id);
 
     // Collect the remaining entities of which all conditions below are met:
     // 1. The entity is linked to a device which is linked to the current area,
     //    or the entity itself is linked to the current area.
     // 2. The entity is not hidden and is not disabled.
-    const miscellaneousEntities = entities.filter(entity => {
+    const miscellaneousEntities = this.#entities.filter(entity => {
       return (areaDevices.includes(entity.device_id) || entity.area_id === area.area_id)
           && entity.hidden_by == null
           && entity.disabled_by == null
@@ -1186,7 +1181,7 @@ class MushroomStrategy {
         type: "vertical-stack",
         cards: this.#createViewCards(
             miscellaneousEntities,
-            entityConfig,
+            strategyOptions.entityConfig,
             {
               type: "custom:mushroom-entity-card",
               icon_color: "blue-grey",
