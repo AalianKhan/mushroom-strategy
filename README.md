@@ -43,9 +43,8 @@ Mushroom dashboard strategy is available in [HACS][hacs] (Home Assistant Communi
 1. Install HACS if you don't have it already.
 2. Open HACS in Home Assistant.
 3. Go to the "Frontend" section.
-4. Click on the 3 dots on top right and custom repository.
-5. Add `https://github.com/AalianKhan/mushroom-strategy` with category `Lovelace`.
-6. Search for "Mushroom dashboard strategy" and install.
+4. Click button with "+" icon
+6. Search for "Mushroom dashboard" and install.
 
 ### Manual
 
@@ -387,7 +386,7 @@ strategy:
 
 <!-- Badges References -->
 
-[hacsBadge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg
+[hacsBadge]: https://img.shields.io/badge/HACS-Default-41BDF5.svg
 
 [releaseBadge]: https://img.shields.io/github/v/release/AalianKhan/mushroom-strategy
 
