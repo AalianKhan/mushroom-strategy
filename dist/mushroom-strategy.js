@@ -75,7 +75,7 @@ class MushroomStrategy {
         return device.id;
       });
 
-      // Collect entity states of which all conditions below are met:
+      // Collect entity states of which all the conditions below are met:
       // 1. The entity is linked to a device which is linked to the given area,
       //    or the entity itself is linked to the given area.
       // 2. The entity's ID starts with the give string.
@@ -242,15 +242,28 @@ class MushroomStrategy {
       const hassEntity = entityMap[state.entity_id];
       const device     = deviceMap[hassEntity?.device_id];
 
-      // Collect states of which all conditions below are met:
-      // 1. The linked entity is linked to the given area or isn't linked to any area.
-      // 2. The linked device (if any) is assigned to the given area.
+      // TODO: Agree on conditions (https://github.com/AalianKhan/mushroom-strategy/pull/7#discussion_r1173032335)
+      // Collect states of which any (whichever comes first) of the conditions below are met:
+      // 1. The linked entity is linked to the given area.
+      // 2. The entity is linked to a device, and the linked device is linked to the given area.
       if (
-          (!hassEntity?.area_id || hassEntity.area_id === area.area_id)
-          && (device && device.area_id === area.area_id)
+          (hassEntity?.area_id === area.area_id)
+          || (device && device.area_id === area.area_id)
       ) {
         states.push(state);
       }
+
+      /*
+       // Collect states of which all conditions below are met:
+       // 1. The linked entity is linked to the given area or isn't linked to any area.
+       // 2. The linked device (if any) is assigned to the given area.
+       if (
+       (!hassEntity?.area_id || hassEntity.area_id === area.area_id)
+       && (device && device.area_id === area.area_id)
+       ) {
+       states.push(state);
+       }
+       */
     }
 
     return states;
@@ -878,7 +891,7 @@ class MushroomStrategy {
    * @return {Promise<{cards: Object[]}>}
    */
   static async generateView(info) {
-    const cards           = [];
+    const cards = [];
 
     // Get all required values.
     const area            = info.view.strategy.options.area;
