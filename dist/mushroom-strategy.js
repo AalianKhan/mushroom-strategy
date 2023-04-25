@@ -1302,7 +1302,7 @@ class MushroomStrategy {
         others.add(entity);
       }
     }
-    if (others.size > 0) 
+    if (others.size > 0 && false)
     {
       cards.push
       (
