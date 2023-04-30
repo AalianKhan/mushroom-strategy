@@ -38,13 +38,13 @@ You need to install these cards before using this strategy:
 
 ### HACS
 
-Mushroom dashboard strategy is available in [HACS][hacs] (Home Assistant Community Store).
+Mushroom dashboard strategy is available in [HACS][hacsUrl] (Home Assistant Community Store).
 
 1. Install HACS if you don't have it already.
 2. Open HACS in Home Assistant.
 3. Go to the "Frontend" section.
-4. Click button with "+" icon
-6. Search for "Mushroom dashboard" and install.
+4. Click the button with the "+" icon
+5. Search for "Mushroom dashboard" and install.
 
 ### Manual
 
@@ -65,7 +65,7 @@ Mushroom dashboard strategy is available in [HACS][hacs] (Home Assistant Communi
 
 ## Usage
 
-All the rounded cards can be configured using Dashboard UI editor.
+All the rounded cards can be configured using the Dashboard UI editor.
 
 1. In the UI of the dashboard, click the 3 dots in the top right corner.
 2. Click _Edit Dashboard_.
@@ -75,7 +75,7 @@ All the rounded cards can be configured using Dashboard UI editor.
 
 ```yaml
 strategy:
-  type: custom:mushroom-strategy
+   type: custom:mushroom-strategy
 views: [ ]
 ```
 
@@ -111,24 +111,25 @@ The options available are:
 
 | Name                 | Type                      | Default                                                 | Description                                                                               | 
 |:---------------------|:--------------------------|:--------------------------------------------------------|:------------------------------------------------------------------------------------------|
-| `areas`              | array (optional)          | unset or empty                                          | One or more areas in a list, see [areas object](#area-object).                            |
-| `entity_config`      | array of cards (optional) | unset or empty                                          | Card definition for an entity, see [entity config](#entity-config).                       |
+| `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object).                            |
+| `entity_config`      | array of cards (optional) | unset                                                   | Card definition for an entity, see [entity config](#entity-config).                       |
 | `views`              | object                    | All views enabled                                       | Setting which pre-built views to show, see available [Pre-built views](#pre-built-views). |
 | `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                                                      |
-| `quick_access_cards` | array of cards (optional) | unset or empty                                          | List of cards to show between welcome card and rooms cards.                               |
-| `extra_cards`        | array of cards (optional  | unset or empty                                          | List of cards to show below room cards.                                                   |
-| `extra_views`        | array of views (optional) | unset or empty                                          | List of views to add to the dashboard.                                                    |
+| `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.                               |
+| `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                                                   |
+| `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                                                    |
 
 #### Example
 
 ```yaml
 strategy:
-  type: custom:mushroom-strategy
-  options:
-    areas:
-      - name: Family Room
-        icon: mdi:sofa
-        icon_color: green
+   type: custom:mushroom-strategy
+   options:
+      areas:
+         family_room_id:
+            name: Family Room
+            icon: mdi:sofa
+            icon_color: green
 views: [ ]
 ```
 
@@ -163,24 +164,26 @@ The order of definition is used to sort the rooms and pre-built views
 
 ```yaml
 strategy:
-  type: custom:mushroom-strategy
-  options:
-    areas:
-    - name: Family Room
-      icon: mdi:television
-      icon_color: green
-      extra_cards:
-        - type: custom:mushroom-chips-card
-          chips:
-            - type: entity
-              entity: sensor.family_room_temperature
-              icon: mdi:thermometer
-              icon_color: pink
-          alignment: center
-    - name: Kitchen
-      icon: mdi:silverware-fork-knife
-      icon_color: red
-views: []
+   type: custom:mushroom-strategy
+   options:
+      areas:
+         family_room_id:
+            name: Family Room
+            icon: mdi:television
+            icon_color: green
+            extra_cards:
+               - type: custom:mushroom-chips-card
+                 chips:
+                    - type: entity
+                      entity: sensor.family_room_temperature
+                      icon: mdi:thermometer
+                      icon_color: pink
+                 alignment: center
+         kitchen_id:
+            name: Kitchen
+            icon: mdi:silverware-fork-knife
+            icon_color: red
+views: [ ]
 ```
 
 ### Entity Config
@@ -242,7 +245,7 @@ Only devices of an area as defined in `areas` are counted.
 If `areas` is not defined then the devices in all areas are counted.  
 By default, all chips are enabled.
 
-You can manually configure a weather entity-id to use and there's also an option to add
+You can manually configure a weather entity-id to use, and there's also an option to add
 more [Mushroom Chips][mushroom-chipsUrl] using `extra_chips`.
 
 **Note: To hide the weather chip, you should hide or disable the entity itself.**
@@ -323,7 +326,8 @@ strategy:
             tap_action:
               action: toggle
     areas:
-      - name: Family Room
+      family_room_id:
+        name: Family Room
         icon: mdi:television
         icon_color: green
         extra_cards:
@@ -334,25 +338,33 @@ strategy:
                 icon: mdi:thermometer
                 icon_color: pink
             alignment: center
-      - name: Kitchen
+      kitchen_id:
+        name: Kitchen
         icon: mdi:silverware-fork-knife
         icon_color: red
-      - name: Master Bedroom
+      master_bedroom_id:
+        name: Master Bedroom
         icon: mdi:bed-king
         icon_color: blue
-      - name: Abia's Bedroom
+      abias_bedroom_id:
+        name: Abia's Bedroom
         icon: mdi:flower-tulip
         icon_color: green
-      - name: Aalian's Bedroom
+      aalians_bedroom_id:
+        name: Aalian's Bedroom
         icon: mdi:rocket-launch
         icon_color: yellow
-      - name: Rohaan's Bedroom
+      rohaans_bedroom_id:
+        name: Rohaan's Bedroom
         icon: mdi:controller
         icon_color: red
-      - name: Hallway
-      - name: Living Room
+      hallway_id:
+        name: Hallway
+      living_room_id:
+        name: Living Room
         icon: mdi:sofa
-      - name: Front Door
+      front_door_id:
+        name: Front Door
         icon: mdi:door-closed
     entity_config:
       - entity: fan.master_bedroom_fan
@@ -391,7 +403,7 @@ strategy:
 
 ## Credits
 
-* The cards used are from [Mushroom][mushroomUrl], [Mini graph card][mini-graphUrl] and [WebRTC][webrtc]
+* The cards used are from [Mushroom][mushroomUrl], [Mini graph card][mini-graphUrl] and [WebRTC][webRtcUrl]
 * Took inspiration from [Balloob battery strategy][balloobBatteryUrl]
 
 ## Contributors
