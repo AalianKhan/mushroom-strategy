@@ -90,10 +90,11 @@
  */
 
 /**
- * @typedef {abstractOptions & Object} areaCardOptions Person Card options.
- * @property {string} [primary] Primary info to render. May contain templates.
+ * @typedef {abstractOptions & Object} areaCardOptions Area Card options.
+ * @property {string} [name] The name of the area
  * @property {string} [icon] Icon to render. May contain templates.
  * @property {string} [icon_color] Icon color to render. May contain templates.
+ * @property {string} [primary] Primary info to render. May contain templates.
  * @property {areaTapAction} [tap_action] Home assistant action to perform on tap.
  * @memberOf typedefs.cards
  */
