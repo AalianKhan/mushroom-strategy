@@ -159,7 +159,7 @@ class HomeView extends AbstractView {
     import("../cards/AreaCard").then(areaModule => {
       const areaCards = [];
 
-      for (const area of Helper.areas) {
+      for (let area of Helper.areas) {
         areaCards.push(new areaModule.AreaCard(area, Helper.strategyOptions.areas?.[area.area_id]).getCard());
       }
 

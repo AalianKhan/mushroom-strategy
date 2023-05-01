@@ -42,6 +42,11 @@ class AreaCard extends AbstractCard {
         this.#defaultOptions,
         options,
     );
+
+    // Override the area's name with a custom name, unless a custom primary text is set.
+    if (!options.primary && options.name) {
+      this.options.primary = options.name;
+    }
   }
 }
 
