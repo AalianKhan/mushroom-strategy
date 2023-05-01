@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 module.exports = {
   mode: "development",
-  devtool: false,
+  devtool: "inline-source-map",
   entry: "./src/mushroom-strategy.js",
   output: {
     filename: "mushroom-strategy.js",
