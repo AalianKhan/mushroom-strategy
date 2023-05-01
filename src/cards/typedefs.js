@@ -94,7 +94,7 @@
  * @property {string} [primary] Primary info to render. May contain templates.
  * @property {string} [icon] Icon to render. May contain templates.
  * @property {string} [icon_color] Icon color to render. May contain templates.
- * @property {areaTapAction} tap_action Home assistant action to perform on tap.
+ * @property {areaTapAction} [tap_action] Home assistant action to perform on tap.
  * @memberOf typedefs.cards
  */
 

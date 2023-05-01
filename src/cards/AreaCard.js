@@ -30,7 +30,7 @@ class AreaCard extends AbstractCard {
    * Class constructor.
    *
    * @param {areaEntity} area The area entity to create a card for.
-   * @param {personCardOptions} [options={}] Options for the card.
+   * @param {areaCardOptions} [options={}] Options for the card.
    * @throws {Error} If the Helper module isn't initialized.
    */
   constructor(area, options = {}) {
