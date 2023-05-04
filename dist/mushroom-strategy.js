@@ -1031,9 +1031,10 @@ class MushroomStrategy {
             vacuums,
             entity_config,
             {
-              type: "custom:mushroom-vacuum-card"
+              type: "custom:mushroom-vacuum-card",
+              commands: ["start_pause", "stop", "return_home", "locate", "clean_spot"]
             },
-            createTitleWithControls(null, "Covers", "vacuum.on_off", "vacuum.on_off", "mdi:robot-vacuum-off", "mdi:robot-vacuum", area.area_id)
+            createTitleWithControls(null, "Vacuums", "vacuum.on_off", "vacuum.on_off", "mdi:robot-vacuum-off", "mdi:robot-vacuum", area.area_id)
           )
         }
       )
