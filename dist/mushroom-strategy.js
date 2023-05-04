@@ -1018,6 +1018,28 @@ class MushroomStrategy {
       )
     }
 
+    // Create vacuum cards
+    const vacuums = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "vacuum.");
+    if (vacuums.size > 0)
+    {
+      cards.push
+      (
+        {
+          type: "vertical-stack",
+          cards:
+          createPlatformCard(
+            vacuums,
+            entity_config,
+            {
+              type: "custom:mushroom-vacuum-card"
+            },
+            createTitleWithControls(null, "Covers", "vacuum.on_off", "vacuum.on_off", "mdi:robot-vacuum-off", "mdi:robot-vacuum", area.area_id)
+          )
+        }
+      )
+    }
+
+
     // Create switch cards
     const switches = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "switch.");
     if (switches.size > 0) 
