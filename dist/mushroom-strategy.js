@@ -1034,7 +1034,7 @@ class MushroomStrategy {
               type: "custom:mushroom-vacuum-card",
               commands: ["start_pause", "stop", "return_home", "locate", "clean_spot"]
             },
-            createTitleWithControls(null, "Vacuums", "vacuum.on_off", "vacuum.on_off", "mdi:robot-vacuum-off", "mdi:robot-vacuum", area.area_id)
+            createTitleWithControls(null, "Vacuums", "vacuum.start_pause", "vacuum.return_home", "mdi:robot-vacuum-off", "mdi:robot-vacuum", area.area_id)
           )
         }
       )
@@ -1324,7 +1324,7 @@ class MushroomStrategy {
         others.add(entity);
       }
     }
-    if (others.size > 0) 
+    if (others.size > 0)
     {
       cards.push
       (
