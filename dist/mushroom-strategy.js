@@ -1034,7 +1034,7 @@ class MushroomStrategy {
               type: "custom:mushroom-vacuum-card",
               commands: ["start_pause", "stop", "return_home", "locate", "clean_spot"]
             },
-            createTitleWithControls(null, "Vacuums", "vacuum.stop", "vacuum.start_pause", "mdi:robot-vacuum-off", "mdi:robot-vacuum", area.area_id)
+            createTitleWithControls(null, "Vacuums", "vacuum.return_to_base", "vacuum.start_pause", "mdi:robot-vacuum-off", "mdi:robot-vacuum", area.area_id)
           )
         }
       )
