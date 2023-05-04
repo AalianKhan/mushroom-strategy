@@ -1040,7 +1040,6 @@ class MushroomStrategy {
       )
     }
 
-
     // Create switch cards
     const switches = getFilteredEntitiesFromEntityRegistry(entities, devices, area, "switch.");
     if (switches.size > 0) 
