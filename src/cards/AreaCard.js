@@ -24,6 +24,9 @@ class AreaCard extends AbstractCard {
       action: "navigate",
       navigation_path: undefined,
     },
+    hold_action: {
+      action: "none",
+    }
   };
 
   /**
