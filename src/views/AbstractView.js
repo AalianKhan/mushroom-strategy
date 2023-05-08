@@ -65,7 +65,8 @@ class AbstractView {
    */
   createViewCards() {
     /** @type Object[] */
-    const viewCards = [this.viewTitleCard];
+    const viewCards      = [this.viewTitleCard];
+    const addedEntityIds = [];
 
     // Create cards for each area.
     for (const area of Helper.areas) {
@@ -85,11 +86,14 @@ class AbstractView {
 
           // Create a card for each domain-entity of the current area.
           for (const entity of entities) {
-            const card = (Helper.strategyOptions.entity_config ?? []).find(
-                config => config.entity === entity.entity_id,
-            ) ?? new cardModule[className](entity).getCard();
+            if (!addedEntityIds.includes(entity.entity_id)) {
+              const card = (Helper.strategyOptions.entity_config ?? []).find(
+                  config => config.entity === entity.entity_id,
+              ) ?? new cardModule[className](entity).getCard();
 
             areaCards.push(card);
+            addedEntityIds.push(entity.entity_id);
+            }
           }
         }
       });

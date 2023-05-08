@@ -156,6 +156,7 @@ The order of definition is used to sort the rooms and pre-built views
 | `hold_action`         | action*           | `none`         | Home assistant action to perform on hold.                                                                                           |
 | `entity_id`           | `string` `array`  | unset or empty | Only reacts to the state changes of these entities. This can be used if the automatic analysis fails to find all relevant entities. |
 | `double_tap_action`   | action*           | `more-info`    | Home assistant action to perform on double_tap.                                                                                     |
+| `hidden`              | boolean           | false          | Set to `true` to exlucde the area from the dashboard and views.                                                                     |
 | `extra_cards`         | array of cards    | unset or empty | A list of cards to show on the top of the area subview.                                                                             |
 
 *) `more-info` `toggle` `call-service` `navigate` `url` `none`
@@ -185,6 +186,13 @@ strategy:
             icon_color: red
 views: [ ]
 ```
+
+#### Undisclosed Area
+The strategy has a special area, named `undisclosed`.
+This area is enabled by default and includes the entities that aren't linked to any Home Assistant area.
+
+The area can be configured like any other area as described above.
+To exclude this area from the dashboard and views, set its property `hidden` to `true`.
 
 ### Entity Config
 

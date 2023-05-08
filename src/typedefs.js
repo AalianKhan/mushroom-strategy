@@ -23,15 +23,15 @@
 
 /**
  * @typedef {Object} areaEntity Area Entity.
- * @property {string[]} aliases Array of aliases of this entity.
- * @property {string} area_id The id of this entity.
+ * @property {string[]} [aliases] Array of aliases of this entity.
+ * @property {string|null} area_id The id of this entity.
  * @property {string} name Name of this entity.
- * @property {string} picture URL to a picture that should be used instead of showing the domain icon.
- * @property {boolean} hidden True if the entity should be hidden from the dashboard.
- *                            This property is added by the custom strategy.
- * @property {Object[]} extra_cards An array of card configurations.
- *                                  The configured cards are added to the dashboard.
- *                                  This property is added by the custom strategy.
+ * @property {string|null} picture URL to a picture that should be used instead of showing the domain icon.
+ * @property {boolean} [hidden] True if the entity should be hidden from the dashboard.
+ *                              This property is added by the custom strategy.
+ * @property {Object[]} [extra_cards] An array of card configurations.
+ *                                    The configured cards are added to the dashboard.
+ *                                    This property is added by the custom strategy.
  * @memberOf typedefs.generic
  */
 
@@ -76,7 +76,7 @@
 /**
  * @typedef {Object} customStrategyOptions Custom strategy configuration.
  * @property {boolean} [debug] Set to true for more verbose debugging info.
- * @property {Object[]} [areas] List of areas.
+ * @property {Object.<areaEntity>} [areas] List of areas.
  * @property {Object[]} [entity_config] Card definition for entities.
  * @property {views[]} [views] List of pre-built views to show.
  * @property {chip[]} [chips] List of chips to show in the Home view.

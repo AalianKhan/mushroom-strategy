@@ -49,19 +49,26 @@ class MushroomStrategy {
     }
 
     // Create subviews for each area.
-    for (const area of Helper.areas) {
-      views.push({
-        title: area.name,
-        path: area.area_id,
-        subview: true,
-        strategy: {
-          type: "custom:mushroom-strategy",
-          options: {
-            area,
-            "entity_config": Helper.strategyOptions.entity_config,
+    for (let area of Helper.areas) {
+      area = {
+        ...area,
+        ...Helper.strategyOptions.areas[area.area_id],
+      };
+
+      if (!area.hidden) {
+        views.push({
+          title: area.name,
+          path: area.area_id ?? area.name,
+          subview: true,
+          strategy: {
+            type: "custom:mushroom-strategy",
+            options: {
+              area,
+              "entity_config": Helper.strategyOptions.entity_config,
+            },
           },
-        },
-      });
+        });
+      }
     }
 
     // Add custom views.
@@ -85,7 +92,7 @@ class MushroomStrategy {
    */
   static async generateView(info) {
     const area            = info.view.strategy.options.area;
-    const viewCards       = area.extra_cards ?? [];
+    const viewCards       = [...(area.extra_cards ?? [])];
     const strategyOptions = {
       entityConfig: info.view.strategy.options.entity_config,
     };

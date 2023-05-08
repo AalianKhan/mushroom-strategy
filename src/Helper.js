@@ -116,6 +116,9 @@ class Helper {
    * @static
    */
   static async initialize(info) {
+    this.debug       = this.strategyOptions.debug;
+    this.#hassStates = info.hass.states;
+
     try {
       // Query the registries of Home Assistant.
       [this.#entities, this.#devices, this.#areas] = await Promise.all([
@@ -127,9 +130,31 @@ class Helper {
       console.error(Helper.debug ? e : "An error occurred while querying Home assistant's registries!");
     }
 
-    this.#hassStates      = info.hass.states;
-    this.#strategyOptions = info.config.strategy.options || {};
-    this.debug            = this.strategyOptions.debug;
+    // Cloning is required for the purpose of the required undisclosed area.
+    this.#strategyOptions = structuredClone(info.config.strategy.options || {});
+
+    // Setup required configuration entries.
+    if (!this.#strategyOptions.areas) {
+      this.#strategyOptions.areas = {};
+    }
+
+    // TODO: Decide on property name and value of undisclosed.name.
+    if (!this.#strategyOptions.areas.undisclosed?.hidden) {
+      this.#strategyOptions.areas.undisclosed         = {
+        aliases: [],
+        area_id: null,
+        name: "Undisclosed",
+        picture: null,
+        hidden: false,
+        ...this.#strategyOptions.areas.undisclosed,
+      };
+
+      // Make sure the area_id of the undisclosed area remains null.
+      this.#strategyOptions.areas.undisclosed.area_id = null;
+      this.#areas.push(this.#strategyOptions.areas.undisclosed);
+    }
+
+
 
     this.#initialized = true;
   }
@@ -215,17 +240,24 @@ class Helper {
     const areaDeviceIds = this.#devices.filter(device => {
       return device.area_id === area.area_id;
     }).map(device => {
+
       return device.id;
     });
 
     // Return the entities of which all conditions below are met:
-    // 1. The entity is linked to a device which is linked to the given area,
-    //    or the entity itself is linked to the given area.
+    // 1. Or/Neither the entity's linked device or/nor the entity itself is lined to the given area.
+    // (See variable areaMatch)
     // 2. The entity's domain matches the given domain.
     // 3. The entity is not hidden and is not disabled.
     return this.#entities.filter(entity => {
+      // Define the matching condition of the area_id.
+      const areaMatch = area.area_id
+          // The entity's linked device or the entity itself is linked to the given area.
+          ? (areaDeviceIds.includes(entity.device_id) || entity.area_id === area.area_id)
+          // Neither the entity's linked device, nor the entity itself is linked to any area.
+          : (areaDeviceIds.includes(entity.device_id) && entity.area_id === area.area_id);
       return (
-          (areaDeviceIds.includes(entity.device_id) || entity.area_id === area.area_id)
+          areaMatch
           && entity.entity_id.startsWith(`${domain}.`)
           && entity.hidden_by == null && entity.disabled_by == null
       );

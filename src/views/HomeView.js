@@ -160,7 +160,9 @@ class HomeView extends AbstractView {
       const areaCards = [];
 
       for (let area of Helper.areas) {
-        areaCards.push(new areaModule.AreaCard(area, Helper.strategyOptions.areas?.[area.area_id]).getCard());
+        if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
+          areaCards.push(new areaModule.AreaCard(area, Helper.strategyOptions.areas[area.area_id]).getCard());
+        }
       }
 
       // Horizontally group every two area cards.

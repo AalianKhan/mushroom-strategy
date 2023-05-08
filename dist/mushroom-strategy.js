@@ -130,6 +130,9 @@ class Helper {
    * @static
    */
   static async initialize(info) {
+    this.debug       = this.strategyOptions.debug;
+    this.#hassStates = info.hass.states;
+
     try {
       // Query the registries of Home Assistant.
       [this.#entities, this.#devices, this.#areas] = await Promise.all([
@@ -141,9 +144,31 @@ class Helper {
       console.error(Helper.debug ? e : "An error occurred while querying Home assistant's registries!");
     }
 
-    this.#hassStates      = info.hass.states;
-    this.#strategyOptions = info.config.strategy.options || {};
-    this.debug            = this.strategyOptions.debug;
+    // Cloning is required for the purpose of the required undisclosed area.
+    this.#strategyOptions = structuredClone(info.config.strategy.options || {});
+
+    // Setup required configuration entries.
+    if (!this.#strategyOptions.areas) {
+      this.#strategyOptions.areas = {};
+    }
+
+    // TODO: Decide on property name and value of undisclosed.name.
+    if (!this.#strategyOptions.areas.undisclosed?.hidden) {
+      this.#strategyOptions.areas.undisclosed         = {
+        aliases: [],
+        area_id: null,
+        name: "Undisclosed",
+        picture: null,
+        hidden: false,
+        ...this.#strategyOptions.areas.undisclosed,
+      };
+
+      // Make sure the area_id of the undisclosed area remains null.
+      this.#strategyOptions.areas.undisclosed.area_id = null;
+      this.#areas.push(this.#strategyOptions.areas.undisclosed);
+    }
+
+
 
     this.#initialized = true;
   }
@@ -229,17 +254,24 @@ class Helper {
     const areaDeviceIds = this.#devices.filter(device => {
       return device.area_id === area.area_id;
     }).map(device => {
+
       return device.id;
     });
 
     // Return the entities of which all conditions below are met:
-    // 1. The entity is linked to a device which is linked to the given area,
-    //    or the entity itself is linked to the given area.
+    // 1. Or/Neither the entity's linked device or/nor the entity itself is lined to the given area.
+    // (See variable areaMatch)
     // 2. The entity's domain matches the given domain.
     // 3. The entity is not hidden and is not disabled.
     return this.#entities.filter(entity => {
+      // Define the matching condition of the area_id.
+      const areaMatch = area.area_id
+          // The entity's linked device or the entity itself is linked to the given area.
+          ? (areaDeviceIds.includes(entity.device_id) || entity.area_id === area.area_id)
+          // Neither the entity's linked device, nor the entity itself is linked to any area.
+          : (areaDeviceIds.includes(entity.device_id) && entity.area_id === area.area_id);
       return (
-          (areaDeviceIds.includes(entity.device_id) || entity.area_id === area.area_id)
+          areaMatch
           && entity.entity_id.startsWith(`${domain}.`)
           && entity.hidden_by == null && entity.disabled_by == null
       );
@@ -470,7 +502,7 @@ class AreaCard extends _AbstractCard__WEBPACK_IMPORTED_MODULE_0__.AbstractCard {
   constructor(area, options = {}) {
     super(area);
     this.#defaultOptions.primary                    = area.name;
-    this.#defaultOptions.tap_action.navigation_path = area.area_id;
+    this.#defaultOptions.tap_action.navigation_path = area.area_id ?? area.name;
 
     this.mergeOptions(
         this.#defaultOptions,
@@ -2023,7 +2055,8 @@ class AbstractView {
    */
   createViewCards() {
     /** @type Object[] */
-    const viewCards = [this.viewTitleCard];
+    const viewCards      = [this.viewTitleCard];
+    const addedEntityIds = [];
 
     // Create cards for each area.
     for (const area of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas) {
@@ -2043,11 +2076,14 @@ class AbstractView {
 
           // Create a card for each domain-entity of the current area.
           for (const entity of entities) {
-            const card = (_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.entity_config ?? []).find(
-                config => config.entity === entity.entity_id,
-            ) ?? new cardModule[className](entity).getCard();
+            if (!addedEntityIds.includes(entity.entity_id)) {
+              const card = (_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.entity_config ?? []).find(
+                  config => config.entity === entity.entity_id,
+              ) ?? new cardModule[className](entity).getCard();
 
             areaCards.push(card);
+            addedEntityIds.push(entity.entity_id);
+            }
           }
         }
       });
@@ -2617,7 +2653,9 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
       const areaCards = [];
 
       for (let area of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas) {
-        areaCards.push(new areaModule.AreaCard(area, _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas?.[area.area_id]).getCard());
+        if (!_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id]?.hidden) {
+          areaCards.push(new areaModule.AreaCard(area, _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id]).getCard());
+        }
       }
 
       // Horizontally group every two area cards.
@@ -3126,19 +3164,26 @@ class MushroomStrategy {
     }
 
     // Create subviews for each area.
-    for (const area of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas) {
-      views.push({
-        title: area.name,
-        path: area.area_id,
-        subview: true,
-        strategy: {
-          type: "custom:mushroom-strategy",
-          options: {
-            area,
-            "entity_config": _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.entity_config,
+    for (let area of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas) {
+      area = {
+        ...area,
+        ..._Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id],
+      };
+
+      if (!area.hidden) {
+        views.push({
+          title: area.name,
+          path: area.area_id ?? area.name,
+          subview: true,
+          strategy: {
+            type: "custom:mushroom-strategy",
+            options: {
+              area,
+              "entity_config": _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.entity_config,
+            },
           },
-        },
-      });
+        });
+      }
     }
 
     // Add custom views.
@@ -3162,7 +3207,7 @@ class MushroomStrategy {
    */
   static async generateView(info) {
     const area            = info.view.strategy.options.area;
-    const viewCards       = area.extra_cards ?? [];
+    const viewCards       = [...(area.extra_cards ?? [])];
     const strategyOptions = {
       entityConfig: info.view.strategy.options.entity_config,
     };
