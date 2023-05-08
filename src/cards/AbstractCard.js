@@ -19,11 +19,14 @@ class AbstractCard {
   /**
    * Options for creating a card.
    *
-   * @type {Object}
+   * @type {abstractOptions}
    */
   options = {
     type: "custom:mushroom-entity-card",
     icon: "mdi:help-circle",
+    double_tap_action: {
+      action: null,
+    },
   };
 
   /**
@@ -52,6 +55,7 @@ class AbstractCard {
    */
   mergeOptions(defaultOptions, customOptions) {
     this.options = {
+      ...this.options,
       ...defaultOptions,
       ...customOptions,
     };

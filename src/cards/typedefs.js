@@ -4,8 +4,9 @@
 
 /**
  * @typedef {Object} abstractOptions
- * @property {string} type The type of the card.
- * @property {string} icon Icon of the card.
+ * @property {string} [type] The type of the card.
+ * @property {string} [icon] Icon of the card.
+ * @property {Object} [double_tap_action] Home assistant action to perform on double_tap.
  */
 
 /**
