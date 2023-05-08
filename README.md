@@ -156,7 +156,8 @@ The order of definition is used to sort the rooms and pre-built views
 | `hold_action`         | action*           | `none`         | Home assistant action to perform on hold.                                                                                           |
 | `entity_id`           | `string` `array`  | unset or empty | Only reacts to the state changes of these entities. This can be used if the automatic analysis fails to find all relevant entities. |
 | `double_tap_action`   | action*           | `more-info`    | Home assistant action to perform on double_tap.                                                                                     |
-| `hidden`              | boolean           | false          | Set to `true` to exlucde the area from the dashboard and views.                                                                     |
+| `hidden`              | boolean           | false          | Set to `true` to exclude the area from the dashboard and views.                                                                     |
+| `order`               | number            | Infinity       | Ordering position of the area in the list of available areas.                                                                       |
 | `extra_cards`         | array of cards    | unset or empty | A list of cards to show on the top of the area subview.                                                                             |
 
 *) `more-info` `toggle` `call-service` `navigate` `url` `none`
@@ -172,6 +173,7 @@ strategy:
             name: Family Room
             icon: mdi:television
             icon_color: green
+            order: 1
             extra_cards:
                - type: custom:mushroom-chips-card
                  chips:
@@ -184,6 +186,9 @@ strategy:
             name: Kitchen
             icon: mdi:silverware-fork-knife
             icon_color: red
+            order: 2
+         garage_id:
+            hidden: true
 views: [ ]
 ```
 

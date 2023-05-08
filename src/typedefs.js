@@ -27,6 +27,7 @@
  * @property {string|null} area_id The id of this entity.
  * @property {string} name Name of this entity.
  * @property {string|null} picture URL to a picture that should be used instead of showing the domain icon.
+ * @property {number} [order] Ordering position of the area in the list of available areas.
  * @property {boolean} [hidden] True if the entity should be hidden from the dashboard.
  *                              This property is added by the custom strategy.
  * @property {Object[]} [extra_cards] An array of card configurations.

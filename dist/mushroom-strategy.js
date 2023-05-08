@@ -2088,8 +2088,6 @@ class AbstractView {
         }
       });
 
-      //areaCards.sort((a, b) => a.name.localeCompare(b.name));
-
       viewCards.push({
         type: "vertical-stack",
         cards: areaCards,
@@ -2652,7 +2650,18 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
     Promise.resolve(/*! import() */).then(__webpack_require__.bind(__webpack_require__, /*! ../cards/AreaCard */ "./src/cards/AreaCard.js")).then(areaModule => {
       const areaCards = [];
 
-      for (let area of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas) {
+      let areas = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas.map(area => {
+        return {...area, ..._Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]};
+      });
+
+      // Sort areas by order in custom options first and then by name.
+      areas = areas.sort((a, b) => {
+        //a = {...a, ...Helper.strategyOptions.areas[a.area_id ?? "undisclosed"]};
+       // b = {...b, ...Helper.strategyOptions.areas[b.area_id ?? "undisclosed"]};
+        return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
+      });
+
+      for (const area of areas) {
         if (!_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id]?.hidden) {
           areaCards.push(new areaModule.AreaCard(area, _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id]).getCard());
         }

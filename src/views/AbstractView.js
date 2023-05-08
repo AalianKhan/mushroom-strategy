@@ -98,8 +98,6 @@ class AbstractView {
         }
       });
 
-      //areaCards.sort((a, b) => a.name.localeCompare(b.name));
-
       viewCards.push({
         type: "vertical-stack",
         cards: areaCards,
