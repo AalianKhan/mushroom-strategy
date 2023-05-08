@@ -67,6 +67,15 @@ class HomeView extends AbstractView {
           primary: "{% set time = now().hour %} {% if (time >= 18) %} Good Evening, {{user}}! {% elif (time >= 12) %} Good Afternoon, {{user}}! {% elif (time >= 5) %} Good Morning, {{user}}! {% else %} Hello, {{user}}! {% endif %}",
           icon: "mdi:hand-wave",
           icon_color: "orange",
+          tap_action: {
+            action: "none",
+          },
+          double_tap_action: {
+            action: "none",
+          },
+          hold_action: {
+            action: "none",
+          },
         },
       ];
 
