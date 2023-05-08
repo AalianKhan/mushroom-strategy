@@ -161,7 +161,8 @@ class HomeView extends AbstractView {
 
       for (let area of Helper.areas) {
         if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
-          areaCards.push(new areaModule.AreaCard(area, Helper.strategyOptions.areas[area.area_id]).getCard());
+          areaCards.push(
+              new areaModule.AreaCard(area, Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]).getCard());
         }
       }
 
