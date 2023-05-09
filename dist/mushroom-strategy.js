@@ -168,8 +168,6 @@ class Helper {
       this.#areas.push(this.#strategyOptions.areas.undisclosed);
     }
 
-
-
     this.#initialized = true;
   }
 
@@ -544,7 +542,33 @@ __webpack_require__.r(__webpack_exports__);
  * @extends SensorCard
  */
 class BinarySensorCard extends _SensorCard__WEBPACK_IMPORTED_MODULE_0__.SensorCard {
-  // THe binary Card has the same representation as the Sensor Card.
+  /**
+   * Default options of the card.
+   *
+   * @type {sensorCardOptions}
+   * @private
+   */
+  #defaultOptions = {
+    type: "custom:mushroom-entity-card",
+    icon: "mdi:power-cycle",
+    icon_color: "green",
+  };
+
+  /**
+   * Class constructor.
+   *
+   * @param {hassEntity} entity The hass entity to create a card for.
+   * @param {sensorCardOptions} [options={}] Options for the card.
+   * @throws {Error} If the Helper module isn't initialized.
+   */
+  constructor(entity, options = {}) {
+    super(entity);
+
+    this.mergeOptions(
+        this.#defaultOptions,
+        options,
+    );
+  }
 }
 
 
@@ -1062,7 +1086,7 @@ class SensorCard extends _AbstractCard__WEBPACK_IMPORTED_MODULE_0__.AbstractCard
    */
   #defaultOptions = {
     type: "custom:mushroom-entity-card",
-    icon_color: "green",
+    icon: "mdi:information",
     animate: true,
     line_color: "green",
   };
@@ -1076,6 +1100,7 @@ class SensorCard extends _AbstractCard__WEBPACK_IMPORTED_MODULE_0__.AbstractCard
    */
   constructor(entity, options = {}) {
     super(entity);
+
     this.mergeOptions(
         this.#defaultOptions,
         options,
@@ -2063,9 +2088,9 @@ class AbstractView {
       const areaCards = [];
       const entities  = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getDeviceEntities(area, this["domain"]);
       const className = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.sanitizeClassName(this["domain"] + "Card");
-
+console.log(area, entities, this.domain);
       __webpack_require__("./src/cards lazy recursive ^\\.\\/.*$")(`./${className}`).then(cardModule => {
-        if (entities.length) {
+        if (true) {
           // Create a Title card for the current area.
           areaCards.push(
               new _cards_TitleCard__WEBPACK_IMPORTED_MODULE_1__.TitleCard([area], {
@@ -2650,14 +2675,14 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
     Promise.resolve(/*! import() */).then(__webpack_require__.bind(__webpack_require__, /*! ../cards/AreaCard */ "./src/cards/AreaCard.js")).then(areaModule => {
       const areaCards = [];
 
+      // Merge custom areas with hass areas.
+      /** @type areaEntity[] */
       let areas = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas.map(area => {
         return {...area, ..._Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]};
       });
 
-      // Sort areas by order in custom options first and then by name.
+      // Sort areas by order first and then by name.
       areas = areas.sort((a, b) => {
-        //a = {...a, ...Helper.strategyOptions.areas[a.area_id ?? "undisclosed"]};
-       // b = {...b, ...Helper.strategyOptions.areas[b.area_id ?? "undisclosed"]};
         return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
       });
 

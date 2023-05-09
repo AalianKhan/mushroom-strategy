@@ -9,7 +9,33 @@ import {SensorCard} from "./SensorCard";
  * @extends SensorCard
  */
 class BinarySensorCard extends SensorCard {
-  // THe binary Card has the same representation as the Sensor Card.
+  /**
+   * Default options of the card.
+   *
+   * @type {sensorCardOptions}
+   * @private
+   */
+  #defaultOptions = {
+    type: "custom:mushroom-entity-card",
+    icon: "mdi:power-cycle",
+    icon_color: "green",
+  };
+
+  /**
+   * Class constructor.
+   *
+   * @param {hassEntity} entity The hass entity to create a card for.
+   * @param {sensorCardOptions} [options={}] Options for the card.
+   * @throws {Error} If the Helper module isn't initialized.
+   */
+  constructor(entity, options = {}) {
+    super(entity);
+
+    this.mergeOptions(
+        this.#defaultOptions,
+        options,
+    );
+  }
 }
 
 export {BinarySensorCard};

@@ -17,7 +17,7 @@ class SensorCard extends AbstractCard {
    */
   #defaultOptions = {
     type: "custom:mushroom-entity-card",
-    icon_color: "green",
+    icon: "mdi:information",
     animate: true,
     line_color: "green",
   };
@@ -31,6 +31,7 @@ class SensorCard extends AbstractCard {
    */
   constructor(entity, options = {}) {
     super(entity);
+
     this.mergeOptions(
         this.#defaultOptions,
         options,
