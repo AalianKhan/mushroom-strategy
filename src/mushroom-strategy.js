@@ -202,7 +202,7 @@ class MushroomStrategy {
                 const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
                 let cardOptions   = {};
 
-                if (sensorState.attributes.unit_of_measurement) {
+                if (sensorState?.attributes.unit_of_measurement) {
                   cardOptions = {
                     type: "custom:mini-graph-card",
                     entities: [sensor.entity_id],
