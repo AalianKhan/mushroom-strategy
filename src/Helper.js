@@ -116,7 +116,6 @@ class Helper {
    * @static
    */
   static async initialize(info) {
-    this.debug       = this.strategyOptions.debug;
     this.#hassStates = info.hass.states;
 
     try {
@@ -132,6 +131,7 @@ class Helper {
 
     // Cloning is required for the purpose of the required undisclosed area.
     this.#strategyOptions = structuredClone(info.config.strategy.options || {});
+    this.debug       = this.strategyOptions.debug;
 
     // Setup required configuration entries.
     if (!this.#strategyOptions.areas) {
