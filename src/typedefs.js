@@ -5,6 +5,7 @@
 /**
  * @typedef {Object} hassEntity Home assistant entity.
  * @property {string} name The name of this entity.
+ * @property {string} original_name The original name of this entity.
  * @property {string} entity_id The id of this entity.
  * @property {string} device_id The id of the device to which this entity is linked.
  * @property {string} area_id The id of the area to which this entity is linked.

@@ -273,6 +273,10 @@ class Helper {
           area: area,
           domain: domain,
           areaDeviceIds: areaDeviceIds,
+        })
+        .sort((a, b) => {
+          /** @type hassEntity */
+          return a.original_name.localeCompare(b.original_name);
         });
   }
 

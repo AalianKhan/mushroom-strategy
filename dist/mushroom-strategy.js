@@ -287,6 +287,10 @@ class Helper {
           area: area,
           domain: domain,
           areaDeviceIds: areaDeviceIds,
+        })
+        .sort((a, b) => {
+          /**@type hassEntity */
+          return a.original_name.localeCompare(b.original_name);
         });
   }
 
@@ -404,11 +408,14 @@ class AbstractCard {
   /**
    * Options for creating a card.
    *
-   * @type {Object}
+   * @type {abstractOptions}
    */
   options = {
     type: "custom:mushroom-entity-card",
     icon: "mdi:help-circle",
+    double_tap_action: {
+      action: null,
+    },
   };
 
   /**
@@ -437,6 +444,7 @@ class AbstractCard {
    */
   mergeOptions(defaultOptions, customOptions) {
     this.options = {
+      ...this.options,
       ...defaultOptions,
       ...customOptions,
     };
@@ -502,6 +510,9 @@ class AreaCard extends _AbstractCard__WEBPACK_IMPORTED_MODULE_0__.AbstractCard {
       action: "navigate",
       navigation_path: undefined,
     },
+    hold_action: {
+      action: "none",
+    }
   };
 
   /**
@@ -1313,8 +1324,9 @@ class TitleCard {
 
 /**
  * @typedef {Object} abstractOptions
- * @property {string} type The type of the card.
- * @property {string} icon Icon of the card.
+ * @property {string} [type] The type of the card.
+ * @property {string} [icon] Icon of the card.
+ * @property {Object} [double_tap_action] Home assistant action to perform on double_tap.
  */
 
 /**
@@ -2593,6 +2605,15 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
           primary: "{% set time = now().hour %} {% if (time >= 18) %} Good Evening, {{user}}! {% elif (time >= 12) %} Good Afternoon, {{user}}! {% elif (time >= 5) %} Good Morning, {{user}}! {% else %} Hello, {{user}}! {% endif %}",
           icon: "mdi:hand-wave",
           icon_color: "orange",
+          tap_action: {
+            action: "none",
+          },
+          double_tap_action: {
+            action: "none",
+          },
+          hold_action: {
+            action: "none",
+          },
         },
       ];
 
@@ -2698,7 +2719,8 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
 
       for (const area of areas) {
         if (!_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id]?.hidden) {
-          areaCards.push(new areaModule.AreaCard(area, _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id]).getCard());
+          areaCards.push(
+              new areaModule.AreaCard(area, _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]).getCard());
         }
       }
 
