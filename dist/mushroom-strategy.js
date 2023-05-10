@@ -165,7 +165,13 @@ class Helper {
 
       // Make sure the area_id of the undisclosed area remains null.
       this.#strategyOptions.areas.undisclosed.area_id = null;
+
       this.#areas.push(this.#strategyOptions.areas.undisclosed);
+
+      // Sort areas by order first and then by name.
+      this.#areas.sort((a, b) => {
+        return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
+      });
     }
 
     this.#initialized = true;
@@ -289,7 +295,7 @@ class Helper {
           areaDeviceIds: areaDeviceIds,
         })
         .sort((a, b) => {
-          /**@type hassEntity */
+          /** @type hassEntity */
           return a.original_name.localeCompare(b.original_name);
         });
   }
