@@ -213,4 +213,13 @@
  * @memberOf typedefs.generic
  */
 
+/**
+ * @typedef {Object} areaFilterContext fer Card options.
+ * @property {areaEntity} area Area Entity.
+ * @property {string} domain Domain of the entity.
+ *                           Example: `light`.
+ * @property {string[]} areaDeviceIds The id of devices which are linked to the area entity.
+ * @memberOf typedefs.cards
+ */
+
 export {};

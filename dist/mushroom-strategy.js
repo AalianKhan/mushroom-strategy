@@ -145,7 +145,7 @@ class Helper {
 
     // Cloning is required for the purpose of the required undisclosed area.
     this.#strategyOptions = structuredClone(info.config.strategy.options || {});
-    this.debug       = this.strategyOptions.debug;
+    this.debug            = this.strategyOptions.debug;
 
     // Setup required configuration entries.
     if (!this.#strategyOptions.areas) {
@@ -154,7 +154,7 @@ class Helper {
 
     // TODO: Decide on property name and value of undisclosed.name.
     if (!this.#strategyOptions.areas.undisclosed?.hidden) {
-      this.#strategyOptions.areas.undisclosed         = {
+      this.#strategyOptions.areas.undisclosed = {
         aliases: [],
         area_id: null,
         name: "Undisclosed",
@@ -214,23 +214,48 @@ class Helper {
         return device.id;
       });
 
-      // Collect entity states of which all the conditions below are met:
-      // 1. The entity is linked to a device which is linked to the given area,
-      //    or the entity itself is linked to the given area.
-      // 2. The entity's ID starts with the give string.
-      // 3. The entity is not hidden and not disabled.
-      for (const entity of this.#entities) {
-        if (
-            (areaDeviceIds.includes(entity.device_id) || entity.area_id === area.area_id)
-            && entity.entity_id.startsWith(`${domain}.`)
-            && entity.hidden_by == null && entity.disabled_by == null
-        ) {
-          states.push(`states['${entity.entity_id}']`);
-        }
-      }
+      // Get the entities of which all conditions of the callback function are met. @see areaFilterCallback.
+      const newStates = this.#entities.filter(
+          this.#areaFilterCallback, {
+            area: area,
+            domain: domain,
+            areaDeviceIds: areaDeviceIds,
+          })
+          .map(entity => `states['${entity.entity_id}']`);
+
+      states.push(...newStates);
     }
 
     return `{% set entities = [${states}] %} {{ entities | selectattr('state','${operator}','${value}') | list | count }}`;
+  }
+
+  /**
+   * Callback function for filtering entities.
+   *
+   * Entities of which all the conditions below are met are kept:
+   * 1. Or/Neither the entity's linked device (if any) or/nor the entity itself is lined to the given area.
+   *    (See variable areaMatch)
+   * 2. The entity's domain matches the given domain.
+   * 3. The entity is not hidden and is not disabled.
+   *
+   * @param {hassEntity} entity The current hass entity to evaluate.
+   * @this {areaFilterContext}
+   *
+   * @return {boolean} True to keep the entity.
+   * @static
+   */
+  static #areaFilterCallback(entity) {
+    const areaMatch = this.area.area_id
+        // Area is a hass entity; The entity's linked device or the entity itself is linked to the given area.
+        ? this.areaDeviceIds.includes(entity.device_id) || entity.area_id === this.area.area_id
+        // Undisclosed area; Neither the entity's linked device (if any), nor the entity itself is linked to any area.
+        : (this.areaDeviceIds.includes(entity.device_id) || !entity.device_id) && !entity.area_id;
+
+    return (
+        areaMatch
+        && entity.entity_id.startsWith(`${this.domain}.`)
+        && entity.hidden_by == null && entity.disabled_by == null
+    );
   }
 
   /**
@@ -256,24 +281,13 @@ class Helper {
       return device.id;
     });
 
-    // Return the entities of which all conditions below are met:
-    // 1. Or/Neither the entity's linked device or/nor the entity itself is lined to the given area.
-    // (See variable areaMatch)
-    // 2. The entity's domain matches the given domain.
-    // 3. The entity is not hidden and is not disabled.
-    return this.#entities.filter(entity => {
-      // Define the matching condition of the area_id.
-      const areaMatch = area.area_id
-          // The entity's linked device or the entity itself is linked to the given area.
-          ? (areaDeviceIds.includes(entity.device_id) || entity.area_id === area.area_id)
-          // Neither the entity's linked device, nor the entity itself is linked to any area.
-          : (areaDeviceIds.includes(entity.device_id) && entity.area_id === area.area_id);
-      return (
-          areaMatch
-          && entity.entity_id.startsWith(`${domain}.`)
-          && entity.hidden_by == null && entity.disabled_by == null
-      );
-    });
+    // Return the entities of which all conditions of the callback function are met. @see areaFilterCallback.
+    return this.#entities.filter(
+        this.#areaFilterCallback, {
+          area: area,
+          domain: domain,
+          areaDeviceIds: areaDeviceIds,
+        });
   }
 
   /**
@@ -2081,16 +2095,15 @@ class AbstractView {
   createViewCards() {
     /** @type Object[] */
     const viewCards      = [this.viewTitleCard];
-    const addedEntityIds = [];
 
     // Create cards for each area.
     for (const area of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas) {
       const areaCards = [];
       const entities  = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getDeviceEntities(area, this["domain"]);
       const className = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.sanitizeClassName(this["domain"] + "Card");
-console.log(area, entities, this.domain);
+
       __webpack_require__("./src/cards lazy recursive ^\\.\\/.*$")(`./${className}`).then(cardModule => {
-        if (true) {
+        if (entities.length) {
           // Create a Title card for the current area.
           areaCards.push(
               new _cards_TitleCard__WEBPACK_IMPORTED_MODULE_1__.TitleCard([area], {
@@ -2101,14 +2114,11 @@ console.log(area, entities, this.domain);
 
           // Create a card for each domain-entity of the current area.
           for (const entity of entities) {
-            if (!addedEntityIds.includes(entity.entity_id)) {
               const card = (_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.entity_config ?? []).find(
                   config => config.entity === entity.entity_id,
               ) ?? new cardModule[className](entity).getCard();
 
             areaCards.push(card);
-            addedEntityIds.push(entity.entity_id);
-            }
           }
         }
       });
