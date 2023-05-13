@@ -17,7 +17,6 @@ class CameraCard extends AbstractCard {
    */
   #defaultOptions = {
     type: "custom:webrtc-camera",
-    icon: undefined,
   };
 
   /**
