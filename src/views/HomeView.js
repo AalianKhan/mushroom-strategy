@@ -11,12 +11,6 @@ import {AbstractView} from "./AbstractView";
  */
 class HomeView extends AbstractView {
   /**
-   * Domain of the view's entities.
-   * @type {string}
-   */
-  #domain = "camera";
-
-  /**
    * Default options for the view.
    *
    * @type {viewOptions}
@@ -41,10 +35,12 @@ class HomeView extends AbstractView {
     );
   }
 
-  get domain() {
-    return this.#domain;
-  }
-
+  /**
+   * Create the cards to include in the view.
+   *
+   * @return {Promise} A promise of a card object array.
+   * @override
+   */
   async createViewCards() {
     return await Promise.all([
       this.#createChips(),
@@ -103,6 +99,11 @@ class HomeView extends AbstractView {
     });
   }
 
+  /**
+   * Create the chips to include in the view.
+   *
+   * @return {Object[]} A chip object array.
+   */
   async #createChips() {
     const chips           = [];
     const chipOptions     = Helper.strategyOptions.chips;
@@ -150,6 +151,11 @@ class HomeView extends AbstractView {
     return chips;
   }
 
+  /**
+   * Create the person cards to include in the view.
+   *
+   * @return {Object[]} A card object array.
+   */
   #createPersonCards() {
     const cards = [];
 
@@ -162,6 +168,13 @@ class HomeView extends AbstractView {
     return cards;
   }
 
+  /**
+   * Create the area cards to include in the view.
+   *
+   * Area cards are grouped into two areas per row.
+   *
+   * @return {Object[]} A card object array.
+   */
   #createAreaCards() {
     const groupedCards = [];
 
