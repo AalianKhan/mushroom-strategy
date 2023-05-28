@@ -187,7 +187,7 @@ Mushroom strategy includes pre-built views to control/view specific domains. Onl
 | `fans` | boolean | View to control all fans and fans of each area |
 | `covers` | boolean | View to control all covers and covers of each area |
 | `switches` | boolean | View to control all switches and switches of each area |
-| `climates` | boolean | View to control climate devices such as thermostates. Seperated by each area |
+| `climates` | boolean | View to control climate devices such as thermostats. Seperated by each area |
 | `cameras` | boolean | View to show all cameras using WebRTC cards. Seperated by each area | 
 
 #### Example
@@ -201,7 +201,7 @@ strategy:
       switches: true
       covers: false
       cameras: true
-      thermostats: false
+      climates: false
 views: []
 ```
 
