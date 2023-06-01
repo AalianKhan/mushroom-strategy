@@ -154,6 +154,7 @@ class Helper {
 
       this.#areas.push(this.#strategyOptions.areas.undisclosed);
 
+      // TODO: Merge custom areas with hass areas and remove it from the Home View.
       // Sort areas by order first and then by name.
       this.#areas.sort((a, b) => {
         return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
@@ -314,7 +315,6 @@ class Helper {
       const hassEntity = entityMap[state.entity_id];
       const device     = deviceMap[hassEntity?.device_id];
 
-      // TODO: Agree on conditions (https://github.com/AalianKhan/mushroom-strategy/pull/7#discussion_r1173032335)
       // Collect states of which any (whichever comes first) of the conditions below are met:
       // 1. The linked entity is linked to the given area.
       // 2. The entity is linked to a device, and the linked device is linked to the given area.
@@ -324,18 +324,6 @@ class Helper {
       ) {
         states.push(state);
       }
-
-      /*
-       // Collect states of which all conditions below are met:
-       // 1. The linked entity is linked to the given area or isn't linked to any area.
-       // 2. The linked device (if any) is assigned to the given area.
-       if (
-       (!hassEntity?.area_id || hassEntity.area_id === area.area_id)
-       && (device && device.area_id === area.area_id)
-       ) {
-       states.push(state);
-       }
-       */
     }
 
     return states;
@@ -344,8 +332,8 @@ class Helper {
   /**
    * Sanitize a classname.
    *
-   * The name is sanitized nu upper-casing the first character of the name or after an underscore.
-   * Underscored will be removed.
+   * The name is sanitized by upper-casing the first character of the name or after an underscore.
+   * Underscores are removed.
    *
    * @param {string} className Name of the class to sanitize.
    * @returns {string} The sanitized classname.
