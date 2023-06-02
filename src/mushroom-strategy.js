@@ -28,18 +28,16 @@ class MushroomStrategy {
     await Helper.initialize(info);
 
     // Create views.
-    // TODO: Get domains from config (Currently strategy.options.views).
-    const exposedDomains = ["Home", "light", "fan", "cover", "switch", "climate", "camera"];
     const views          = [];
 
     let viewModule;
 
     // Create a view for each exposed domain.
-    for (let viewType of exposedDomains) {
+    for (let viewId of Helper.getExposedViews()) {
       try {
-        viewType   = Helper.sanitizeClassName(viewType + "View");
+        const viewType   = Helper.sanitizeClassName(viewId + "View");
         viewModule = await import(`./views/${viewType}`);
-        const view = await new viewModule[viewType]().getView();
+        const view = await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView();
 
         views.push(view);
 
@@ -50,11 +48,6 @@ class MushroomStrategy {
 
     // Create subviews for each area.
     for (let area of Helper.areas) {
-      area = {
-        ...area,
-        ...Helper.strategyOptions.areas[area.area_id],
-      };
-
       if (!area.hidden) {
         views.push({
           title: area.name,
@@ -264,7 +257,7 @@ class MushroomStrategy {
     // Create cards for any other domain.
     // Collect device entities of the current area.
     const areaDevices = Helper.devices.filter(device => device.area_id === area.area_id)
-                              .map(device => device.id);
+        .map(device => device.id);
 
     // Collect the remaining entities of which all conditions below are met:
     // 1. The entity is linked to a device which is linked to the current area,

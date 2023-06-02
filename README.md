@@ -75,7 +75,7 @@ All the rounded cards can be configured using the Dashboard UI editor.
 
 ```yaml
 strategy:
-   type: custom:mushroom-strategy
+  type: custom:mushroom-strategy
 views: [ ]
 ```
 
@@ -109,27 +109,27 @@ weather entity for the weather chip.
 
 The options available are:
 
-| Name                 | Type                      | Default                                                 | Description                                                                               | 
-|:---------------------|:--------------------------|:--------------------------------------------------------|:------------------------------------------------------------------------------------------|
-| `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object).                            |
-| `entity_config`      | array of cards (optional) | unset                                                   | Card definition for an entity, see [entity config](#entity-config).                       |
-| `views`              | object                    | All views enabled                                       | Setting which pre-built views to show, see available [Pre-built views](#pre-built-views). |
-| `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                                                      |
-| `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.                               |
-| `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                                                   |
-| `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                                                    |
+| Name                 | Type                      | Default                                                 | Description                                                         | 
+|:---------------------|:--------------------------|:--------------------------------------------------------|:--------------------------------------------------------------------|
+| `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object).      |
+| `entity_config`      | array of cards (optional) | unset                                                   | Card definition for an entity, see [entity config](#entity-config). |
+| `views`              | object                    | All default views                                       | See available [Pre-built views](#pre-built-views).                  |
+| `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                                |
+| `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.         |
+| `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                             |
+| `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                              |
 
 #### Example
 
 ```yaml
 strategy:
-   type: custom:mushroom-strategy
-   options:
-      areas:
-         family_room_id:
-            name: Family Room
-            icon: mdi:sofa
-            icon_color: green
+  type: custom:mushroom-strategy
+  options:
+    areas:
+      family_room_id:
+        name: Family Room
+        icon: mdi:sofa
+        icon_color: green
 views: [ ]
 ```
 
@@ -137,7 +137,6 @@ views: [ ]
 
 The area object includes all options from the template mushroom card and `extra_cards` which is a list of cards to show
 at the top of the area subview.
-The order of definition is used to sort the rooms and pre-built views
 
 | Name                  | Type              | Default        | Description                                                                                                                         |
 |:----------------------|:------------------|:---------------|:------------------------------------------------------------------------------------------------------------------------------------|
@@ -166,33 +165,34 @@ The order of definition is used to sort the rooms and pre-built views
 
 ```yaml
 strategy:
-   type: custom:mushroom-strategy
-   options:
-      areas:
-         family_room_id:
-            name: Family Room
-            icon: mdi:television
-            icon_color: green
-            order: 1
-            extra_cards:
-               - type: custom:mushroom-chips-card
-                 chips:
-                    - type: entity
-                      entity: sensor.family_room_temperature
-                      icon: mdi:thermometer
-                      icon_color: pink
-                 alignment: center
-         kitchen_id:
-            name: Kitchen
-            icon: mdi:silverware-fork-knife
-            icon_color: red
-            order: 2
-         garage_id:
-            hidden: true
+  type: custom:mushroom-strategy
+  options:
+    areas:
+      family_room_id:
+        name: Family Room
+        icon: mdi:television
+        icon_color: green
+        order: 1
+        extra_cards:
+          - type: custom:mushroom-chips-card
+            chips:
+              - type: entity
+                entity: sensor.family_room_temperature
+                icon: mdi:thermometer
+                icon_color: pink
+            alignment: center
+      kitchen_id:
+        name: Kitchen
+        icon: mdi:silverware-fork-knife
+        icon_color: red
+        order: 2
+      garage_id:
+        hidden: true
 views: [ ]
 ```
 
 #### Undisclosed Area
+
 The strategy has a special area, named `undisclosed`.
 This area is enabled by default and includes the entities that aren't linked to any Home Assistant area.
 
@@ -212,7 +212,7 @@ strategy:
     entity_config:
       - entity: fan.master_bedroom_fan
         type: custom:mushroom-fan-card
-views: []
+views: [ ]
 ```
 
 ### Pre-built views
@@ -223,16 +223,29 @@ Mushroom strategy includes pre-built views to control/view specific domains.
 Only devices that are in an area as defined in `areas` are shown.  
 If `areas` is undefined then the devices of all areas are shown.
 
-By default, all views are shown.
+By default, all pre-built views below are shown:
 
 | Available views | type    | Description                                                                  |
 |:----------------|:--------|:-----------------------------------------------------------------------------|
-| `lights`        | boolean | View to control all lights and lights of each area.                          |
-| `fans`          | boolean | View to control all fans and fans of each area.                              |
-| `covers`        | boolean | View to control all covers and covers of each area.                          |
-| `switches`      | boolean | View to control all switches and switches of each area.                      |
-| `climates`      | boolean | View to control climate devices such as thermostats. Seperated by each area. |
-| `cameras`       | boolean | View to show all cameras using WebRTC cards. Seperated by each area.         | 
+| `light`         | object* | View to control all lights and lights of each area.                          |
+| `fan`           | object* | View to control all fans and fans of each area.                              |
+| `cover`         | object* | View to control all covers and covers of each area.                          |
+| `switch`        | object* | View to control all switches and switches of each area.                      |
+| `climate`       | object* | View to control climate devices such as thermostats. Seperated by each area. |
+| `camera`        | object* | View to show all cameras using WebRTC cards. Seperated by each area.         | 
+
+*) See [View Options](#view-options).
+
+#### View Options
+
+For each of the pre-built views, the following options are available:
+
+| name     | type    | description                                                                                   |
+|:---------|:--------|:----------------------------------------------------------------------------------------------|
+| `title`  | string  | Title of the view in the navigation bar. (Shown when no icon is defined or hovering above it. |
+| `icon`   | string  | Icon of the view in the navigation bar.                                                       |
+| `order`  | string  | Ordering position of the view in the navigation bar.                                          |
+| `hidden` | boolean | Set to `true` to exclude the view from the dashboard                                          |
 
 #### Example
 
@@ -241,12 +254,14 @@ strategy:
   type: custom:mushroom-strategy
   options:
     views:
-      lights: true
-      switches: true
-      covers: false
-      cameras: true
-      thermostats: false
-views: []
+      light:
+        order: 0
+        title: illumination
+      switch:
+        order: 1
+        hidden: true
+        icon: mdi:toggle-switch
+views: [ ]
 ```
 
 ### Chips
@@ -304,11 +319,11 @@ strategy:
   type: custom:mushroom-strategy
   options:
     views:
-      lights: true
-      switches: true
-      covers: false
-      cameras: true
-      thermostats: false
+      light:
+        title: illumination
+      switches:
+        hidden: true
+        icon: mdi:toggle-switch
     chips:
       weather_entity: weather.forecast_home
       climate_count: false
@@ -420,6 +435,7 @@ strategy:
 * Took inspiration from [Balloob battery strategy][balloobBatteryUrl]
 
 ## Contributors
+
 * [DigiLive](https://github.com/DigiLive)
 
 <!-- Badges References -->

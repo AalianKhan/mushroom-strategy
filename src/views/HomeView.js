@@ -181,18 +181,7 @@ class HomeView extends AbstractView {
     import("../cards/AreaCard").then(areaModule => {
       const areaCards = [];
 
-      // Merge custom areas with hass areas.
-      /** @type areaEntity[] */
-      let areas = Helper.areas.map(area => {
-        return {...area, ...Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]};
-      });
-
-      // Sort areas by order first and then by name.
-      areas = areas.sort((a, b) => {
-        return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
-      });
-
-      for (const area of areas) {
+      for (const area of Helper.areas) {
         if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
           areaCards.push(
               new areaModule.AreaCard(area, Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]).getCard());

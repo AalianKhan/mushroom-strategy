@@ -39,6 +39,17 @@
  */
 
 /**
+ * @typedef {Object} viewEntity View Entity.
+ *                              This entity is added by the custom strategy.
+ * @property {string} title Title of this entity.
+ * @property {string} icon Icon to use for the entity in the frontend.
+ *                         Example: `mdi:home`.
+ * @property {number} [order] Ordering position of the entity in the list of available views.
+ * @property {boolean} [hidden] True if the entity should be hidden from the dashboard.
+ * @memberOf typedefs.generic
+ */
+
+/**
  * @typedef {Object} dashBoardInfo Strategy information object.
  * @property {dashboardConfig} config User supplied dashboard configuration, if any.
  * @property {hassObject} hass The Home Assistant object.
@@ -81,7 +92,7 @@
  * @property {boolean} [debug] Set to true for more verbose debugging info.
  * @property {Object.<areaEntity>} [areas] List of areas.
  * @property {Object[]} [entity_config] Card definition for entities.
- * @property {views[]} [views] List of pre-built views to show.
+ * @property {Object.<viewEntity>} [views] List of views.
  * @property {chip[]} [chips] List of chips to show in the Home view.
  * @property {Object[]} [quick_access_cards] List of cards to show between welcome card and rooms cards.
  * @property {Object[]} [extra_cards] List of cards to show below room cards.
@@ -98,17 +109,6 @@
  * @property {boolean} climate_count Chip to display the number of climates which are not off.
  * @property {string} weather_entity Entity ID for the weather chip to use, accepts `weather.` only.
  * @property {Object[]} extra_chips List of extra chips.
- * @memberOf typedefs.generic
- */
-
-/**
- * @typedef {Object} views List of chips to show in the Home view.
- * @property {boolean} lights View to control all lights and lights of each area.
- * @property {boolean} fans View to control all fans and fans of each area.
- * @property {boolean} covers View to control all covers and covers of each area.
- * @property {boolean} switches View to control all switches and switches of each area.
- * @property {boolean} climates View to control climate devices such as thermostats. Seperated by each area.
- * @property {boolean} cameras View to show all cameras using WebRTC cards. Seperated by each area.
  * @memberOf typedefs.generic
  */
 

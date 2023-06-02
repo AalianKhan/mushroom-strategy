@@ -1,3 +1,5 @@
+import {optionDefaults} from "./optionDefaults";
+
 /**
  * Helper Class
  *
@@ -24,7 +26,7 @@ class Helper {
    * @type {areaEntity[]}
    * @private
    */
-  static #areas;
+  static #areas = [];
   /**
    * An array of state entities from Home Assistant's Hass object.
    *
@@ -54,7 +56,7 @@ class Helper {
    *
    * @type {boolean}
    */
-  static debug = false;
+  static debug = optionDefaults.debug;
 
   /**
    * Class constructor.
@@ -131,40 +133,56 @@ class Helper {
 
     // Cloning is required for the purpose of the required undisclosed area.
     this.#strategyOptions = structuredClone(info.config.strategy.options || {});
-    this.debug            = this.strategyOptions.debug;
+    this.debug            = this.#strategyOptions.debug;
 
     // Setup required configuration entries.
-    if (!this.#strategyOptions.areas) {
-      this.#strategyOptions.areas = {};
-    }
+    this.#strategyOptions.areas = this.#strategyOptions.areas ?? {};
+    this.#strategyOptions.views = this.#strategyOptions.views ?? {};
 
-    // TODO: Decide on property name and value of undisclosed.name.
+    // Setup and add the undisclosed area if not hidden in the strategy options.
     if (!this.#strategyOptions.areas.undisclosed?.hidden) {
       this.#strategyOptions.areas.undisclosed = {
-        aliases: [],
-        area_id: null,
-        name: "Undisclosed",
-        picture: null,
-        hidden: false,
+        ...optionDefaults.areas.undisclosed,
         ...this.#strategyOptions.areas.undisclosed,
       };
 
-      // Make sure the area_id of the undisclosed area remains null.
+      // Make sure the area_id of the custom undisclosed area remains null.
       this.#strategyOptions.areas.undisclosed.area_id = null;
 
       this.#areas.push(this.#strategyOptions.areas.undisclosed);
-
-      // TODO: Merge custom areas with hass areas and remove it from the Home View.
-      // Sort areas by order first and then by name.
-      this.#areas.sort((a, b) => {
-        return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
-      });
     }
+
+    // Merge custom areas of the strategy options into hass areas.
+    this.#areas = Helper.areas.map(area => {
+      return {...area, ...this.#strategyOptions.areas[area.area_id ?? "undisclosed"]};
+    });
+
+    // Sort hass areas by order first and then by name.
+    this.#areas.sort((a, b) => {
+      return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
+    });
+
+    // Merge default views into the views of the strategy options.
+    for (const view of Object.keys(optionDefaults.views)) {
+      this.#strategyOptions.views[view] = {
+        ...optionDefaults.views[view],
+        ...(this.#strategyOptions.views[view]),
+      };
+    }
+
+    // Sort views of the strategy options by order first and then by title.
+    this.#strategyOptions.views = Object.fromEntries(
+        Object.entries(this.#strategyOptions.views).sort(([, a], [, b]) => {
+          return (a.order ?? Infinity) - (b.order ?? Infinity) || a.title?.localeCompare(b.title);
+        }),
+    );
 
     this.#initialized = true;
   }
 
   /**
+   * Get the initialization status of the Helper class.
+   *
    * @returns {boolean} True if this module is initialized.
    * @static
    */
@@ -347,6 +365,36 @@ class Helper {
             .replace("-", "")
             .replace("_", ""),
     );
+  }
+
+  /**
+   * Get the keys of nested objects by its property value.
+   *
+   * @param {Object<Object>} object An object of objects.
+   * @param {string|number} property The name of the property to evaluate.
+   * @param {*} value The value which the property should match.
+   *
+   * @return {string[]|number[]} An array with keys.
+   */
+  static #getObjectKeysByPropertyValue(object, property, value) {
+    const keys = [];
+
+    for (const key of Object.keys(object)) {
+      if (object[key][property] === value) {
+        keys.push(key);
+      }
+    }
+
+    return keys;
+  }
+
+  /**
+   * Get the view ids from the views which aren't set to hidden in the strategy options.
+   *
+   * @return {string[]} An array of view ids.
+   */
+  static getExposedViews() {
+    return this.#getObjectKeysByPropertyValue(this.#strategyOptions.views, "hidden", false);
   }
 }
 

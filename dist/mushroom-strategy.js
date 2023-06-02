@@ -12,6 +12,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Helper": () => (/* binding */ Helper)
 /* harmony export */ });
+/* harmony import */ var _optionDefaults__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./optionDefaults */ "./src/optionDefaults.js");
+
+
 /**
  * Helper Class
  *
@@ -38,7 +41,7 @@ class Helper {
    * @type {areaEntity[]}
    * @private
    */
-  static #areas;
+  static #areas = [];
   /**
    * An array of state entities from Home Assistant's Hass object.
    *
@@ -68,7 +71,7 @@ class Helper {
    *
    * @type {boolean}
    */
-  static debug = false;
+  static debug = _optionDefaults__WEBPACK_IMPORTED_MODULE_0__.optionDefaults.debug;
 
   /**
    * Class constructor.
@@ -145,39 +148,56 @@ class Helper {
 
     // Cloning is required for the purpose of the required undisclosed area.
     this.#strategyOptions = structuredClone(info.config.strategy.options || {});
-    this.debug            = this.strategyOptions.debug;
+    this.debug            = this.#strategyOptions.debug;
 
     // Setup required configuration entries.
-    if (!this.#strategyOptions.areas) {
-      this.#strategyOptions.areas = {};
-    }
+    this.#strategyOptions.areas = this.#strategyOptions.areas ?? {};
+    this.#strategyOptions.views = this.#strategyOptions.views ?? {};
 
-    // TODO: Decide on property name and value of undisclosed.name.
+    // Setup and add the undisclosed area if not hidden in the strategy options.
     if (!this.#strategyOptions.areas.undisclosed?.hidden) {
       this.#strategyOptions.areas.undisclosed = {
-        aliases: [],
-        area_id: null,
-        name: "Undisclosed",
-        picture: null,
-        hidden: false,
+        ..._optionDefaults__WEBPACK_IMPORTED_MODULE_0__.optionDefaults.areas.undisclosed,
         ...this.#strategyOptions.areas.undisclosed,
       };
 
-      // Make sure the area_id of the undisclosed area remains null.
+      // Make sure the area_id of the custom undisclosed area remains null.
       this.#strategyOptions.areas.undisclosed.area_id = null;
 
       this.#areas.push(this.#strategyOptions.areas.undisclosed);
-
-      // Sort areas by order first and then by name.
-      this.#areas.sort((a, b) => {
-        return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
-      });
     }
+
+    // Merge custom areas of the strategy options into hass areas.
+    this.#areas = Helper.areas.map(area => {
+      return {...area, ...this.#strategyOptions.areas[area.area_id ?? "undisclosed"]};
+    });
+
+    // Sort hass areas by order first and then by name.
+    this.#areas.sort((a, b) => {
+      return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
+    });
+
+    // Merge default views into the views of the strategy options.
+    for (const view of Object.keys(_optionDefaults__WEBPACK_IMPORTED_MODULE_0__.optionDefaults.views)) {
+      this.#strategyOptions.views[view] = {
+        ..._optionDefaults__WEBPACK_IMPORTED_MODULE_0__.optionDefaults.views[view],
+        ...(this.#strategyOptions.views[view]),
+      };
+    }
+
+    // Sort views of the strategy options by order first and then by title.
+    this.#strategyOptions.views = Object.fromEntries(
+        Object.entries(this.#strategyOptions.views).sort(([, a], [, b]) => {
+          return (a.order ?? Infinity) - (b.order ?? Infinity) || a.title?.localeCompare(b.title);
+        }),
+    );
 
     this.#initialized = true;
   }
 
   /**
+   * Get the initialization status of the Helper class.
+   *
    * @returns {boolean} True if this module is initialized.
    * @static
    */
@@ -328,7 +348,6 @@ class Helper {
       const hassEntity = entityMap[state.entity_id];
       const device     = deviceMap[hassEntity?.device_id];
 
-      // TODO: Agree on conditions (https://github.com/AalianKhan/mushroom-strategy/pull/7#discussion_r1173032335)
       // Collect states of which any (whichever comes first) of the conditions below are met:
       // 1. The linked entity is linked to the given area.
       // 2. The entity is linked to a device, and the linked device is linked to the given area.
@@ -338,18 +357,6 @@ class Helper {
       ) {
         states.push(state);
       }
-
-      /*
-       // Collect states of which all conditions below are met:
-       // 1. The linked entity is linked to the given area or isn't linked to any area.
-       // 2. The linked device (if any) is assigned to the given area.
-       if (
-       (!hassEntity?.area_id || hassEntity.area_id === area.area_id)
-       && (device && device.area_id === area.area_id)
-       ) {
-       states.push(state);
-       }
-       */
     }
 
     return states;
@@ -358,8 +365,8 @@ class Helper {
   /**
    * Sanitize a classname.
    *
-   * The name is sanitized nu upper-casing the first character of the name or after an underscore.
-   * Underscored will be removed.
+   * The name is sanitized by upper-casing the first character of the name or after an underscore.
+   * Underscores are removed.
    *
    * @param {string} className Name of the class to sanitize.
    * @returns {string} The sanitized classname.
@@ -373,6 +380,36 @@ class Helper {
             .replace("-", "")
             .replace("_", ""),
     );
+  }
+
+  /**
+   * Get the keys of nested objects by its property value.
+   *
+   * @param {Object<Object>} object An object of objects.
+   * @param {string|number} property The name of the property to evaluate.
+   * @param {*} value The value which the property should match.
+   *
+   * @return {string[]|number[]} An array with keys.
+   */
+  static #getObjectKeysByPropertyValue(object, property, value) {
+    const keys = [];
+
+    for (const key of Object.keys(object)) {
+      if (object[key][property] === value) {
+        keys.push(key);
+      }
+    }
+
+    return keys;
+  }
+
+  /**
+   * Get the view ids from the views which aren't set to hidden in the strategy options.
+   *
+   * @return {string[]} An array of view ids.
+   */
+  static getExposedViews() {
+    return this.#getObjectKeysByPropertyValue(this.#strategyOptions.views, "hidden", false);
   }
 }
 
@@ -638,7 +675,6 @@ class CameraCard extends _AbstractCard__WEBPACK_IMPORTED_MODULE_0__.AbstractCard
    */
   #defaultOptions = {
     type: "custom:webrtc-camera",
-    icon: undefined,
   };
 
   /**
@@ -2032,6 +2068,63 @@ module.exports = webpackAsyncContext;
 
 /***/ }),
 
+/***/ "./src/optionDefaults.js":
+/*!*******************************!*\
+  !*** ./src/optionDefaults.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "optionDefaults": () => (/* binding */ optionDefaults)
+/* harmony export */ });
+const optionDefaults = {
+  debug: false,
+  views: {
+    home: {
+      order: 1,
+      hidden: false,
+    },
+    light: {
+      order: 2,
+      hidden: false,
+    },
+    fan: {
+      order: 3,
+      hidden: false,
+    },
+    cover: {
+      order: 4,
+      hidden: false,
+    },
+    switch: {
+      order: 5,
+      hidden: false,
+    },
+    climate: {
+      order: 6,
+      hidden: false,
+    },
+    camera: {
+      order: 7,
+      hidden: false,
+    }
+  },
+  areas: {
+    undisclosed: {
+      aliases: [],
+      area_id: null,
+      name: "Undisclosed",
+      picture: null,
+      hidden: false,
+    }
+  }
+}
+
+
+/***/ }),
+
 /***/ "./src/views/AbstractView.js":
 /*!***********************************!*\
   !*** ./src/views/AbstractView.js ***!
@@ -2555,12 +2648,6 @@ __webpack_require__.r(__webpack_exports__);
  */
 class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
   /**
-   * Domain of the view's entities.
-   * @type {string}
-   */
-  #domain = "camera";
-
-  /**
    * Default options for the view.
    *
    * @type {viewOptions}
@@ -2585,10 +2672,12 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
     );
   }
 
-  get domain() {
-    return this.#domain;
-  }
-
+  /**
+   * Create the cards to include in the view.
+   *
+   * @return {Promise} A promise of a card object array.
+   * @override
+   */
   async createViewCards() {
     return await Promise.all([
       this.#createChips(),
@@ -2647,6 +2736,11 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
     });
   }
 
+  /**
+   * Create the chips to include in the view.
+   *
+   * @return {Object[]} A chip object array.
+   */
   async #createChips() {
     const chips           = [];
     const chipOptions     = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.chips;
@@ -2694,6 +2788,11 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
     return chips;
   }
 
+  /**
+   * Create the person cards to include in the view.
+   *
+   * @return {Object[]} A card object array.
+   */
   #createPersonCards() {
     const cards = [];
 
@@ -2706,24 +2805,20 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
     return cards;
   }
 
+  /**
+   * Create the area cards to include in the view.
+   *
+   * Area cards are grouped into two areas per row.
+   *
+   * @return {Object[]} A card object array.
+   */
   #createAreaCards() {
     const groupedCards = [];
 
     Promise.resolve(/*! import() */).then(__webpack_require__.bind(__webpack_require__, /*! ../cards/AreaCard */ "./src/cards/AreaCard.js")).then(areaModule => {
       const areaCards = [];
 
-      // Merge custom areas with hass areas.
-      /** @type areaEntity[] */
-      let areas = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas.map(area => {
-        return {...area, ..._Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]};
-      });
-
-      // Sort areas by order first and then by name.
-      areas = areas.sort((a, b) => {
-        return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
-      });
-
-      for (const area of areas) {
+      for (const area of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas) {
         if (!_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id]?.hidden) {
           areaCards.push(
               new areaModule.AreaCard(area, _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]).getCard());
@@ -3215,18 +3310,16 @@ class MushroomStrategy {
     await _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.initialize(info);
 
     // Create views.
-    // TODO: Get domains from config (Currently strategy.options.views).
-    const exposedDomains = ["Home", "light", "fan", "cover", "switch", "climate", "camera"];
     const views          = [];
 
     let viewModule;
 
     // Create a view for each exposed domain.
-    for (let viewType of exposedDomains) {
+    for (let viewId of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getExposedViews()) {
       try {
-        viewType   = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.sanitizeClassName(viewType + "View");
+        const viewType   = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.sanitizeClassName(viewId + "View");
         viewModule = await __webpack_require__("./src/views lazy recursive ^\\.\\/.*$")(`./${viewType}`);
-        const view = await new viewModule[viewType]().getView();
+        const view = await new viewModule[viewType](_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.views[viewId]).getView();
 
         views.push(view);
 
@@ -3237,11 +3330,6 @@ class MushroomStrategy {
 
     // Create subviews for each area.
     for (let area of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas) {
-      area = {
-        ...area,
-        ..._Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.areas[area.area_id],
-      };
-
       if (!area.hidden) {
         views.push({
           title: area.name,
@@ -3451,7 +3539,7 @@ class MushroomStrategy {
     // Create cards for any other domain.
     // Collect device entities of the current area.
     const areaDevices = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.devices.filter(device => device.area_id === area.area_id)
-                              .map(device => device.id);
+        .map(device => device.id);
 
     // Collect the remaining entities of which all conditions below are met:
     // 1. The entity is linked to a device which is linked to the current area,
