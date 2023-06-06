@@ -28,21 +28,21 @@ class MushroomStrategy {
     await Helper.initialize(info);
 
     // Create views.
-    const views          = [];
+    const views = [];
 
     let viewModule;
 
     // Create a view for each exposed domain.
-    for (let viewId of Helper.getExposedViews()) {
+    for (let viewId of Helper.getExposedViewIds()) {
       try {
-        const viewType   = Helper.sanitizeClassName(viewId + "View");
-        viewModule = await import(`./views/${viewType}`);
-        const view = await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView();
+        const viewType = Helper.sanitizeClassName(viewId + "View");
+        viewModule     = await import(`./views/${viewType}`);
+        const view     = await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView();
 
         views.push(view);
 
       } catch (e) {
-        console.error(Helper.debug ? e : `View '${viewType}' couldn't be loaded!`);
+        console.error(Helper.debug ? e : `View '${viewId}' couldn't be loaded!`);
       }
     }
 
@@ -84,86 +84,19 @@ class MushroomStrategy {
    * @return {Promise<{cards: Object[]}>}
    */
   static async generateView(info) {
+    const exposedDomainIds  = Helper.getExposedDomainIds();
     const area            = info.view.strategy.options.area;
     const viewCards       = [...(area.extra_cards ?? [])];
     const strategyOptions = {
       entityConfig: info.view.strategy.options.entity_config,
     };
 
-    // TODO: Get domains from config (Currently strategy.options.views).
-    const exposedDomains = [
-      "light",
-      "fan",
-      "cover",
-      "switch",
-      "climate",
-      "camera",
-      "media_player",
-      "sensor",
-      "binary_sensor",
-    ];
-
-    const titleCardOptions = {
-      default: {
-        title: "Miscellaneous",
-        showControls: false,
-      },
-      light: {
-        title: "Lights",
-        showControls: true,
-        iconOn: "mdi:lightbulb",
-        iconOff: "mdi:lightbulb-off",
-        onService: "light.turn_on",
-        offService: "light.turn_off",
-      },
-      fan: {
-        title: "Fans",
-        showControls: true,
-        iconOn: "mdi:fan",
-        iconOff: "mdi:fan-off",
-        onService: "fan.turn_on",
-        offService: "fan.turn_off",
-      },
-      cover: {
-        title: "Covers",
-        showControls: true,
-        iconOn: "mdi:arrow-up",
-        iconOff: "mdi:arrow-down",
-        onService: "cover.open_cover",
-        offService: "cover.close_cover",
-      },
-      switch: {
-        title: "Switches",
-        showControls: true,
-        iconOn: "mdi:power-plug",
-        iconOff: "mdi:power-plug-off",
-        onService: "switch.turn_on",
-        offService: "switch.turn_off",
-      },
-      camera: {
-        title: "Cameras",
-        showControls: false,
-      },
-      climate: {
-        title: "Climates",
-        showControls: false,
-      },
-      media_player: {
-        title: "Media Players",
-        showControls: false,
-      },
-      sensor: {
-        title: "Sensors",
-        showControls: false,
-      },
-      binary_sensor: {
-        title: "Binary Sensors",
-        showControls: false,
-      },
-    };
-
     // Create cards for each domain.
-    for (const domain of exposedDomains) {
+    for (const domain of exposedDomainIds) {
+      if (domain === "default") {
+        continue;
+      }
+
       const className = Helper.sanitizeClassName(domain + "Card");
 
       let domainCards = [];
@@ -175,8 +108,10 @@ class MushroomStrategy {
 
           if (entities.length) {
             // Create a Title card for the current domain.
-            const titleCard = new TitleCard([area],
-                titleCardOptions[domain] ?? titleCardOptions["default"]).createCard();
+            const titleCard = new TitleCard(
+                [area],
+                Helper.strategyOptions.domains[domain]
+            ).createCard();
 
             if (domain === "sensor") {
               // Create a card for each entity-sensor of the current area.
@@ -267,7 +202,7 @@ class MushroomStrategy {
       return (areaDevices.includes(entity.device_id) || entity.area_id === area.area_id)
           && entity.hidden_by == null
           && entity.disabled_by == null
-          && !exposedDomains.includes(entity.entity_id.split(".", 1)[0]);
+          && !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0]);
     });
 
     // Create a column of miscellaneous entity cards.
@@ -278,7 +213,7 @@ class MushroomStrategy {
         miscellaneousCards = await import("./cards/MiscellaneousCard").then(cardModule => {
           /** @type Object[] */
           const miscellaneousCards = [
-            new TitleCard([area], {title: "Miscellaneous", showControls: false}).createCard(),
+            new TitleCard([area], Helper.strategyOptions.domains.default).createCard(),
           ];
           for (const entity of miscellaneousEntities) {
             const card = (Helper.strategyOptions.entity_config ?? []).find(

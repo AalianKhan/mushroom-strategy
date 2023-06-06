@@ -151,8 +151,10 @@ class Helper {
     this.debug            = this.#strategyOptions.debug;
 
     // Setup required configuration entries.
-    this.#strategyOptions.areas = this.#strategyOptions.areas ?? {};
-    this.#strategyOptions.views = this.#strategyOptions.views ?? {};
+    // TODO: Refactor to something smarter than repeating code for areas, views and domains.
+    this.#strategyOptions.areas   = this.#strategyOptions.areas ?? {};
+    this.#strategyOptions.views   = this.#strategyOptions.views ?? {};
+    this.#strategyOptions.domains = this.#strategyOptions.domains ?? {};
 
     // Setup and add the undisclosed area if not hidden in the strategy options.
     if (!this.#strategyOptions.areas.undisclosed?.hidden) {
@@ -177,7 +179,7 @@ class Helper {
       return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
     });
 
-    // Merge default views into the views of the strategy options.
+    // Merge the views of the strategy options and the default views.
     for (const view of Object.keys(_optionDefaults__WEBPACK_IMPORTED_MODULE_0__.optionDefaults.views)) {
       this.#strategyOptions.views[view] = {
         ..._optionDefaults__WEBPACK_IMPORTED_MODULE_0__.optionDefaults.views[view],
@@ -188,6 +190,21 @@ class Helper {
     // Sort views of the strategy options by order first and then by title.
     this.#strategyOptions.views = Object.fromEntries(
         Object.entries(this.#strategyOptions.views).sort(([, a], [, b]) => {
+          return (a.order ?? Infinity) - (b.order ?? Infinity) || a.title?.localeCompare(b.title);
+        }),
+    );
+
+    // Merge the domains of the strategy options and the default domains.
+    for (const domain of Object.keys(_optionDefaults__WEBPACK_IMPORTED_MODULE_0__.optionDefaults.domains)) {
+      this.#strategyOptions.domains[domain] = {
+        ..._optionDefaults__WEBPACK_IMPORTED_MODULE_0__.optionDefaults.domains[domain],
+        ...(this.#strategyOptions.domains[domain]),
+      };
+    }
+
+    // Sort domains of the strategy options by order first and then by title.
+    this.#strategyOptions.domains = Object.fromEntries(
+        Object.entries(this.#strategyOptions.domains).sort(([, a], [, b]) => {
           return (a.order ?? Infinity) - (b.order ?? Infinity) || a.title?.localeCompare(b.title);
         }),
     );
@@ -231,6 +248,10 @@ class Helper {
      * @type {string[]}
      */
     const states = [];
+
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
 
     // Get the ID of the devices which are linked to the given area.
     for (const area of this.#areas) {
@@ -299,6 +320,10 @@ class Helper {
    * @static
    */
   static getDeviceEntities(area, domain) {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
     // Get the ID of the devices which are linked to the given area.
     const areaDeviceIds = this.#devices.filter(device => {
       return device.area_id === area.area_id;
@@ -316,7 +341,7 @@ class Helper {
         })
         .sort((a, b) => {
           /** @type hassEntity */
-          return a.original_name.localeCompare(b.original_name);
+          return a.original_name?.localeCompare(b.original_name);
         });
   }
 
@@ -331,6 +356,10 @@ class Helper {
    * @return {stateObject[]} Array of state entities.
    */
   static getStateEntities(area, domain) {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
     const states = [];
 
     // Create a map for the hassEntities and devices {id: object} to improve lookup speed.
@@ -365,7 +394,7 @@ class Helper {
   /**
    * Sanitize a classname.
    *
-   * The name is sanitized by upper-casing the first character of the name or after an underscore.
+   * The name is sanitized by capitalizing the first character of the name or after an underscore.
    * Underscores are removed.
    *
    * @param {string} className Name of the class to sanitize.
@@ -404,12 +433,29 @@ class Helper {
   }
 
   /**
-   * Get the view ids from the views which aren't set to hidden in the strategy options.
+   * Get the ids of the views which aren't set to hidden in the strategy options.
    *
    * @return {string[]} An array of view ids.
    */
-  static getExposedViews() {
+  static getExposedViewIds() {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
     return this.#getObjectKeysByPropertyValue(this.#strategyOptions.views, "hidden", false);
+  }
+
+  /**
+   * Get the ids of the domain ids which aren't set to hidden in the strategy options.
+   *
+   * @return {string[]} An array of domain ids.
+   */
+  static getExposedDomainIds() {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
+    return this.#getObjectKeysByPropertyValue(this.#strategyOptions.domains, "hidden", false);
   }
 }
 
@@ -2119,6 +2165,74 @@ const optionDefaults = {
       picture: null,
       hidden: false,
     }
+  },
+  domains: {
+    default: {
+      title: "Miscellaneous",
+      showControls: false,
+      hidden: false,
+    },
+    light: {
+      title: "Lights",
+      showControls: true,
+      iconOn: "mdi:lightbulb",
+      iconOff: "mdi:lightbulb-off",
+      onService: "light.turn_on",
+      offService: "light.turn_off",
+      hidden: false,
+    },
+    fan: {
+      title: "Fans",
+      showControls: true,
+      iconOn: "mdi:fan",
+      iconOff: "mdi:fan-off",
+      onService: "fan.turn_on",
+      offService: "fan.turn_off",
+      hidden: false,
+    },
+    cover: {
+      title: "Covers",
+      showControls: true,
+      iconOn: "mdi:arrow-up",
+      iconOff: "mdi:arrow-down",
+      onService: "cover.open_cover",
+      offService: "cover.close_cover",
+      hidden: false,
+    },
+    switch: {
+      title: "Switches",
+      showControls: true,
+      iconOn: "mdi:power-plug",
+      iconOff: "mdi:power-plug-off",
+      onService: "switch.turn_on",
+      offService: "switch.turn_off",
+      hidden: false,
+    },
+    camera: {
+      title: "Cameras",
+      showControls: false,
+      hidden: false,
+    },
+    climate: {
+      title: "Climates",
+      showControls: false,
+      hidden: false,
+    },
+    media_player: {
+      title: "Media Players",
+      showControls: false,
+      hidden: false,
+    },
+    sensor: {
+      title: "Sensors",
+      showControls: false,
+      hidden: false,
+    },
+    binary_sensor: {
+      title: "Binary Sensors",
+      showControls: false,
+      hidden: false,
+    },
   }
 }
 
@@ -3280,6 +3394,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Helper */ "./src/Helper.js");
 /* harmony import */ var _cards_SensorCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./cards/SensorCard */ "./src/cards/SensorCard.js");
 /* harmony import */ var _cards_TitleCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./cards/TitleCard */ "./src/cards/TitleCard.js");
+/* harmony import */ var _optionDefaults__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./optionDefaults */ "./src/optionDefaults.js");
+
 
 
 
@@ -3310,21 +3426,21 @@ class MushroomStrategy {
     await _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.initialize(info);
 
     // Create views.
-    const views          = [];
+    const views = [];
 
     let viewModule;
 
     // Create a view for each exposed domain.
-    for (let viewId of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getExposedViews()) {
+    for (let viewId of _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getExposedViewIds()) {
       try {
-        const viewType   = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.sanitizeClassName(viewId + "View");
-        viewModule = await __webpack_require__("./src/views lazy recursive ^\\.\\/.*$")(`./${viewType}`);
-        const view = await new viewModule[viewType](_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.views[viewId]).getView();
+        const viewType = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.sanitizeClassName(viewId + "View");
+        viewModule     = await __webpack_require__("./src/views lazy recursive ^\\.\\/.*$")(`./${viewType}`);
+        const view     = await new viewModule[viewType](_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.views[viewId]).getView();
 
         views.push(view);
 
       } catch (e) {
-        console.error(_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.debug ? e : `View '${viewType}' couldn't be loaded!`);
+        console.error(_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.debug ? e : `View '${viewId}' couldn't be loaded!`);
       }
     }
 
@@ -3366,86 +3482,19 @@ class MushroomStrategy {
    * @return {Promise<{cards: Object[]}>}
    */
   static async generateView(info) {
+    const exposedDomainIds  = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getExposedDomainIds();
     const area            = info.view.strategy.options.area;
     const viewCards       = [...(area.extra_cards ?? [])];
     const strategyOptions = {
       entityConfig: info.view.strategy.options.entity_config,
     };
 
-    // TODO: Get domains from config (Currently strategy.options.views).
-    const exposedDomains = [
-      "light",
-      "fan",
-      "cover",
-      "switch",
-      "climate",
-      "camera",
-      "media_player",
-      "sensor",
-      "binary_sensor",
-    ];
-
-    const titleCardOptions = {
-      default: {
-        title: "Miscellaneous",
-        showControls: false,
-      },
-      light: {
-        title: "Lights",
-        showControls: true,
-        iconOn: "mdi:lightbulb",
-        iconOff: "mdi:lightbulb-off",
-        onService: "light.turn_on",
-        offService: "light.turn_off",
-      },
-      fan: {
-        title: "Fans",
-        showControls: true,
-        iconOn: "mdi:fan",
-        iconOff: "mdi:fan-off",
-        onService: "fan.turn_on",
-        offService: "fan.turn_off",
-      },
-      cover: {
-        title: "Covers",
-        showControls: true,
-        iconOn: "mdi:arrow-up",
-        iconOff: "mdi:arrow-down",
-        onService: "cover.open_cover",
-        offService: "cover.close_cover",
-      },
-      switch: {
-        title: "Switches",
-        showControls: true,
-        iconOn: "mdi:power-plug",
-        iconOff: "mdi:power-plug-off",
-        onService: "switch.turn_on",
-        offService: "switch.turn_off",
-      },
-      camera: {
-        title: "Cameras",
-        showControls: false,
-      },
-      climate: {
-        title: "Climates",
-        showControls: false,
-      },
-      media_player: {
-        title: "Media Players",
-        showControls: false,
-      },
-      sensor: {
-        title: "Sensors",
-        showControls: false,
-      },
-      binary_sensor: {
-        title: "Binary Sensors",
-        showControls: false,
-      },
-    };
-
     // Create cards for each domain.
-    for (const domain of exposedDomains) {
+    for (const domain of exposedDomainIds) {
+      if (domain === "default") {
+        continue;
+      }
+
       const className = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.sanitizeClassName(domain + "Card");
 
       let domainCards = [];
@@ -3457,8 +3506,10 @@ class MushroomStrategy {
 
           if (entities.length) {
             // Create a Title card for the current domain.
-            const titleCard = new _cards_TitleCard__WEBPACK_IMPORTED_MODULE_2__.TitleCard([area],
-                titleCardOptions[domain] ?? titleCardOptions["default"]).createCard();
+            const titleCard = new _cards_TitleCard__WEBPACK_IMPORTED_MODULE_2__.TitleCard(
+                [area],
+                _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.domains[domain]
+            ).createCard();
 
             if (domain === "sensor") {
               // Create a card for each entity-sensor of the current area.
@@ -3549,7 +3600,7 @@ class MushroomStrategy {
       return (areaDevices.includes(entity.device_id) || entity.area_id === area.area_id)
           && entity.hidden_by == null
           && entity.disabled_by == null
-          && !exposedDomains.includes(entity.entity_id.split(".", 1)[0]);
+          && !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0]);
     });
 
     // Create a column of miscellaneous entity cards.
@@ -3560,7 +3611,7 @@ class MushroomStrategy {
         miscellaneousCards = await Promise.resolve(/*! import() */).then(__webpack_require__.bind(__webpack_require__, /*! ./cards/MiscellaneousCard */ "./src/cards/MiscellaneousCard.js")).then(cardModule => {
           /** @type Object[] */
           const miscellaneousCards = [
-            new _cards_TitleCard__WEBPACK_IMPORTED_MODULE_2__.TitleCard([area], {title: "Miscellaneous", showControls: false}).createCard(),
+            new _cards_TitleCard__WEBPACK_IMPORTED_MODULE_2__.TitleCard([area], _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.domains["default"]).createCard(),
           ];
           for (const entity of miscellaneousEntities) {
             const card = (_Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.entity_config ?? []).find(

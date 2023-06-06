@@ -136,8 +136,10 @@ class Helper {
     this.debug            = this.#strategyOptions.debug;
 
     // Setup required configuration entries.
-    this.#strategyOptions.areas = this.#strategyOptions.areas ?? {};
-    this.#strategyOptions.views = this.#strategyOptions.views ?? {};
+    // TODO: Refactor to something smarter than repeating code for areas, views and domains.
+    this.#strategyOptions.areas   = this.#strategyOptions.areas ?? {};
+    this.#strategyOptions.views   = this.#strategyOptions.views ?? {};
+    this.#strategyOptions.domains = this.#strategyOptions.domains ?? {};
 
     // Setup and add the undisclosed area if not hidden in the strategy options.
     if (!this.#strategyOptions.areas.undisclosed?.hidden) {
@@ -162,7 +164,7 @@ class Helper {
       return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
     });
 
-    // Merge default views into the views of the strategy options.
+    // Merge the views of the strategy options and the default views.
     for (const view of Object.keys(optionDefaults.views)) {
       this.#strategyOptions.views[view] = {
         ...optionDefaults.views[view],
@@ -173,6 +175,21 @@ class Helper {
     // Sort views of the strategy options by order first and then by title.
     this.#strategyOptions.views = Object.fromEntries(
         Object.entries(this.#strategyOptions.views).sort(([, a], [, b]) => {
+          return (a.order ?? Infinity) - (b.order ?? Infinity) || a.title?.localeCompare(b.title);
+        }),
+    );
+
+    // Merge the domains of the strategy options and the default domains.
+    for (const domain of Object.keys(optionDefaults.domains)) {
+      this.#strategyOptions.domains[domain] = {
+        ...optionDefaults.domains[domain],
+        ...(this.#strategyOptions.domains[domain]),
+      };
+    }
+
+    // Sort domains of the strategy options by order first and then by title.
+    this.#strategyOptions.domains = Object.fromEntries(
+        Object.entries(this.#strategyOptions.domains).sort(([, a], [, b]) => {
           return (a.order ?? Infinity) - (b.order ?? Infinity) || a.title?.localeCompare(b.title);
         }),
     );
@@ -216,6 +233,10 @@ class Helper {
      * @type {string[]}
      */
     const states = [];
+
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
 
     // Get the ID of the devices which are linked to the given area.
     for (const area of this.#areas) {
@@ -284,6 +305,10 @@ class Helper {
    * @static
    */
   static getDeviceEntities(area, domain) {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
     // Get the ID of the devices which are linked to the given area.
     const areaDeviceIds = this.#devices.filter(device => {
       return device.area_id === area.area_id;
@@ -301,7 +326,7 @@ class Helper {
         })
         .sort((a, b) => {
           /** @type hassEntity */
-          return a.original_name.localeCompare(b.original_name);
+          return a.original_name?.localeCompare(b.original_name);
         });
   }
 
@@ -316,6 +341,10 @@ class Helper {
    * @return {stateObject[]} Array of state entities.
    */
   static getStateEntities(area, domain) {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
     const states = [];
 
     // Create a map for the hassEntities and devices {id: object} to improve lookup speed.
@@ -350,7 +379,7 @@ class Helper {
   /**
    * Sanitize a classname.
    *
-   * The name is sanitized by upper-casing the first character of the name or after an underscore.
+   * The name is sanitized by capitalizing the first character of the name or after an underscore.
    * Underscores are removed.
    *
    * @param {string} className Name of the class to sanitize.
@@ -389,12 +418,29 @@ class Helper {
   }
 
   /**
-   * Get the view ids from the views which aren't set to hidden in the strategy options.
+   * Get the ids of the views which aren't set to hidden in the strategy options.
    *
    * @return {string[]} An array of view ids.
    */
-  static getExposedViews() {
+  static getExposedViewIds() {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
     return this.#getObjectKeysByPropertyValue(this.#strategyOptions.views, "hidden", false);
+  }
+
+  /**
+   * Get the ids of the domain ids which aren't set to hidden in the strategy options.
+   *
+   * @return {string[]} An array of domain ids.
+   */
+  static getExposedDomainIds() {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
+    return this.#getObjectKeysByPropertyValue(this.#strategyOptions.domains, "hidden", false);
   }
 }
 

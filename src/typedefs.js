@@ -50,6 +50,26 @@
  */
 
 /**
+ * @typedef {Object & titleCardOptions} domainEntity Domain Entity.
+ *                                                   This entity is added by the custom strategy.
+ * @property {number} [order] Ordering position of the entity in the list of available views.
+ * @property {boolean} [hidden] True if the entity should be hidden from the dashboard.
+ * @memberOf typedefs.generic
+ */
+
+/**
+ * @typedef {Object} titleCardOptions Title Card options.
+ * @property {string} [title] Title to render. May contain templates.
+ * @property {string} [subtitle] Subtitle to render. May contain templates.
+ * @property {boolean} [showControls=true] False to hide controls.
+ * @property {string} [iconOn] Icon to show for switching entities from off state.
+ * @property {string} [iconOff] Icon to show for switching entities to off state.
+ * @property {string} [onService=none] Service to call for switching entities from off state.
+ * @property {string} [offService=none] Service to call for switching entities to off state.
+ * @memberOf typedefs.generic
+ */
+
+/**
  * @typedef {Object} dashBoardInfo Strategy information object.
  * @property {dashboardConfig} config User supplied dashboard configuration, if any.
  * @property {hassObject} hass The Home Assistant object.
@@ -93,6 +113,7 @@
  * @property {Object.<areaEntity>} [areas] List of areas.
  * @property {Object[]} [entity_config] Card definition for entities.
  * @property {Object.<viewEntity>} [views] List of views.
+ * @property {Object.<domainEntity>} [domains] List of domains.
  * @property {chip[]} [chips] List of chips to show in the Home view.
  * @property {Object[]} [quick_access_cards] List of cards to show between welcome card and rooms cards.
  * @property {Object[]} [extra_cards] List of cards to show below room cards.

@@ -113,11 +113,12 @@ The options available are:
 |:---------------------|:--------------------------|:--------------------------------------------------------|:--------------------------------------------------------------------|
 | `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object).      |
 | `entity_config`      | array of cards (optional) | unset                                                   | Card definition for an entity, see [entity config](#entity-config). |
-| `views`              | object                    | All default views                                       | See available [Pre-built views](#pre-built-views).                  |
+| `views`              | object (optional)         | All default views                                       | See available [Pre-built views](#pre-built-views).                  |
 | `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                                |
 | `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.         |
 | `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                             |
 | `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                              |
+| `domains`            | object (optional)         | All supported domains                                   | See [Supported domains](#supported-domains).                        |
 
 #### Example
 
@@ -263,6 +264,30 @@ strategy:
         icon: mdi:toggle-switch
 views: [ ]
 ```
+
+### Supported domains
+
+The following domains are supported and enabled by default:
+
+* light
+* fan
+* cover
+* switch
+* camera
+* climate
+* media_player
+* sensor
+* binary_sensor
+* default (Miscellaneous)
+
+For these domains, the following options are supported:
+
+| Option         | type    | Description                                                                |
+|:---------------|:--------|:---------------------------------------------------------------------------|
+| `title`        | string  | Title of the domain in a view.                                             |
+| `showControls` | boolean | Weather to show controls int a view, to switch all entities of the domain. |
+| `hidden`       | boolean | Set to `true` to exclude the view from the dashboard.                      |
+| `order`        | number  | Ordering position of the domain entities in a view.                        |
 
 ### Chips
 
