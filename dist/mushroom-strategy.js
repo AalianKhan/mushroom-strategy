@@ -1744,7 +1744,7 @@ class ClimateChip {
       throw new Error("The Helper module must be initialized before using this one.");
     }
 
-    this.#areaIds = areaIds;
+    this.#areaIds = areaIds.filter(areaId => areaId);
     this.#options = {
       ...this.#options,
       ...options,
@@ -1795,7 +1795,7 @@ class CoverChip {
       throw new Error("The Helper module must be initialized before using this one.");
     }
 
-    this.#areaIds = areaIds;
+    this.#areaIds = areaIds.filter(areaId => areaId);
     this.#options = {
       ...this.#options,
       ...options,
@@ -1846,7 +1846,7 @@ class FanChip {
       throw new Error("The Helper module must be initialized before using this one.");
     }
 
-    this.#areaIds = areaIds;
+    this.#areaIds = areaIds.filter(areaId => areaId);
     this.#options = {
       ...this.#options,
       ...options,
@@ -1905,7 +1905,7 @@ class LightChip {
       throw new Error("The Helper module must be initialized before using this one.");
     }
 
-    this.#areaIds = areaIds;
+    this.#areaIds = areaIds.filter(areaId => areaId);
     this.#options = {
       ...this.#options,
       ...options,
@@ -1964,7 +1964,7 @@ class SwitchChip {
       throw new Error("The Helper module must be initialized before using this one.");
     }
 
-    this.#areaIds = areaIds;
+    this.#areaIds = areaIds.filter(areaId => areaId);
     this.#options = {
       ...this.#options,
       ...options,
@@ -2856,13 +2856,13 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
    * @return {Object[]} A chip object array.
    */
   async #createChips() {
-    const chips           = [];
-    const chipOptions     = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.chips;
+    const chips       = [];
+    const chipOptions = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.chips;
 
-    // TODO: Get domains from config (Currently strategy.options.views).
-    const exposed_domains = ["light", "fan", "cover", "switch", "climate"];
+    // TODO: Get domains from config.
+    const exposed_chips = ["light", "fan", "cover", "switch", "climate"];
     // Create a list of area-ids, used for switching all devices via chips
-    const areaIds         = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas.map(area => area.area_id);
+    const areaIds       = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.areas.map(area => area.area_id);
 
     let chipModule;
 
@@ -2882,7 +2882,7 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
     }
 
     // Numeric chips.
-    for (let chipType of exposed_domains) {
+    for (let chipType of exposed_chips) {
       if (chipOptions?.[`${chipType}_count`] ?? true) {
         const className = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.sanitizeClassName(chipType + "Chip");
         try {

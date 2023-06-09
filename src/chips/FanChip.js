@@ -11,7 +11,7 @@ class FanChip {
       throw new Error("The Helper module must be initialized before using this one.");
     }
 
-    this.#areaIds = areaIds;
+    this.#areaIds = areaIds.filter(areaId => areaId);
     this.#options = {
       ...this.#options,
       ...options,
