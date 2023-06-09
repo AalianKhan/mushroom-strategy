@@ -33,7 +33,7 @@ class TitleCard {
    * @param {titleCardOptions} options Title Card options.
    */
   constructor(areas, options = {}) {
-    this.#areaIds = areas.map(area => area.area_id);
+    this.#areaIds = areas.map(area => area.area_id).filter(area_id => area_id);
     this.#options = {
       ...this.#options,
       ...options,
