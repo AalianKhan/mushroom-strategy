@@ -105,12 +105,13 @@ class HomeView extends AbstractView {
    * @return {Object[]} A chip object array.
    */
   async #createChips() {
-    const chips           = [];
-    const chipOptions     = Helper.strategyOptions.chips;
-    // TODO: Get domains from config (Currently strategy.options.views).
-    const exposed_domains = ["light", "fan", "cover", "switch", "climate"];
+    const chips       = [];
+    const chipOptions = Helper.strategyOptions.chips;
+
+    // TODO: Get domains from config.
+    const exposed_chips = ["light", "fan", "cover", "switch", "climate"];
     // Create a list of area-ids, used for switching all devices via chips
-    const areaIds         = Helper.areas.map(area => area.area_id);
+    const areaIds       = Helper.areas.map(area => area.area_id);
 
     let chipModule;
 
@@ -130,7 +131,7 @@ class HomeView extends AbstractView {
     }
 
     // Numeric chips.
-    for (let chipType of exposed_domains) {
+    for (let chipType of exposed_chips) {
       if (chipOptions?.[`${chipType}_count`] ?? true) {
         const className = Helper.sanitizeClassName(chipType + "Chip");
         try {
@@ -145,7 +146,7 @@ class HomeView extends AbstractView {
 
     // Extra chips.
     if (chipOptions?.extra_chips) {
-      chips.push(chipOptions.extra_chips);
+      chips.push(...chipOptions.extra_chips);
     }
 
     return chips;

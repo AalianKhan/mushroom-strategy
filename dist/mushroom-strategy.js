@@ -2858,6 +2858,7 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
   async #createChips() {
     const chips           = [];
     const chipOptions     = _Helper__WEBPACK_IMPORTED_MODULE_0__.Helper.strategyOptions.chips;
+
     // TODO: Get domains from config (Currently strategy.options.views).
     const exposed_domains = ["light", "fan", "cover", "switch", "climate"];
     // Create a list of area-ids, used for switching all devices via chips
@@ -2896,7 +2897,7 @@ class HomeView extends _AbstractView__WEBPACK_IMPORTED_MODULE_1__.AbstractView {
 
     // Extra chips.
     if (chipOptions?.extra_chips) {
-      chips.push(chipOptions.extra_chips);
+      chips.push(...chipOptions.extra_chips);
     }
 
     return chips;
@@ -3394,8 +3395,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Helper */ "./src/Helper.js");
 /* harmony import */ var _cards_SensorCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./cards/SensorCard */ "./src/cards/SensorCard.js");
 /* harmony import */ var _cards_TitleCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./cards/TitleCard */ "./src/cards/TitleCard.js");
-/* harmony import */ var _optionDefaults__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./optionDefaults */ "./src/optionDefaults.js");
-
 
 
 
