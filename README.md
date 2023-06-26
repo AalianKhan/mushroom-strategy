@@ -467,7 +467,7 @@ strategy:
 
 [hacsBadge]: https://img.shields.io/badge/HACS-Default-41BDF5.svg
 
-[releaseBadge]: https://img.shields.io/github/v/release/AalianKhan/mushroom-strategy
+[releaseBadge]: https://img.shields.io/github/v/release/AalianKhan/mushroom-strategy?include_prereleases
 
 <!-- Other References -->
 
