@@ -85,11 +85,11 @@ class AbstractView {
 
           // Create a card for each domain-entity of the current area.
           for (const entity of entities) {
-              const card = (Helper.strategyOptions.entity_config ?? []).find(
-                  config => config.entity === entity.entity_id,
-              ) ?? new cardModule[className](entity).getCard();
+            let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
 
-            areaCards.push(card);
+            if (!cardOptions.hidden) {
+              areaCards.push(new cardModule[className](entity, cardOptions).getCard());
+            }
           }
         }
       });
