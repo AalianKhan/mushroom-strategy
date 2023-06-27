@@ -5,6 +5,18 @@ class SwitchChip {
   #options = {
     // No default options.
   };
+  turnOffAction = {
+    action: "call-service",
+    service: "switch.turn_off",
+    target: {
+      area_id: this.#areaIds,
+    },
+    data: {},
+  };
+  navigateAction = {
+    action: "navigate",
+    navigation_path: "switches",
+  };
 
   constructor(areaIds, options = {}) {
     if (!Helper.isInitialized()) {
@@ -24,18 +36,8 @@ class SwitchChip {
       icon: "mdi:dip-switch",
       icon_color: "blue",
       content: Helper.getCountTemplate("switch", "eq", "on"),
-      tap_action: {
-        action: "call-service",
-        service: "switch.turn_off",
-        target: {
-          area_id: this.#areaIds,
-        },
-        data: {},
-      },
-      hold_action: {
-        action: "navigate",
-        navigation_path: "switches",
-      },
+      tap_action: this.#options.tapToNavigate ? this.navigateAction : this.turnOffAction,
+      hold_action: this.#options.tapToNavigate ? this.turnOffAction : this.navigateAction,
     };
   }
 }

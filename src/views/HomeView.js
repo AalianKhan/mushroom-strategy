@@ -107,6 +107,7 @@ class HomeView extends AbstractView {
   async #createChips() {
     const chips       = [];
     const chipOptions = Helper.strategyOptions.chips;
+    const tapToNavigate = chipOptions.options?.tapToNavigate;
 
     // TODO: Get domains from config.
     const exposed_chips = ["light", "fan", "cover", "switch", "climate"];
@@ -134,9 +135,10 @@ class HomeView extends AbstractView {
     for (let chipType of exposed_chips) {
       if (chipOptions?.[`${chipType}_count`] ?? true) {
         const className = Helper.sanitizeClassName(chipType + "Chip");
+        const chipOptions = {"tapToNavigate": tapToNavigate};
         try {
           chipModule = await import((`../chips/${className}`));
-          const chip = new chipModule[className](areaIds);
+          const chip = new chipModule[className](areaIds, chipOptions);
           chips.push(chip.getChip());
         } catch (e) {
           console.error(Helper.debug ? e : `An error occurred while creating the ${chipType} chip!`);

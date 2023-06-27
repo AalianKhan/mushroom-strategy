@@ -5,6 +5,18 @@ class FanChip {
   #options = {
     // No default options.
   };
+  turnOffAction = {
+    action: "call-service",
+    service: "fan.turn_off",
+    target: {
+      area_id: this.#areaIds,
+    },
+    data: {},
+  };
+  navigateAction = {
+    action: "navigate",
+    navigation_path: "fans",
+  };
 
   constructor(areaIds, options = {}) {
     if (!Helper.isInitialized()) {
@@ -24,18 +36,8 @@ class FanChip {
       icon: "mdi:fan",
       icon_color: "green",
       content: Helper.getCountTemplate("fan", "eq", "on"),
-      tap_action: {
-        action: "call-service",
-        service: "fan.turn_off",
-        target: {
-          area_id: this.#areaIds,
-        },
-        data: {},
-      },
-      hold_action: {
-        action: "navigate",
-        navigation_path: "fans",
-      },
+      tap_action: this.#options.tapToNavigate ? this.navigateAction : this.turnOffAction,
+      hold_action: this.#options.tapToNavigate ? this.turnOffAction : this.navigateAction,
     };
   }
 }
