@@ -91,6 +91,10 @@ class AbstractView {
               areaCards.push(new cardModule[className](entity, cardOptions).getCard());
             }
           }
+
+          if (areaCards.length) {
+            areaCards.unshift(titleCard);
+          }
         }
       });
 
@@ -100,7 +104,13 @@ class AbstractView {
       });
     }
 
-    return viewCards;
+    return viewCards.length === 1 ? viewCards : [
+      {
+        type: "custom:mushroom-title-card",
+        title: "No Entities Available",
+        subtitle: "They're either hidden in the configuration or in Home Assistant.",
+      },
+    ];
   }
 
   /**

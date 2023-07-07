@@ -134,12 +134,14 @@ class MushroomStrategy {
                 }
               }
 
-              domainCards.push({
-                type: "vertical-stack",
-                cards: sensorCards,
-              });
+              if (sensorCards.length) {
+                domainCards.push({
+                  type: "vertical-stack",
+                  cards: sensorCards,
+                });
 
-              domainCards.unshift(titleCard);
+                domainCards.unshift(titleCard);
+              }
 
               return domainCards;
             }
@@ -167,7 +169,9 @@ class MushroomStrategy {
               domainCards = horizontalCards;
             }
 
-            domainCards.unshift(titleCard);
+            if (domainCards.length) {
+              domainCards.unshift(titleCard);
+            }
           }
 
           return domainCards;
