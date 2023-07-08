@@ -63,54 +63,53 @@ class AbstractView {
    *
    * @return {Object[] | Promise} An array of card objects.
    */
-  createViewCards() {
+  async createViewCards() {
     /** @type Object[] */
     const viewCards      = [this.viewTitleCard];
 
     // Create cards for each area.
     for (const area of Helper.areas) {
-      const areaCards = [];
-      const entities  = Helper.getDeviceEntities(area, this["domain"]);
-      const className = Helper.sanitizeClassName(this["domain"] + "Card");
+      const areaCards  = [];
+      const entities   = Helper.getDeviceEntities(area, this["domain"]);
+      const className  = Helper.sanitizeClassName(this["domain"] + "Card");
+      const cardModule = await import(`../cards/${className}`);
 
-      import((`../cards/${className}`)).then(cardModule => {
-        if (entities.length) {
-          // Create a Title card for the current area.
-          areaCards.push(
-              new TitleCard([area], {
-                title: area.name,
-                ...this.options["titleCard"],
-              }).createCard(),
-          );
+      // Create a card for each domain-entity of the current area.
+      for (const entity of entities) {
+        let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
 
-          // Create a card for each domain-entity of the current area.
-          for (const entity of entities) {
-            let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
-
-            if (!cardOptions.hidden) {
-              areaCards.push(new cardModule[className](entity, cardOptions).getCard());
-            }
-          }
-
-          if (areaCards.length) {
-            areaCards.unshift(titleCard);
-          }
+        if (cardOptions.hidden) {
+          continue;
         }
-      });
 
-      viewCards.push({
-        type: "vertical-stack",
-        cards: areaCards,
-      });
+        areaCards.push(new cardModule[className](entity, cardOptions).getCard());
+      }
+
+      if (areaCards.length) {
+        // Create a Title card for the current area if it has entities.
+        areaCards.unshift(new TitleCard(
+            [area],
+            {
+              title: area.name,
+              ...this.options["titleCard"],
+            },
+            this["domain"],
+        ).createCard());
+
+        viewCards.push({
+          type: "vertical-stack",
+          cards: areaCards,
+        });
+      }
     }
 
-    return viewCards.length === 1 ? viewCards : [
-      {
-        type: "custom:mushroom-title-card",
-        title: "No Entities Available",
-        subtitle: "They're either hidden in the configuration or in Home Assistant.",
-      },
-    ];
+    viewCards.unshift(viewCards.length ? this.viewTitleCard : {
+      type: "custom:mushroom-title-card",
+      title: "No Entities Available",
+      subtitle: "They're either hidden by the configuration or by Home Assistant.",
+    });
+
+    return viewCards;
   }
 
   /**
