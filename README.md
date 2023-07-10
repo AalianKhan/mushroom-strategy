@@ -314,6 +314,7 @@ more [Mushroom Chips][mushroom-chipsUrl] using `extra_chips`.
 | `climate_count`  | boolean           | Chip to display the number of climate not off, tapping navigates to climates view.                             |
 | `weather_entity` | string (optional) | Entity ID for the weather chip to use, accepts `weather.` only.                                                |
 | `extra_chips`    | array (optional)  | List of extra chips to display, see [Mushroom Chips][mushroom-chipsUrl].                                       |
+| `options`        | object (optional) | Configuration options applying to all chips, see [Chips Options](#chips-options)
 
 #### Example
 
@@ -338,6 +339,20 @@ strategy:
             tap_action:
               action: toggle
 ```
+
+#### Chips Options
+If you want to always navigate on tapping a chip and swap the turn off action to holding the chip you can use the `tapToNavigate` setting here:
+
+##### Example
+```yaml
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    chips:
+      options:
+        tapToNavigate: true
+```
+
 
 ## Full Example
 
