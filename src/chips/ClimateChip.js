@@ -26,7 +26,7 @@ class ClimateChip {
       content: Helper.getCountTemplate("climate", "ne", "off"),
       tap_action: {
         action: "navigate",
-        navigation_path: "thermostats",
+        navigation_path: "climate",
       },
     };
   }
