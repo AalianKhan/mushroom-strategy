@@ -161,7 +161,11 @@ class HomeView extends AbstractView {
     const cards = [];
 
     import("../cards/PersonCard").then(personModule => {
-      for (const person of Helper.entities.filter(entity => entity.entity_id.startsWith("person."))) {
+      for (const person of Helper.entities.filter(entity => {
+          return entity.entity_id.startsWith("person.")
+              && entity.hidden_by == null
+              && entity.disabled_by == null
+          })) {
         cards.push(new personModule.PersonCard(person).getCard());
       }
     });
