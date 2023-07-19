@@ -26,7 +26,7 @@ class AreaCard extends AbstractCard {
     },
     hold_action: {
       action: "none",
-    }
+    },
   };
 
   /**
