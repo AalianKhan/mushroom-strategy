@@ -57,7 +57,6 @@ class MushroomStrategy {
             type: "custom:mushroom-strategy",
             options: {
               area,
-              "entity_config": Helper.strategyOptions.entity_config,
             },
           },
         });
@@ -84,12 +83,9 @@ class MushroomStrategy {
    * @return {Promise<{cards: Object[]}>}
    */
   static async generateView(info) {
-    const exposedDomainIds  = Helper.getExposedDomainIds();
-    const area            = info.view.strategy.options.area;
-    const viewCards       = [...(area.extra_cards ?? [])];
-    const strategyOptions = {
-      entityConfig: info.view.strategy.options.entity_config,
-    };
+    const exposedDomainIds = Helper.getExposedDomainIds();
+    const area             = info.view.strategy.options.area;
+    const viewCards        = [...(area.extra_cards ?? [])];
 
     // Create cards for each domain.
     for (const domain of exposedDomainIds) {
@@ -110,7 +106,7 @@ class MushroomStrategy {
             // Create a Title card for the current domain.
             const titleCard = new TitleCard(
                 [area],
-                Helper.strategyOptions.domains[domain]
+                Helper.strategyOptions.domains[domain],
             ).createCard();
 
             if (domain === "sensor") {
@@ -119,43 +115,44 @@ class MushroomStrategy {
               const sensorCards  = [];
 
               for (const sensor of entities) {
-                let card = (strategyOptions.entityConfig?.find(config => config.entity_id === sensor.entity_id));
-
-                if (card) {
-                  sensorCards.push(card);
-                  continue;
-                }
-
                 // Find the state of the current sensor.
                 const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
-                let cardOptions   = {};
+                let cardOptions   = Helper.strategyOptions.card_options?.[sensor.entity_id] ?? {};
 
-                if (sensorState?.attributes.unit_of_measurement) {
-                  cardOptions = {
-                    type: "custom:mini-graph-card",
-                    entities: [sensor.entity_id],
-                  };
+                if (!cardOptions.hidden) {
+                  if (sensorState?.attributes.unit_of_measurement) {
+                    cardOptions = {
+                      ...{
+                        type: "custom:mini-graph-card",
+                        entities: [sensor.entity_id],
+                      },
+                      ...cardOptions,
+                    };
+                  }
+
+                  sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
                 }
-
-                sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
               }
 
-              domainCards.push({
-                type: "vertical-stack",
-                cards: sensorCards,
-              });
+              if (sensorCards.length) {
+                domainCards.push({
+                  type: "vertical-stack",
+                  cards: sensorCards,
+                });
 
-              domainCards.unshift(titleCard);
+                domainCards.unshift(titleCard);
+              }
+
               return domainCards;
             }
 
             // Create a card for each domain-entity of the current area.
             for (const entity of entities) {
-              const card = (Helper.strategyOptions.entity_config ?? []).find(
-                  config => config.entity === entity.entity_id,
-              ) ?? new cardModule[className](entity).getCard();
+              let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
 
-              domainCards.push(card);
+              if (!cardOptions.hidden) {
+                domainCards.push(new cardModule[className](entity, cardOptions).getCard());
+              }
             }
 
             if (domain === "binary_sensor") {
@@ -172,7 +169,9 @@ class MushroomStrategy {
               domainCards = horizontalCards;
             }
 
-            domainCards.unshift(titleCard);
+            if (domainCards.length) {
+              domainCards.unshift(titleCard);
+            }
           }
 
           return domainCards;
@@ -215,12 +214,13 @@ class MushroomStrategy {
           const miscellaneousCards = [
             new TitleCard([area], Helper.strategyOptions.domains.default).createCard(),
           ];
-          for (const entity of miscellaneousEntities) {
-            const card = (Helper.strategyOptions.entity_config ?? []).find(
-                config => config.entity === entity.entity_id,
-            ) ?? new cardModule.MiscellaneousCard(entity).getCard();
 
-            miscellaneousCards.push(card);
+          for (const entity of miscellaneousEntities) {
+            let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
+
+            if (!cardOptions.hidden) {
+              miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
+            }
           }
 
           return miscellaneousCards;
