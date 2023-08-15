@@ -111,7 +111,7 @@
  * @typedef {Object} customStrategyOptions Custom strategy configuration.
  * @property {boolean} [debug] Set to true for more verbose debugging info.
  * @property {Object.<areaEntity>} [areas] List of areas.
- * @property {Object[]} [entity_config] Card definition for entities.
+ * @property {Object.<cardOptions>} [card_options] Card options for entities.
  * @property {Object.<viewEntity>} [views] List of views.
  * @property {Object.<domainEntity>} [domains] List of domains.
  * @property {chip[]} [chips] List of chips to show in the Home view.
@@ -134,9 +134,9 @@
  */
 
 /**
- * @typedef {Object} entityConfig Custom card-configuration for an entity on a view card.
- * @property {string} entity The id of the entity to create a card for.
+ * @typedef {Object} cardOptions Custom card-configuration for an entity.
  * @property {string} type Type of card for the entity
+ * @property {boolean} hidden True if the entity should be hidden from the dashboard.
  * @memberOf typedefs.generic
  */
 

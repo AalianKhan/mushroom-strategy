@@ -109,16 +109,16 @@ weather entity for the weather chip.
 
 The options available are:
 
-| Name                 | Type                      | Default                                                 | Description                                                         | 
-|:---------------------|:--------------------------|:--------------------------------------------------------|:--------------------------------------------------------------------|
-| `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object).      |
-| `entity_config`      | array of cards (optional) | unset                                                   | Card definition for an entity, see [entity config](#entity-config). |
-| `views`              | object (optional)         | All default views                                       | See available [Pre-built views](#pre-built-views).                  |
-| `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                                |
-| `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.         |
-| `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                             |
-| `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                              |
-| `domains`            | object (optional)         | All supported domains                                   | See [Supported domains](#supported-domains).                        |
+| Name                 | Type                      | Default                                                 | Description                                                    | 
+|:---------------------|:--------------------------|:--------------------------------------------------------|:---------------------------------------------------------------|
+| `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object). |
+| `card_options`       | object (optional)         | unset                                                   | Card options for an entity, see [Card Options](#card-options). |
+| `views`              | object (optional)         | All default views                                       | See available [Pre-built views](#pre-built-views).             |
+| `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                           |
+| `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.    |
+| `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                        |
+| `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                         |
+| `domains`            | object (optional)         | All supported domains                                   | See [Supported domains](#supported-domains).                   |
 
 #### Example
 
@@ -200,9 +200,9 @@ This area is enabled by default and includes the entities that aren't linked to 
 The area can be configured like any other area as described above.
 To exclude this area from the dashboard and views, set its property `hidden` to `true`.
 
-### Entity Config
+### Card Options
 
-The `entity_config` essentially enables you to give a specific entity any card you wish.
+The `card_options` entry enables you to specify a card type for an entity or to hide the card from the dashboard.
 
 #### Example
 
@@ -210,9 +210,11 @@ The `entity_config` essentially enables you to give a specific entity any card y
 strategy:
   type: custom:mushroom-strategy
   options:
-    entity_config:
-      - entity: fan.master_bedroom_fan
+    card_options:
+      fan.master_bedroom_fan:
         type: custom:mushroom-fan-card
+      remote.harmony_hub_wk:
+        hidden: true
 views: [ ]
 ```
 
@@ -419,9 +421,11 @@ strategy:
       front_door_id:
         name: Front Door
         icon: mdi:door-closed
-    entity_config:
-      - entity: fan.master_bedroom_fan
+    card_options:
+      fan.master_bedroom_fan:
         type: custom:mushroom-fan-card
+      remote.harmony_hub_wk:
+        hidden: true
     quick_access_cards:
       - type: custom:mushroom-title-card
         title: Security
