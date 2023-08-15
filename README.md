@@ -34,7 +34,6 @@ You need to install these cards before using this strategy:
 
 - [Mushroom cards][mushroomUrl]
 - [Mini graph card][mini-graphUrl]
-- [Web RTC][webRtcUrl]
 
 ### HACS
 

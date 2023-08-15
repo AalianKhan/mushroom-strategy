@@ -16,7 +16,10 @@ class CameraCard extends AbstractCard {
    * @private
    */
   #defaultOptions = {
-    type: "custom:webrtc-camera",
+    type: "picture-entity",
+    show_name: false,
+    show_state: false,
+    camera_view: "live",
   };
 
   /**
