@@ -86,6 +86,11 @@ export const optionDefaults = {
       showControls: false,
       hidden: false,
     },
+    lock: {
+      title: "Locks",
+      showControls: false,
+      hidden: false,
+    },
     climate: {
       title: "Climates",
       showControls: false,
