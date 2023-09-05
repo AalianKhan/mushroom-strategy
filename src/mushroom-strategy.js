@@ -188,6 +188,7 @@ class MushroomStrategy {
       }
     }
 
+    // TODO: Check if default is hidden
     // Create cards for any other domain.
     // Collect device entities of the current area.
     const areaDevices = Helper.devices.filter(device => device.area_id === area.area_id)
