@@ -215,6 +215,9 @@ class HomeView extends AbstractView {
       let temperature = Helper.strategyOptions.areas[area.area_id]?.temperature;
       let humidity = Helper.strategyOptions.areas[area.area_id]?.humidity;
       let lux = Helper.strategyOptions.areas[area.area_id]?.illuminance;
+      let window = Helper.strategyOptions.areas[area.area_id]?.window;
+      let lock = Helper.strategyOptions.areas[area.area_id]?.window;
+      let door = Helper.strategyOptions.areas[area.area_id]?.window;
       
       if (!(temperature || humidity || lux)) {
         const sensors  = Helper.getDeviceEntities(area, "sensor");
@@ -250,6 +253,45 @@ class HomeView extends AbstractView {
         cardOptions = {
           ...{
             secondary: secondary,
+          },
+          ...cardOptions,
+        }
+      }
+      
+      if (!(window || lock || door)) {
+        const binary_sensors  = Helper.getDeviceEntities(area, "binary_sensor");
+        if (binary_sensors.length) {
+          const binary_sensorStates = Helper.getStateEntities(area, "binary_sensor");
+          for (const binary_sensor of binary_sensors) {
+            const binary_sensorState = binary_sensorStates.find(state => state.entity_id === binary_sensor.entity_id);
+            if (binary_sensorState?.attributes.device_class == "window" && binary_sensorState?.state != "unavailable") {
+              window = binary_sensor.entity_id
+            }
+            if (binary_sensorState?.attributes.device_class == "door" && binary_sensorState?.state != "unavailable") {
+              door = binary_sensor.entity_id
+            }
+            if (binary_sensorState?.attributes.device_class == "lock" && binary_sensorState?.state != "unavailable") {
+              lock = binary_sensor.entity_id
+            }
+          }
+        }
+      }
+
+      if (window || lock || door) {
+        let badge = `{% `;
+        if (window) {
+          badge = badge + `if is_state('${window}', 'on') %}mdi:window-open-variant{% el`
+        }
+        if (lock) {
+          badge = badge + `if is_state('${lock}', 'on') %}mdi:lock-open{% el`
+        }
+        if (door) {
+          badge = badge + `if is_state('${door}', 'on') %}mdi:door-open`
+        }
+        badge = badge + `{% endif %}`
+        cardOptions = {
+          ...{
+            badge_icon: badge,
           },
           ...cardOptions,
         }
