@@ -189,27 +189,32 @@ class HomeView extends AbstractView {
       for (const area of Helper.areas) {
         
         let cardOptions   = Helper.strategyOptions.areas[area.area_id ?? "undisclosed"];
+        let temperature = Helper.strategyOptions.areas[area.area_id]?.temperature;
+        let humidity = Helper.strategyOptions.areas[area.area_id]?.humidity;
+        let lux = Helper.strategyOptions.areas[area.area_id]?.illuminance;
         
-        const sensors  = Helper.getDeviceEntities(area, "sensor");
-        let secondary = ``;
-        
-        if (sensors.length) {
-          const sensorStates = Helper.getStateEntities(area, "sensor");
-          let temperature = null;
-          let humidity = null;
-          let lux = null;
-          for (const sensor of sensors) {
-            const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
-            if (sensorState?.attributes.device_class == "temperature") {
-              temperature = sensor.entity_id
-            }
-            if (sensorState?.attributes.device_class == "humidity") {
-              humidity = sensor.entity_id
-            }
-            if (sensorState?.attributes.device_class == "illuminance") {
-              lux = sensor.entity_id
+        if (!(temperature || humidity || lux)) {
+          const sensors  = Helper.getDeviceEntities(area, "sensor");
+          
+          if (sensors.length) {
+            const sensorStates = Helper.getStateEntities(area, "sensor");
+            for (const sensor of sensors) {
+              const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
+              if (sensorState?.attributes.device_class == "temperature" && sensorState?.state != "unavailable") {
+                temperature = sensor.entity_id
+              }
+              if (sensorState?.attributes.device_class == "humidity" && sensorState?.state != "unavailable") {
+                humidity = sensor.entity_id
+              }
+              if (sensorState?.attributes.device_class == "illuminance" && sensorState?.state != "unavailable") {
+                lux = sensor.entity_id
+              }
             }
           }
+        }
+
+        if (temperature || humidity || lux) {
+          let secondary = ``;
           if (temperature) {
             secondary = secondary + `❄️{{ states('${temperature}') | int }}°`
           }
@@ -219,13 +224,12 @@ class HomeView extends AbstractView {
           if (lux) {
             secondary = secondary + `☀️{{ states('${lux}')}}lx`
           }
-        }
-        
-        cardOptions = {
-          ...{
-            secondary: secondary,
-          },
-          ...cardOptions,
+          cardOptions = {
+            ...{
+              secondary: secondary,
+            },
+            ...cardOptions,
+          }
         }
         
         if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
