@@ -211,14 +211,49 @@ class HomeView extends AbstractView {
         }
       }
 
+      let cardOptions   = Helper.strategyOptions.areas[area.area_id ?? "undisclosed"];
+        
+      const sensors  = Helper.getDeviceEntities(area, "sensor");
+      let secondary = ``;
+      
+      if (sensors.length) {
+        const sensorStates = Helper.getStateEntities(area, "sensor");
+        let temperature = null;
+        let humidity = null;
+        let lux = null;
+        for (const sensor of sensors) {
+          const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
+          if (sensorState?.attributes.device_class == "temperature") {
+            temperature = sensor.entity_id
+          }
+          if (sensorState?.attributes.device_class == "humidity") {
+            humidity = sensor.entity_id
+          }
+          if (sensorState?.attributes.device_class == "illuminance") {
+            lux = sensor.entity_id
+          }
+        }
+        if (temperature) {
+          secondary = secondary + `❄️{{ states('${temperature}') | int }}°`
+        }
+        if (humidity) {
+          secondary = secondary + `💧{{ states('${humidity}')}}%`
+        }
+        if (lux) {
+          secondary = secondary + `☀️{{ states('${lux}')}}lx`
+        }
+      }
+      
+      cardOptions = {
+        ...{
+          secondary: secondary,
+        },
+        ...cardOptions,
+      }
+
       // Get a card for the area.
       if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
-        let options = {
-          ...Helper.strategyOptions.areas["_"],
-          ...Helper.strategyOptions.areas[area.area_id ?? "undisclosed"],
-        };
-
-        areaCards.push(new module.AreaCard(area, options).getCard());
+        areaCards.push(new module.AreaCard(area, cardOptions).getCard());
       }
 
       // Horizontally group every two area cards if all cards are created.
