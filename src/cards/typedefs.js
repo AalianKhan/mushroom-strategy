@@ -57,7 +57,6 @@
 
 /**
  * @typedef {abstractOptions & Object} lockCardOptions Lock Card options.
- * @property {{tap_action: switchTapAction}} [action] Home assistant action to perform on tap.
  * @memberOf typedefs.cards
  */
 
