@@ -86,10 +86,12 @@ class MushroomStrategy {
     const exposedDomainIds = Helper.getExposedDomainIds();
     const area             = info.view.strategy.options.area;
     const viewCards        = [...(area.extra_cards ?? [])];
+    let   defaultExists    = false;
 
     // Create cards for each domain.
     for (const domain of exposedDomainIds) {
       if (domain === "default") {
+        defaultExists = true;
         continue;
       }
 
@@ -188,52 +190,54 @@ class MushroomStrategy {
       }
     }
 
-    // TODO: Check if default is hidden
-    // Create cards for any other domain.
-    // Collect device entities of the current area.
-    const areaDevices = Helper.devices.filter(device => device.area_id === area.area_id)
-        .map(device => device.id);
-
-    // Collect the remaining entities of which all conditions below are met:
-    // 1. The entity is linked to a device which is linked to the current area,
-    //    or the entity itself is linked to the current area.
-    // 2. The entity is not hidden and is not disabled.
-    const miscellaneousEntities = Helper.entities.filter(entity => {
-      return (areaDevices.includes(entity.device_id) || entity.area_id === area.area_id)
-          && entity.hidden_by == null
-          && entity.disabled_by == null
-          && !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0]);
-    });
-
-    // Create a column of miscellaneous entity cards.
-    if (miscellaneousEntities.length) {
-      let miscellaneousCards = [];
-
-      try {
-        miscellaneousCards = await import("./cards/MiscellaneousCard").then(cardModule => {
-          /** @type Object[] */
-          const miscellaneousCards = [
-            new TitleCard([area], Helper.strategyOptions.domains.default).createCard(),
-          ];
-
-          for (const entity of miscellaneousEntities) {
-            let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
-
-            if (!cardOptions.hidden) {
-              miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
-            }
-          }
-
-          return miscellaneousCards;
-        });
-      } catch (e) {
-        console.error(Helper.debug ? e : "An error occurred while creating the domain cards!");
-      }
-
-      viewCards.push({
-        type: "vertical-stack",
-        cards: miscellaneousCards,
+    if (defaultExists) {
+      // TODO: Check if default is hidden
+      // Create cards for any other domain.
+      // Collect device entities of the current area.
+      const areaDevices = Helper.devices.filter(device => device.area_id === area.area_id)
+          .map(device => device.id);
+  
+      // Collect the remaining entities of which all conditions below are met:
+      // 1. The entity is linked to a device which is linked to the current area,
+      //    or the entity itself is linked to the current area.
+      // 2. The entity is not hidden and is not disabled.
+      const miscellaneousEntities = Helper.entities.filter(entity => {
+        return (areaDevices.includes(entity.device_id) || entity.area_id === area.area_id)
+            && entity.hidden_by == null
+            && entity.disabled_by == null
+            && !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0]);
       });
+  
+      // Create a column of miscellaneous entity cards.
+      if (miscellaneousEntities.length) {
+        let miscellaneousCards = [];
+  
+        try {
+          miscellaneousCards = await import("./cards/MiscellaneousCard").then(cardModule => {
+            /** @type Object[] */
+            const miscellaneousCards = [
+              new TitleCard([area], Helper.strategyOptions.domains.default).createCard(),
+            ];
+  
+            for (const entity of miscellaneousEntities) {
+              let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
+  
+              if (!cardOptions.hidden) {
+                miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
+              }
+            }
+  
+            return miscellaneousCards;
+          });
+        } catch (e) {
+          console.error(Helper.debug ? e : "An error occurred while creating the domain cards!");
+        }
+  
+        viewCards.push({
+          type: "vertical-stack",
+          cards: miscellaneousCards,
+        });
+      }
     }
 
     // Return cards.
