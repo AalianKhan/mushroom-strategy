@@ -17,6 +17,7 @@ class MediaPlayerCard extends AbstractCard {
    */
   #defaultOptions = {
     type: "custom:mushroom-media-player-card",
+    icon: undefined,
     use_media_info: true,
     media_controls: [
       "on_off",

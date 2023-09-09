@@ -275,6 +275,7 @@ The following domains are supported and enabled by default:
 * cover
 * switch
 * camera
+* lock
 * climate
 * media_player
 * sensor
@@ -289,6 +290,23 @@ For these domains, the following options are supported:
 | `showControls` | boolean | Weather to show controls int a view, to switch all entities of the domain. |
 | `hidden`       | boolean | Set to `true` to exclude the view from the dashboard.                      |
 | `order`        | number  | Ordering position of the domain entities in a view.                        |
+
+#### Example
+
+```YAML
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    domains:
+      lights:
+         title: "My cool lights"
+         order: 1
+      switch:
+         showControls: false
+      default: 
+        hidden: true
+views: [ ]
+```
 
 ### Chips
 
