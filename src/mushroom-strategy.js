@@ -86,12 +86,10 @@ class MushroomStrategy {
     const exposedDomainIds = Helper.getExposedDomainIds();
     const area             = info.view.strategy.options.area;
     const viewCards        = [...(area.extra_cards ?? [])];
-    let   defaultExists    = false;
 
     // Create cards for each domain.
     for (const domain of exposedDomainIds) {
       if (domain === "default") {
-        defaultExists = true;
         continue;
       }
 
@@ -190,7 +188,7 @@ class MushroomStrategy {
       }
     }
 
-    if (defaultExists) {
+    if (!Helper.strategyOptions.domains.default.hidden) {
       // TODO: Check if default is hidden
       // Create cards for any other domain.
       // Collect device entities of the current area.
