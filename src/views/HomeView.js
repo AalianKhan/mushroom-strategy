@@ -82,10 +82,6 @@ class HomeView extends AbstractView {
 
       // Add area cards.
       homeViewCards.push({
-            type: "custom:mushroom-title-card",
-            title: "Areas",
-          },
-          {
             type: "vertical-stack",
             cards: areaCards,
           });
@@ -182,6 +178,11 @@ class HomeView extends AbstractView {
    */
   #createAreaCards() {
     const groupedCards = [];
+    groupedCards.push({
+      type: "custom:mushroom-title-card",
+      title: "Areas",
+      },
+    );
 
     import("../cards/AreaCard").then(areaModule => {
       const areaCards = [];
