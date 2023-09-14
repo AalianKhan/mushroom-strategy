@@ -77,8 +77,9 @@ class AbstractView {
       // Create a card for each domain-entity of the current area.
       for (const entity of entities) {
         let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
+        let deviceOptions   = Helper.strategyOptions.devices?.[entity.device_id] ?? {};
 
-        if (cardOptions.hidden) {
+        if (cardOptions.hidden || deviceOptions.hidden) {
           continue;
         }
 
