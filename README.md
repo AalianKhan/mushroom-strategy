@@ -201,7 +201,7 @@ To exclude this area from the dashboard and views, set its property `hidden` to 
 
 ### Card Options
 
-The `card_options` entry enables you to specify a card type for an entity or to hide the card from the dashboard.
+The `card_options` entry enables you to specify a card type for an entity or to hide the card from the dashboard. You can also provide a device ID and hide all entities linked to that device. [Instructions to find device ID](https://community.home-assistant.io/t/device-id-entity-id-where-to-find/289230/4?u=aaliankhan)
 
 #### Example
 
@@ -214,6 +214,9 @@ strategy:
         type: custom:mushroom-fan-card
       remote.harmony_hub_wk:
         hidden: true
+      077ba0492c9bb3b31ffac34f1f3a626a:
+        hidden: true
+      
 views: [ ]
 ```
 
