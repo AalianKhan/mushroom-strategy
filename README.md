@@ -161,6 +161,7 @@ at the top of the area subview.
 | `hidden`              | boolean           | false          | Set to `true` to exclude the area from the dashboard and views.                                                                     |
 | `order`               | number            | Infinity       | Ordering position of the area in the list of available areas.                                                                       |
 | `extra_cards`         | array of cards    | unset or empty | A list of cards to show on the top of the area subview.                                                                             |
+| `use_type_area`       | boolean           | false          | Will use `type: area`(instead of mushroom)                                                                                          |
 
 *) `more-info` `toggle` `call-service` `navigate` `url` `none`
 
@@ -201,6 +202,18 @@ This area is enabled by default and includes the entities that aren't linked to 
 
 The area can be configured like any other area as described above.
 To exclude this area from the dashboard and views, set its property `hidden` to `true`.
+
+#### Settings for all areas
+
+Use `_`to set options for all areas. Example:
+```yaml
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    areas:
+      _:
+        use_type_area: true
+```
 
 ### Card Options
 
