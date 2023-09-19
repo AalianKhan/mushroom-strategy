@@ -83,8 +83,11 @@ views: [ ]
 When creating this dashboard for the first time, you probably have many entities that you don't want to see.
 
 You can easily hide these entities by holding the entity > Click the `cog icon` in the top right corner of the popup >
-Click `Advanced settings` > Set `entity status` to `hidden`.  
+Set `Visble` to `off`.  
 The view should update when the page is refreshed.
+
+If you don't want to hide the entity from all dashboards, you can use [Card Options](#card-options) to hide specific
+entities and devices.
 
 ![Views](./docs/Hidden.png)
 
@@ -111,7 +114,7 @@ The options available are:
 | Name                 | Type                      | Default                                                 | Description                                                    | 
 |:---------------------|:--------------------------|:--------------------------------------------------------|:---------------------------------------------------------------|
 | `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object). |
-| `card_options`       | object (optional)         | unset                                                   | Card options for an entity, see [Card Options](#card-options). |
+| `card_options`       | object (optional)         | unset                                                   | Card options for cards, see [Card Options](#card-options).     |
 | `views`              | object (optional)         | All default views                                       | See available [Pre-built views](#pre-built-views).             |
 | `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                           |
 | `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.    |
@@ -227,8 +230,7 @@ views: [ ]
 ![Light Views](./docs/light_view.png)
 
 Mushroom strategy includes pre-built views to control/view specific domains.  
-Only devices that are in an area as defined in `areas` are shown.  
-If `areas` is undefined then the devices of all areas are shown.
+All devices that are in an area where `hidden` is set to false/undefined are shown.  
 
 By default, all pre-built views below are shown:
 
@@ -318,8 +320,7 @@ views: [ ]
 ![Chips](./docs/chips.png)
 
 Mushroom strategy has chips that indicate the number of devices which are active for a specific domain.  
-Only devices of an area as defined in `areas` are counted.  
-If `areas` is not defined then the devices in all areas are counted.  
+All devices that are in an area where `hidden` is set to false/undefined are counted.
 By default, all chips are enabled.
 
 You can manually configure a weather entity-id to use, and there's also an option to add
