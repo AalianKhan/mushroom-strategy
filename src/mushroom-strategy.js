@@ -118,8 +118,9 @@ class MushroomStrategy {
                 // Find the state of the current sensor.
                 const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
                 let cardOptions   = Helper.strategyOptions.card_options?.[sensor.entity_id] ?? {};
+                let deviceOptions   = Helper.strategyOptions.card_options?.[sensor.device_id] ?? {};
 
-                if (!cardOptions.hidden) {
+                if (!cardOptions.hidden && !deviceOptions.hidden) {
                   if (sensorState?.attributes.unit_of_measurement) {
                     cardOptions = {
                       ...{
@@ -149,8 +150,9 @@ class MushroomStrategy {
             // Create a card for each domain-entity of the current area.
             for (const entity of entities) {
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
+              let deviceOptions   = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
 
-              if (!cardOptions.hidden) {
+              if (!cardOptions.hidden && !deviceOptions.hidden) {
                 domainCards.push(new cardModule[className](entity, cardOptions).getCard());
               }
             }
@@ -219,8 +221,9 @@ class MushroomStrategy {
   
             for (const entity of miscellaneousEntities) {
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
+              let deviceOptions   = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
   
-              if (!cardOptions.hidden) {
+              if (!cardOptions.hidden && !deviceOptions.hidden) {
                 miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
               }
             }
