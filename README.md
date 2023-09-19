@@ -22,7 +22,7 @@ My goal is to propose a way to create powerful dashboards without the need of sp
 
 ### Features
 
-- 🛠 Automatically create dashboard with 3 lines of yaml.
+- 🛠 Automatically create dashboard with three lines of yaml.
 - 😍 Built-in Views for device-specific controls.
 - 🎨 Many options to customize to fit your needs.
 
@@ -55,7 +55,7 @@ Mushroom dashboard strategy is available in [HACS][hacsUrl] (Home Assistant Comm
     - **Using UI:** _Settings_ → _Dashboards_ → _More Options icon_ → _Resources_ → _Add Resource_ → Set _Url_
       as `/local/mushroom-strategy.js` → Set _Resource type_ as `JavaScript Module`.  
       **Note:** If you do not see the Resources menu, you will need to enable _Advanced Mode_ in your _User Profile_
-    - **Using YAML:** Add following code to the `lovelace` section.
+    - **Using YAML:** Add the following code to the `lovelace` section.
         ```yaml
         resources:
             - url: /local/mushroom-strategy.js
@@ -66,7 +66,7 @@ Mushroom dashboard strategy is available in [HACS][hacsUrl] (Home Assistant Comm
 
 All the rounded cards can be configured using the Dashboard UI editor.
 
-1. In the UI of the dashboard, click the 3 dots in the top right corner.
+1. In the UI of the dashboard, click the three dots in the top right corner.
 2. Click _Edit Dashboard_.
 3. Click 3 dots again
 4. Click `Raw configuration editor`
@@ -201,7 +201,9 @@ To exclude this area from the dashboard and views, set its property `hidden` to 
 
 ### Card Options
 
-The `card_options` entry enables you to specify a card type for an entity or to hide the card from the dashboard. You can also provide a device ID and hide all entities linked to that device. [Instructions to find device ID](https://community.home-assistant.io/t/device-id-entity-id-where-to-find/289230/4?u=aaliankhan)
+The `card_options` entry enables you to specify a card type for an entity or to hide the card from the dashboard.  
+You can also provide a device ID and hide all entities linked to that device.
+See [Instructions on to find a device ID](https://community.home-assistant.io/t/device-id-entity-id-where-to-find/289230/4?u=aaliankhan).
 
 #### Example
 
@@ -216,7 +218,7 @@ strategy:
         hidden: true
       077ba0492c9bb3b31ffac34f1f3a626a:
         hidden: true
-      
+
 views: [ ]
 ```
 
@@ -302,11 +304,11 @@ strategy:
   options:
     domains:
       lights:
-         title: "My cool lights"
-         order: 1
+        title: "My cool lights"
+        order: 1
       switch:
-         showControls: false
-      default: 
+        showControls: false
+      default:
         hidden: true
 views: [ ]
 ```
