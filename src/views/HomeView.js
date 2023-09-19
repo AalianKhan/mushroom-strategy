@@ -177,12 +177,10 @@ class HomeView extends AbstractView {
    * @return {Object[]} A card object array.
    */
   #createAreaCards() {
-    const groupedCards = [];
-    groupedCards.push({
+    const groupedCards = [{
       type: "custom:mushroom-title-card",
       title: "Areas",
-      },
-    );
+    }];
 
     import("../cards/AreaCard").then(areaModule => {
       const areaCards = [];
