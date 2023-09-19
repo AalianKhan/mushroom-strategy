@@ -65,7 +65,7 @@ class AbstractView {
    */
   async createViewCards() {
     /** @type Object[] */
-    const viewCards      = [this.viewTitleCard];
+    const viewCards      = [];
 
     // Create cards for each area.
     for (const area of Helper.areas) {
