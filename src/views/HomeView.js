@@ -188,7 +188,7 @@ class HomeView extends AbstractView {
       for (const area of Helper.areas) {
         if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
           let options = Helper.strategyOptions.areas[area.area_id ?? "undisclosed"];
-          let optionsForAllAreas = Helper.strategyOptions.areas["_"];
+          const optionsForAllAreas = Helper.strategyOptions.areas["_"];
           options = {...optionsForAllAreas,...options}
           areaCards.push(
               new areaModule.AreaCard(area, options).getCard());

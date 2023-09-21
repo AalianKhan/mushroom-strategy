@@ -102,7 +102,6 @@
  * @property {string} [icon_color] Icon color to render. May contain templates.
  * @property {string} [primary] Primary info to render. May contain templates.
  * @property {areaTapAction} [tap_action] Home assistant action to perform on tap.
- * @property {boolean} [use_type_area] Use Home Assistant's Area Card instead of Mushroom
  * @memberOf typedefs.cards
  */
 
