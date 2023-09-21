@@ -161,7 +161,6 @@ at the top of the area subview.
 | `hidden`              | boolean           | false          | Set to `true` to exclude the area from the dashboard and views.                                                                     |
 | `order`               | number            | Infinity       | Ordering position of the area in the list of available areas.                                                                       |
 | `extra_cards`         | array of cards    | unset or empty | A list of cards to show on the top of the area subview.                                                                             |
-| `use_type_area`       | boolean           | false          | Will use `type: area`(instead of mushroom)                                                                                          |
 
 *) `more-info` `toggle` `call-service` `navigate` `url` `none`
 
@@ -212,8 +211,23 @@ strategy:
   options:
     areas:
       _:
-        use_type_area: true
+        layout: vertical
 ```
+
+##### Access to area ID
+
+If you want access to the area ID, you can use the value `"{{area_id}}"`. Example:
+```yaml
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    areas:
+      _:
+        type: area
+        area: "{{area_id}}"
+        navigation_path: "{{area_id}}"
+```
+This example would use Home Assistant's built-in Area Card for all areas.
 
 ### Card Options
 

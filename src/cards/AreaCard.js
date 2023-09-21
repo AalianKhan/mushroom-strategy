@@ -38,14 +38,13 @@ class AreaCard extends AbstractCard {
    */
   constructor(area, options = {}) {
     super(area);
-    if (options.use_type_area) {
-      this.#defaultOptions.type = "area";
-      this.#defaultOptions.area = area.area_id;
-      this.#defaultOptions.navigation_path = area.area_id;
-    } else {
-      this.#defaultOptions.primary = area.name;
-      this.#defaultOptions.tap_action.navigation_path = area.area_id ?? area.name;
+    for (const [key, value] of Object.entries(options)) {
+      if (value === "{{area_id}}") {
+        options[key] = area.area_id;
+      }
     }
+    this.#defaultOptions.primary = area.name;
+    this.#defaultOptions.tap_action.navigation_path = area.area_id ?? area.name;
 
     this.mergeOptions(
         this.#defaultOptions,
