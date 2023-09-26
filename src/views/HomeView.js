@@ -114,7 +114,7 @@ class HomeView extends AbstractView {
     // Weather chip.
     const weatherEntityId = chipOptions?.weather_entity ?? Helper.entities.find(
         entity => entity.entity_id.startsWith("weather.") && entity.disabled_by == null && entity.hidden_by == null,
-    ).entity_id;
+    )?.entity_id;
 
     if (weatherEntityId) {
       try {
