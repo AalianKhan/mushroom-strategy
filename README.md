@@ -111,16 +111,17 @@ weather entity for the weather chip.
 
 The options available are:
 
-| Name                 | Type                      | Default                                                 | Description                                                    | 
-|:---------------------|:--------------------------|:--------------------------------------------------------|:---------------------------------------------------------------|
-| `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object). |
-| `card_options`       | object (optional)         | unset                                                   | Card options for cards, see [Card Options](#card-options).     |
-| `views`              | object (optional)         | All default views                                       | See available [Pre-built views](#pre-built-views).             |
-| `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                           |
-| `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.    |
-| `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                        |
-| `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                         |
-| `domains`            | object (optional)         | All supported domains                                   | See [Supported domains](#supported-domains).                   |
+| Name                 | Type                      | Default                                                 | Description                                                                                                                                | 
+|:---------------------|:--------------------------|:--------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------|
+| `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object).                                                                             |
+| `card_options`       | object (optional)         | unset                                                   | Card options for cards, see [Card Options](#card-options).                                                                             |
+| `views`              | object (optional)         | All default views                                       | See available [Pre-built views](#pre-built-views).                                                                                         |
+| `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                                                                                                       |
+| `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.                                                                                |
+| `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                                                                                                    |
+| `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                                                                                                     |
+| `domains`            | object (optional)         | All supported domains                                   | See [Supported domains](#supported-domains).                                                                                               |
+| `use_ha_area_card`   | boolean                   | false                                                   | Will use Home Assistant's built-in area card, `type: area`(instead of mushroom). This will ignore all mushroom specific options for areas. |
 
 #### Example
 
@@ -161,7 +162,6 @@ at the top of the area subview.
 | `hidden`              | boolean           | false          | Set to `true` to exclude the area from the dashboard and views.                                                                     |
 | `order`               | number            | Infinity       | Ordering position of the area in the list of available areas.                                                                       |
 | `extra_cards`         | array of cards    | unset or empty | A list of cards to show on the top of the area subview.                                                                             |
-| `use_ha_area_card`    | boolean           | false          | Will use Home Assistant's built-in area card, `type: area`(instead of mushroom). This will ignore all other options above.          |
 
 *) `more-info` `toggle` `call-service` `navigate` `url` `none`
 
