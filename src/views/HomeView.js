@@ -1,5 +1,7 @@
 import {Helper} from "../Helper";
 import {AbstractView} from "./AbstractView";
+import {AreaCard} from "../cards/AreaCard";
+import {HaAreaCard} from "../cards/HaAreaCard";
 
 /**
  * Home View Class.
@@ -181,28 +183,27 @@ class HomeView extends AbstractView {
       type: "custom:mushroom-title-card",
       title: "Areas",
     }];
+    const areaCards = [];
 
-    import("../cards/AreaCard").then(areaModule => {
-      const areaCards = [];
-
-      for (const area of Helper.areas) {
-        if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
-          let options = Helper.strategyOptions.areas[area.area_id ?? "undisclosed"];
-          const optionsForAllAreas = Helper.strategyOptions.areas["_"];
-          options = {...optionsForAllAreas,...options}
-          areaCards.push(
-              new areaModule.AreaCard(area, options).getCard());
+    for (const area of Helper.areas) {
+      if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
+        let areaCard;
+        if (Helper.strategyOptions.use_ha_area_card) {
+          areaCard = new HaAreaCard(area);
+        } else {
+          areaCard = new AreaCard(area, Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]);
         }
+        areaCards.push(areaCard.getCard());
       }
+    }
 
-      // Horizontally group every two area cards.
-      for (let i = 0; i < areaCards.length; i += 2) {
-        groupedCards.push({
-          type: "horizontal-stack",
-          cards: areaCards.slice(i, i + 2),
-        });
-      }
-    });
+    // Horizontally group every two area cards.
+    for (let i = 0; i < areaCards.length; i += 2) {
+      groupedCards.push({
+        type: "horizontal-stack",
+        cards: areaCards.slice(i, i + 2),
+      });
+    }
 
     return groupedCards;
   }
