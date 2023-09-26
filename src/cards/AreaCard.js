@@ -38,12 +38,7 @@ class AreaCard extends AbstractCard {
    */
   constructor(area, options = {}) {
     super(area);
-    for (const [key, value] of Object.entries(options)) {
-      if (value === "{{area_id}}") {
-        options[key] = area.area_id;
-      }
-    }
-    this.#defaultOptions.primary = area.name;
+    this.#defaultOptions.primary                    = area.name;
     this.#defaultOptions.tap_action.navigation_path = area.area_id ?? area.name;
 
     this.mergeOptions(
