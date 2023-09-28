@@ -141,27 +141,27 @@ views: [ ]
 The area object includes all options from the template mushroom card and `extra_cards` which is a list of cards to show
 at the top of the area subview.
 
-| Name                  | Type              | Default                  | Description                                                                                                                         |
-|:----------------------|:------------------|:-------------------------|:------------------------------------------------------------------------------------------------------------------------------------|
-| `name`                | string            | N.A.                     | The name of the area.                                                                                                               |
-| `icon`                | string (optional) | unset or empty           | Icon to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                              |
-| `icon_color`          | string (optional) | unset or empty           | Icon color to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                        |
-| `primary`             | string (optional) | unset or empty           | Primary info to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                      |
-| `secondary`           | string (optional) | unset or empty           | Secondary info to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                    |
-| `badge_icon`          | string (optional) | unset or empty           | Badge icon to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                        |
-| `badge_color`         | string (optional) | unset or empty           | Badge icon color to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                  |
-| `picture`             | string (optional) | unset or empty           | Picture to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                           |
-| `multiline_secondary` | boolean           | `false`                  | Enables support for multiline text for the secondary info.                                                                          |
-| `layout`              | string (optional) | unset or empty           | Layout of the card. Vertical, horizontal and default layout are supported.                                                          |
-| `fill_container`      | boolean           | `false`                  | Fill container or not. Useful when card is in a grid, vertical or horizontal layout.                                                |
-| `tap_action`          | action*           | `none`                   | Home assistant action to perform on tap.                                                                                            |
-| `hold_action`         | action*           | `none`                   | Home assistant action to perform on hold.                                                                                           |
-| `entity_id`           | `string` `array`  | unset or empty           | Only reacts to the state changes of these entities. This can be used if the automatic analysis fails to find all relevant entities. |
-| `double_tap_action`   | action*           | `more-info`              | Home assistant action to perform on double_tap.                                                                                     |
-| `hidden`              | boolean           | false                    | Set to `true` to exclude the area from the dashboard and views.                                                                     |
-| `order`               | number            | Infinity                 | Ordering position of the area in the list of available areas.                                                                       |
-| `extra_cards`         | array of cards    | unset or empty           | A list of cards to show on the top of the area subview.                                                                             |
-| `type`                | string            | `mushroom-template-card` | Only valid options are `mushroom-template-card` or `area`                                                                           |
+| Name                  | Type              | Default        | Description                                                                                                                         |
+|:----------------------|:------------------|:---------------|:------------------------------------------------------------------------------------------------------------------------------------|
+| `name`                | string            | N.A.           | The name of the area.                                                                                                               |
+| `icon`                | string (optional) | unset or empty | Icon to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                              |
+| `icon_color`          | string (optional) | unset or empty | Icon color to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                        |
+| `primary`             | string (optional) | unset or empty | Primary info to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                      |
+| `secondary`           | string (optional) | unset or empty | Secondary info to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                    |
+| `badge_icon`          | string (optional) | unset or empty | Badge icon to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                        |
+| `badge_color`         | string (optional) | unset or empty | Badge icon color to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                  |
+| `picture`             | string (optional) | unset or empty | Picture to render. May contain [templates](https://www.home-assistant.io/docs/configuration/templating/).                           |
+| `multiline_secondary` | boolean           | `false`        | Enables support for multiline text for the secondary info.                                                                          |
+| `layout`              | string (optional) | unset or empty | Layout of the card. Vertical, horizontal and default layout are supported.                                                          |
+| `fill_container`      | boolean           | `false`        | Fill container or not. Useful when card is in a grid, vertical or horizontal layout.                                                |
+| `tap_action`          | action*           | `none`         | Home assistant action to perform on tap.                                                                                            |
+| `hold_action`         | action*           | `none`         | Home assistant action to perform on hold.                                                                                           |
+| `entity_id`           | `string` `array`  | unset or empty | Only reacts to the state changes of these entities. This can be used if the automatic analysis fails to find all relevant entities. |
+| `double_tap_action`   | action*           | `more-info`    | Home assistant action to perform on double_tap.                                                                                     |
+| `hidden`              | boolean           | false          | Set to `true` to exclude the area from the dashboard and views.                                                                     |
+| `order`               | number            | Infinity       | Ordering position of the area in the list of available areas.                                                                       |
+| `extra_cards`         | array of cards    | unset or empty | A list of cards to show on the top of the area subview.                                                                             |
+| `use_ha_area_card`    | boolean           | `false`        | Set to true if you want to use Home Assistant's built-in Area Card instead of Mushroom. This will ignore all other options above.   |
 
 *) `more-info` `toggle` `call-service` `navigate` `url` `none`
 
@@ -206,6 +206,7 @@ To exclude this area from the dashboard and views, set its property `hidden` to 
 #### Settings for all areas
 
 Use `_`to set options for all areas. Example:
+
 ```yaml
 strategy:
   type: custom:mushroom-strategy
@@ -223,8 +224,9 @@ strategy:
   options:
     areas:
       _:
-        type: area
+        use_ha_area_card: true
 ```
+
 This example would use Home Assistant's built-in Area Card for all areas.
 
 ### Card Options
@@ -255,7 +257,7 @@ views: [ ]
 ![Light Views](./docs/light_view.png)
 
 Mushroom strategy includes pre-built views to control/view specific domains.  
-All devices that are in an area where `hidden` is set to false/undefined are shown.  
+All devices that are in an area where `hidden` is set to false/undefined are shown.
 
 By default, all pre-built views below are shown:
 

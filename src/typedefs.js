@@ -35,6 +35,7 @@
  * @property {Object[]} [extra_cards] An array of card configurations.
  *                                    The configured cards are added to the dashboard.
  *                                    This property is added by the custom strategy.
+ * @property {boolean} [use_ha_area_card] Set to true to use ha area card instead of mushroom.
  * @memberOf typedefs.generic
  */
 

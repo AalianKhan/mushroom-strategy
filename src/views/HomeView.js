@@ -183,7 +183,7 @@ class HomeView extends AbstractView {
     }];
 
     let optionsForAllAreas = Helper.strategyOptions.areas["_"];
-    let cardToImport = optionsForAllAreas?.type === 'area' ? "HaAreaCard" : "AreaCard";
+    let cardToImport = optionsForAllAreas?.use_ha_area_card  ? "HaAreaCard" : "AreaCard";
     import((`../cards/${cardToImport}`)).then(areaModule => {
       const areaCards = [];
 
