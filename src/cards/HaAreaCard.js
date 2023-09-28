@@ -8,7 +8,7 @@ import {AbstractCard} from "./AbstractCard";
  * @class
  * @extends AbstractCard
  */
-class HaAreaCard extends AbstractCard {
+class AreaCard extends AbstractCard {
 
   /**
    * Class constructor.
@@ -32,4 +32,4 @@ class HaAreaCard extends AbstractCard {
   }
 }
 
-export {HaAreaCard};
+export {AreaCard};

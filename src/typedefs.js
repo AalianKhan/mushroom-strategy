@@ -118,7 +118,6 @@
  * @property {Object[]} [quick_access_cards] List of cards to show between welcome card and rooms cards.
  * @property {Object[]} [extra_cards] List of cards to show below room cards.
  * @property {Object[]} [extra_views] List of views to add to the dashboard.
- * @property {boolean} [use_ha_area_card] Set to true to use ha area card instead of mushroom.
  * @memberOf typedefs.generic
  */
 
