@@ -196,7 +196,8 @@ class HomeView extends AbstractView {
       let module;
       let moduleName =
               Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]?.type ??
-              Helper.strategyOptions.areas["_"]?.type;
+              Helper.strategyOptions.areas["_"]?.type ??
+              "default";
 
       // Load module by type in strategy options.
       try {
@@ -205,7 +206,7 @@ class HomeView extends AbstractView {
         // Fallback to the default strategy card.
         module = await import("../cards/AreaCard");
 
-        if (Helper.strategyOptions.debug) {
+        if (Helper.strategyOptions.debug && moduleName !== "default") {
           console.error(e);
         }
       }
