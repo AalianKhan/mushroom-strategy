@@ -82,9 +82,9 @@ class HomeView extends AbstractView {
 
       // Add area cards.
       homeViewCards.push({
-            type: "vertical-stack",
-            cards: areaCards,
-          });
+        type: "vertical-stack",
+        cards: areaCards,
+      });
 
       // Add custom cards.
       if (options.extra_cards) {
@@ -158,10 +158,10 @@ class HomeView extends AbstractView {
 
     import("../cards/PersonCard").then(personModule => {
       for (const person of Helper.entities.filter(entity => {
-          return entity.entity_id.startsWith("person.")
-              && entity.hidden_by == null
-              && entity.disabled_by == null
-          })) {
+        return entity.entity_id.startsWith("person.")
+            && entity.hidden_by == null
+            && entity.disabled_by == null;
+      })) {
         cards.push(new personModule.PersonCard(person).getCard());
       }
     });
@@ -176,36 +176,61 @@ class HomeView extends AbstractView {
    *
    * @return {Object[]} A card object array.
    */
-  #createAreaCards() {
-    const groupedCards = [{
-      type: "custom:mushroom-title-card",
-      title: "Areas",
-    }];
+  async #createAreaCards() {
+    /**
+     * Cards to be stacked vertically.
+     *
+     * Contains a Title card and horizontal stacks of Area cards.
+     *
+     * @type {[{}]}
+     */
+    const groupedCards = [
+      {
+        type: "custom:mushroom-title-card",
+        title: "Areas",
+      },
+    ];
+    let areaCards      = [];
 
-    let optionsForAllAreas = Helper.strategyOptions.areas["_"];
-    let cardToImport = optionsForAllAreas?.use_ha_area_card  ? "HaAreaCard" : "AreaCard";
-    import((`../cards/${cardToImport}`)).then(areaModule => {
-      const areaCards = [];
+    for (const [i, area] of Helper.areas.entries()) {
+      let module;
+      let moduleName =
+              Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]?.type ??
+              Helper.strategyOptions.areas["_"]?.type;
 
-      for (const area of Helper.areas) {
-        if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
-          let options = {
-            ...optionsForAllAreas,
-            ...Helper.strategyOptions.areas[area.area_id ?? "undisclosed"]
-          }
-          areaCards.push(new areaModule.AreaCard(area, options).getCard());
+      // Load module by type in strategy options.
+      try {
+        module = await import((`../cards/${moduleName}`));
+      } catch (e) {
+        // Fallback to the default strategy card.
+        module = await import("../cards/AreaCard");
+
+        if (Helper.strategyOptions.debug) {
+          console.error(e);
         }
       }
 
-      // Horizontally group every two area cards.
-      for (let i = 0; i < areaCards.length; i += 2) {
-        groupedCards.push({
-          type: "horizontal-stack",
-          cards: areaCards.slice(i, i + 2),
-        });
+      // Get a card for the area.
+      if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
+        let options = {
+          ...Helper.strategyOptions.areas["_"],
+          ...Helper.strategyOptions.areas[area.area_id ?? "undisclosed"],
+        };
+
+        areaCards.push(new module.AreaCard(area, options).getCard());
       }
 
-    });
+      // Horizontally group every two area cards if all cards are created.
+      if (i === Helper.areas.length - 1) {
+        for (let i = 0; i < areaCards.length; i += 2) {
+          groupedCards.push({
+            type: "horizontal-stack",
+            cards: areaCards.slice(i, i + 2),
+          });
+        }
+      }
+    }
+
     return groupedCards;
   }
 }

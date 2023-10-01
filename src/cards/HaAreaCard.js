@@ -9,25 +9,37 @@ import {AbstractCard} from "./AbstractCard";
  * @extends AbstractCard
  */
 class AreaCard extends AbstractCard {
+  /**
+   * Default options of the card.
+   *
+   * @type {HaAreaCardOptions}
+   * @private
+   */
+  #defaultOptions = {
+    type: "area",
+    area: undefined,
+    navigation_path: undefined,
+  };
 
   /**
    * Class constructor.
    *
    * @param {areaEntity} area The area entity to create a card for.
-   * @param {options} [options={}] Options for the card.
+   * @param {HaAreaCardOptions} [options={}] Options for the card.
    * @throws {Error} If the Helper module isn't initialized.
    */
 
   constructor(area, options = {}) {
     super(area);
-    const defaultOptions = {
-      type: "area",
-      area: area.area_id,
-      navigation_path: area.area_id,
-    };
+    this.#defaultOptions.area            = area.area_id ?? area.name;
+    this.#defaultOptions.navigation_path = area.area_id ?? area.name;
+
+    // Enforce the card type.
+    options.type = this.#defaultOptions.type;
+
     this.mergeOptions(
-      defaultOptions,
-      options,
+        this.#defaultOptions,
+        options,
     );
   }
 }

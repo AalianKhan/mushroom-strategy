@@ -38,8 +38,14 @@ class AreaCard extends AbstractCard {
    */
   constructor(area, options = {}) {
     super(area);
+
     this.#defaultOptions.primary                    = area.name;
     this.#defaultOptions.tap_action.navigation_path = area.area_id ?? area.name;
+
+    // Set card type to default if a type "default" is given in strategy options.
+    if (options.type === "default") {
+      options.type = this.#defaultOptions.type;
+    }
 
     this.mergeOptions(
         this.#defaultOptions,

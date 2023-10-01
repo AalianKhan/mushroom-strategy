@@ -75,7 +75,7 @@ All the rounded cards can be configured using the Dashboard UI editor.
 ```yaml
 strategy:
   type: custom:mushroom-strategy
-views: [ ]
+views: []
 ```
 
 ### Hidding specific entities
@@ -133,7 +133,7 @@ strategy:
         name: Family Room
         icon: mdi:sofa
         icon_color: green
-views: [ ]
+views: []
 ```
 
 ### Area Object
@@ -161,7 +161,7 @@ at the top of the area subview.
 | `hidden`              | boolean           | false          | Set to `true` to exclude the area from the dashboard and views.                                                                     |
 | `order`               | number            | Infinity       | Ordering position of the area in the list of available areas.                                                                       |
 | `extra_cards`         | array of cards    | unset or empty | A list of cards to show on the top of the area subview.                                                                             |
-| `use_ha_area_card`    | boolean           | `false`        | Set to true if you want to use Home Assistant's built-in Area Card instead of Mushroom. This will ignore all other options above.   |
+| `type`                | string            | `default`      | Set to a type of area card. (Currently supported: `default` & `HaAreaCard`                                                          |
 
 *) `more-info` `toggle` `call-service` `navigate` `url` `none`
 
@@ -192,7 +192,9 @@ strategy:
         order: 2
       garage_id:
         hidden: true
-views: [ ]
+      hallway_id:
+        type: HaAreaCard
+views: []
 ```
 
 #### Undisclosed Area
@@ -203,20 +205,11 @@ This area is enabled by default and includes the entities that aren't linked to 
 The area can be configured like any other area as described above.
 To exclude this area from the dashboard and views, set its property `hidden` to `true`.
 
-#### Settings for all areas
+#### Setting options for all areas
 
-Use `_`to set options for all areas. Example:
+Use `_` as an identifier to set the options for all areas.
 
-```yaml
-strategy:
-  type: custom:mushroom-strategy
-  options:
-    areas:
-      _:
-        layout: vertical
-```
-
-##### Use Home Assistant's built-in area card (instead of Mushroom)
+The following example sets the type of all area-cards to Home Assistant's area card:
 
 ```yaml
 strategy:
@@ -224,10 +217,9 @@ strategy:
   options:
     areas:
       _:
-        use_ha_area_card: true
+        type: HaAreaCard
+views: []
 ```
-
-This example would use Home Assistant's built-in Area Card for all areas.
 
 ### Card Options
 
@@ -249,7 +241,7 @@ strategy:
       077ba0492c9bb3b31ffac34f1f3a626a:
         hidden: true
 
-views: [ ]
+views: []
 ```
 
 ### Pre-built views
@@ -297,7 +289,7 @@ strategy:
         order: 1
         hidden: true
         icon: mdi:toggle-switch
-views: [ ]
+views: []
 ```
 
 ### Supported domains
@@ -339,7 +331,7 @@ strategy:
         showControls: false
       default:
         hidden: true
-views: [ ]
+views: []
 ```
 
 ### Chips
@@ -502,7 +494,7 @@ strategy:
         title: cool view
         path: cool-view
         icon: mdi:emoticon-cool
-        badges: [ ]
+        badges: []
         cards:
           - type: markdown
             content: I am cool
