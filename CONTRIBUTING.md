@@ -10,15 +10,15 @@ IDE.
 
 ### Fork this repository
 
-<img src="../docs/contributing/fork.png" style="float: right" title="Fork Repository" alt="Fork Repository">
+<img src="docs/contributing/fork.png" style="float: right" title="Fork Repository" alt="Fork Repository">
 
 Fork this repository by clicking on the fork button on the top of this page.
 This will create a copy of this repository in your account.
 
 ### Clone the repository
 
-<img src="../docs/contributing/clone.png" style="float: right" title="Clone Repository" alt="Clone Repository">
-<img src="../docs/contributing/copy.png" style="float: right" title="Copy URL" alt="Copy URL">
+<img src="docs/contributing/clone.png" style="float: right" title="Clone Repository" alt="Clone Repository">
+<img src="docs/contributing/copy.png" style="float: right" title="Copy URL" alt="Copy URL">
 
 1. Go to your GitHub account and open the forked repository.
 2. Click on the code button and then the _copy to clipboard_ icon.
@@ -87,11 +87,11 @@ on generating and configuring an SSH key to your account.
 
 Go to your repository on GitHub where you'll see a `Compare & pull request` button. Click on that button.
 
-<img src="../docs/contributing/compareAndPullRequest.png" style="float: right" title="Compare and Pull" alt="Compare and Pull">
+<img src="docs/contributing/compareAndPullRequest.png" style="float: right" title="Compare and Pull" alt="Compare and Pull">
 
 #### Submit the pull request.
 
-<img src="../docs/contributing/submitPullRequest.png" style="float: right" title="Submit Pull Request" alt="Submit Pull Request">
+<img src="docs/contributing/submitPullRequest.png" style="float: right" title="Submit Pull Request" alt="Submit Pull Request">
 
 After a review, your changes will be merged into the main branch of this project.
 You will get a notification email once the changes have been merged.
