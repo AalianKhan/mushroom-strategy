@@ -1,6 +1,6 @@
 # Contributing
 
-You can contribute to this project by following the _fork -> clone -> edit -> pull request_ workflow of GitHub.  
+You can contribute to this project by following the _fork -> clone -> edit -> pull request_ workflow of GitHub.
 The steps of this workflow are explained in the [guidelines](#Guidelines) below.
 
 The given examples show you how to use git in a terminal/shell, but similar steps can be taken by using your favorite
@@ -36,7 +36,7 @@ Example:
 git clone git@github.com:github-username/mushroom-strategy.git
 ```
 
-Where `github-username` is your GitHub username.  
+Where `github-username` is your GitHub username.
 Here you're copying the contents of the first-contributions repository on GitHub to your computer.
 
 ### Create a branch
@@ -93,7 +93,7 @@ Go to your repository on GitHub where you'll see a `Compare & pull request` butt
 
 <img src="../docs/contributing/submitPullRequest.png" style="float: right" title="Submit Pull Request" alt="Submit Pull Request">
 
-After a review, your changes will be merged into the main branch of this project.  
+After a review, your changes will be merged into the main branch of this project.
 You will get a notification email once the changes have been merged.
 
 ## Agreements
@@ -105,7 +105,7 @@ You will get a notification email once the changes have been merged.
 
 ## Prevent changes to the distribution directory
 
-As agreed above, we must not commit any changes of directory `dist` or its content.  
+As agreed above, we must not commit any changes of directory `dist` or its content.
 Therefore, you can configure your local git repository to ignore this directory.
 
 ```shell
@@ -122,7 +122,7 @@ git update-index --skip-worktree ./dist/mushroom-strategy.js
 
 ### Additional method
 
-You can add the directory to the `exclude` file of the repository.  
+You can add the directory to the `exclude` file of the repository.
 However, the directory or its content will not be ignored once it's already tracked.
 The syntax is the same as for the `.gitignore` file.
 
