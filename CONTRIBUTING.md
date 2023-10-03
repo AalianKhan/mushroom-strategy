@@ -32,13 +32,13 @@ The community looks forward to your contributions.
 ## Code of Conduct
 
 This project and everyone participating in it is governed by
-the [Mushroom Strategy Code of Conduct](https://github.com/AalianKhan/mushroom-strategyblob/master/CODE_OF_CONDUCT.md).
+the [Mushroom Strategy Code of Conduct](CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code. Please report unacceptable behavior to <aaliankhan5@gmail.com>.
 
 ## I Have a Question
 
 > If you want to ask a question, we assume that you have read the [README](README.md) file or the
-> available [Documentation](https://github.com/DigiLive/mushroom-strategy/wiki).
+> available [Documentation](https://github.com/AalianKhan/mushroom-strategy/wiki).
 
 Before you ask a question, it is best to search for
 existing [Issues](https://github.com/AalianKhan/mushroom-strategy/issues) that might help you.
@@ -47,7 +47,7 @@ It is also advisable to search the internet for answers first.
 
 If you then still feel the need to ask a question and need clarification, we recommend the following:
 
-- Open an [Issue](https://github.com/AalianKhan/mushroom-strategy/issues/new).
+- Open an [Issue](https://github.com/AalianKhan/mushroom-strategy/issues/new/choose).
 - Provide as much context as you can about what you're running into.
 - Provide project and platform versions (nodejs, npm, etc), depending on what seems relevant.
 
@@ -71,18 +71,18 @@ Please complete the following steps in advance to help us fix any potential bug 
 - Make sure that you are using the latest version.
 - Determine if your bug is really a bug and not an error on your side, e.g. using incompatible environment
   components/versions (Make sure that you have read
-  the [documentation](https://github.com/DigiLive/mushroom-strategy/wiki).
+  the [documentation](https://github.com/AalianKhan/mushroom-strategy/wiki).
   If you are looking for support, you might want to check [this section](#i-have-a-question)).
 - To see if other users have experienced (and potentially already solved) the same issue you are having, check if there
   is not already a bug report existing for your bug or error in
-  the [bug tracker](https://github.com/AalianKhan/mushroom-strategyissues?q=label%3Abug).
+  the [bug tracker](https://github.com/AalianKhan/mushroom-strategy/issues?q=label%3Abug).
 - Also make sure to search the internet (including Stack Overflow) to see if users outside the GitHub community have
   discussed the issue.
 - Collect information about the bug:
-    - Stack trace (Traceback)
-    - OS, Platform and Version (Windows, Linux, macOS, x86, ARM)
+    - Stack trace (Traceback).
+    - OS, Platform and Version (Windows, Linux, macOS, x86, ARM).
     - Version of the interpreter, compiler, SDK, runtime environment, package manager, depending on what seems relevant.
-    - Possibly your input and the output
+    - Possibly your input and the output.
     - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
 
 #### How Do I Submit a Good Bug Report?
@@ -93,7 +93,7 @@ Please complete the following steps in advance to help us fix any potential bug 
 
 We use GitHub issues to track bugs and errors. If you run into an issue with the project:
 
-- Open an [Issue](https://github.com/AalianKhan/mushroom-strategy/issues/new).
+- Open an [Issue](https://github.com/AalianKhan/mushroom-strategy/issues/new/choose).
 - Explain the behavior you would expect and the actual behavior.
 - Please provide as much context as possible and describe the *reproduction steps* that someone else can follow to
   recreate the issue on their own.
@@ -142,7 +142,7 @@ Enhancement suggestions are tracked as [GitHub issues](https://github.com/Aalian
 - You may want to **include screenshots and animated GIFs** which help you demonstrate the steps or point out the part
   which the suggestion is related to.
   You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows,
-  and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
+  and [this tool](https://github.com/colinkeenan/silentcast) on Linux.
 - **Explain why this enhancement would be useful** to most Mushroom Strategy users.
   You may also want to point out the other projects that solved it better and which could serve as inspiration.
 
