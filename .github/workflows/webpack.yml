@@ -1,0 +1,40 @@
+name: Build distribution with Webpack
+
+on:
+  push:
+    branches: [ "main" ]
+    # Ignore changes in folders that are affected by the auto commit. (Node.js project)
+    paths-ignore: 
+      - 'dist/**'
+  # pull_request:
+  #  branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CI_COMMIT_MESSAGE: Continuous Integration Build Distribution
+      CI_COMMIT_AUTHOR: Continuous Integration
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    # Checkout Repository
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.WORKFLOW_GIT_ACCESS_TOKEN }}    
+
+    # Build steps
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Node Install
+      run: npm ci
+      
+    - name: Build Distribution
+      run: |
+        npm build
