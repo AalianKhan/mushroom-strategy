@@ -38,3 +38,15 @@ jobs:
     - name: Build Distribution
       run: |
         npm run build
+
+    # Commit and push all changed files. 
+    # Must only affect files that are listed in "paths-ignore".
+    - name: GIT Commit Distribution Build
+      # Only run on main branch push (e.g. pull request merge).
+      if: github.event_name == 'push'
+      run: |
+        git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+        git config --global user.email "ci_activity@noreply.github.com"
+        git add dist
+        git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+        git push
