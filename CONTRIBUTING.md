@@ -1,5 +1,3 @@
-<!-- omit in toc -->
-
 # Contributing to Mushroom Strategy
 
 First off, thanks for taking the time to contribute!
@@ -18,8 +16,6 @@ The community looks forward to your contributions.
 > - Tweet about it
 > - Refer this project in your project's readme
 > - Mention the project at local meetups and tell your friends/colleagues
-
-<!-- omit in toc -->
 
 ## Table of Contents
 
@@ -59,14 +55,12 @@ We will then take care of the issue as soon as possible.
 
 ## I Want To Contribute
 
-> ### Legal Notice <!-- omit in toc -->
+> ### Legal Notice
 >
 > When contributing to this project, you must agree that you have authored 100% of the content, that you have the
 > necessary rights to the content and that the content you contribute may be provided under the project license.
 
 ### Reporting Bugs
-
-<!-- omit in toc -->
 
 #### Before Submitting a Bug Report
 
@@ -90,8 +84,6 @@ Please complete the following steps in advance to help us fix any potential bug 
     - Version of the interpreter, compiler, SDK, runtime environment, package manager, depending on what seems relevant.
     - Possibly your input and the output
     - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
-
-<!-- omit in toc -->
 
 #### How Do I Submit a Good Bug Report?
 
@@ -126,8 +118,6 @@ features and minor improvements to existing functionality**.
 Following these guidelines will help maintainers and the community to understand your suggestion and find related
 suggestions.
 
-<!-- omit in toc -->
-
 #### Before Submitting an Enhancement
 
 - Make sure that you are using the latest version.
@@ -140,8 +130,6 @@ suggestions.
   It's up to you to make a strong case to convince the project's developers of the merits of this feature.
   Keep in mind that we want features that will be useful to the majority of our users and not just a small subset.
   If you're just targeting a minority of users, consider writing an add-on/plugin library.
-
-<!-- omit in toc -->
 
 #### How Do I Submit a Good Enhancement Suggestion?
 
@@ -212,8 +200,6 @@ All files must be properly formatted according to the settings in file [.editorc
 ### Commit Messages
 
 Commit messages must follow [these](https://github.com/DigiLive/gitChangelog/wiki/1-Introduction) guidelines.
-
-<!-- omit in toc -->
 
 ## Attribution
 
