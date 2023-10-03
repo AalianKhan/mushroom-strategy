@@ -1,5 +1,7 @@
 # Mushroom dashboard strategy
 
+test
+
 [![hacs][hacsBadge]][hacsUrl]
 [![release][releaseBadge]][releaseUrl]
 
