@@ -39,11 +39,16 @@ jobs:
       run: |
         npm run build
 
+    - name: Check for file changes
+      id: checkDiff
+      run: |
+        git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
+
     # Commit and push all changed files. 
     # Must only affect files that are listed in "paths-ignore".
     - name: GIT Commit Distribution Build
       # Only run on main branch push (e.g. pull request merge).
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && steps.checkDiff.outputs.changed == 'true'
       run: |
         git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
         git config --global user.email "ci_activity@noreply.github.com"
