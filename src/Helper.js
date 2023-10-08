@@ -65,6 +65,7 @@ class Helper {
    * @throws {Error} If trying to instantiate this class.
    */
   constructor() {
+    console.log("test 21");
     throw new Error("This class should be invoked with method initialize() instead of using the keyword new!");
   }
 
