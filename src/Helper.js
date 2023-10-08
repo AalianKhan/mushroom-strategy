@@ -205,7 +205,6 @@ class Helper {
    * @static
    */
   static isInitialized() {
-    console.log("3");
     return this.#initialized;
   }
 
