@@ -113,6 +113,13 @@
  */
 
 /**
+ * @typedef {abstractOptions & Object} HaAreaCardOptions HA Area Card options.
+ * @property {string} area The id of the area.
+ * @property {string} navigation_path The id of the area to navigate to.
+ * @memberOf typedefs.cards
+ */
+
+/**
  * @typedef {abstractOptions & Object} mediaPlayerCardOptions Media Player Card options.
  * @property {boolean} [use_media_info=true] Use media info instead of name, state, and icon when a media is playing
  * @property {string[]} [media_controls="on_off", "play_pause_stop"] List of controls to display

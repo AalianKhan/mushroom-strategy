@@ -75,7 +75,7 @@ All the rounded cards can be configured using the Dashboard UI editor.
 ```yaml
 strategy:
   type: custom:mushroom-strategy
-views: [ ]
+views: []
 ```
 
 ### Hidding specific entities
@@ -133,7 +133,7 @@ strategy:
         name: Family Room
         icon: mdi:sofa
         icon_color: green
-views: [ ]
+views: []
 ```
 
 ### Area Object
@@ -161,6 +161,7 @@ at the top of the area subview.
 | `hidden`              | boolean           | false          | Set to `true` to exclude the area from the dashboard and views.                                                                     |
 | `order`               | number            | Infinity       | Ordering position of the area in the list of available areas.                                                                       |
 | `extra_cards`         | array of cards    | unset or empty | A list of cards to show on the top of the area subview.                                                                             |
+| `type`                | string            | `default`      | Set to a type of area card. (Currently supported: `default` & `HaAreaCard`                                                          |
 
 *) `more-info` `toggle` `call-service` `navigate` `url` `none`
 
@@ -191,7 +192,9 @@ strategy:
         order: 2
       garage_id:
         hidden: true
-views: [ ]
+      hallway_id:
+        type: HaAreaCard
+views: []
 ```
 
 #### Undisclosed Area
@@ -201,6 +204,22 @@ This area is enabled by default and includes the entities that aren't linked to 
 
 The area can be configured like any other area as described above.
 To exclude this area from the dashboard and views, set its property `hidden` to `true`.
+
+#### Setting options for all areas
+
+Use `_` as an identifier to set the options for all areas.
+
+The following example sets the type of all area-cards to Home Assistant's area card:
+
+```yaml
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    areas:
+      _:
+        type: HaAreaCard
+views: []
+```
 
 ### Card Options
 
@@ -222,7 +241,7 @@ strategy:
       077ba0492c9bb3b31ffac34f1f3a626a:
         hidden: true
 
-views: [ ]
+views: []
 ```
 
 ### Pre-built views
@@ -230,7 +249,7 @@ views: [ ]
 ![Light Views](./docs/light_view.png)
 
 Mushroom strategy includes pre-built views to control/view specific domains.  
-All devices that are in an area where `hidden` is set to false/undefined are shown.  
+All devices that are in an area where `hidden` is set to false/undefined are shown.
 
 By default, all pre-built views below are shown:
 
@@ -270,7 +289,7 @@ strategy:
         order: 1
         hidden: true
         icon: mdi:toggle-switch
-views: [ ]
+views: []
 ```
 
 ### Supported domains
@@ -312,7 +331,7 @@ strategy:
         showControls: false
       default:
         hidden: true
-views: [ ]
+views: []
 ```
 
 ### Chips
@@ -475,7 +494,7 @@ strategy:
         title: cool view
         path: cool-view
         icon: mdi:emoticon-cool
-        badges: [ ]
+        badges: []
         cards:
           - type: markdown
             content: I am cool
