@@ -83,7 +83,7 @@ views: []
 When creating this dashboard for the first time, you probably have many entities that you don't want to see.
 
 You can easily hide these entities by holding the entity > Click the `cog icon` in the top right corner of the popup >
-Set `Visble` to `off`.  
+Set `Visible` to `off`.  
 The view should update when the page is refreshed.
 
 If you don't want to hide the entity from all dashboards, you can use [Card Options](#card-options) to hide specific
