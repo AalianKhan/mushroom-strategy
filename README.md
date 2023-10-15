@@ -50,10 +50,10 @@ Mushroom dashboard strategy is available in [HACS][hacsUrl] (Home Assistant Comm
 1. Download `mushroom-strategy.js` file from
    the [`dist`](https://github.com/AalianKhan/mushroom-strategy/tree/main/dist) directory.
 2. Put `mushroom-strategy.js` file into your `config/www` folder.
-3. Add a reference to `mushroom-strategy.js` in Dashboard.  
+3. Add a reference to `mushroom-strategy.js` in Dashboard.
    There are two ways to do that:
     - **Using UI:** _Settings_ → _Dashboards_ → _More Options icon_ → _Resources_ → _Add Resource_ → Set _Url_
-      as `/local/mushroom-strategy.js` → Set _Resource type_ as `JavaScript Module`.  
+      as `/local/mushroom-strategy.js` → Set _Resource type_ as `JavaScript Module`.
       **Note:** If you do not see the Resources menu, you will need to enable _Advanced Mode_ in your _User Profile_
     - **Using YAML:** Add the following code to the `lovelace` section.
         ```yaml
@@ -82,8 +82,12 @@ views: []
 
 When creating this dashboard for the first time, you probably have many entities that you don't want to see.
 
-You can easily hide these entities by holding the entity > Click the `cog icon` in the top right corner of the popup >
-Set `Visble` to `off`.  
+You can hide these entities by following the steps below:
+
+1. Click and hold the entity
+2. Click the `cog icon` in the top right corner of the popup.
+3. Set `Visible` to `off`.
+
 The view should update when the page is refreshed.
 
 If you don't want to hide the entity from all dashboards, you can use [Card Options](#card-options) to hide specific
@@ -93,9 +97,14 @@ entities and devices.
 
 ### Adding devices to areas
 
-You can easily add devices to an area by going to `Settings` found at the bottom of the sidebar >
-Click `Devices and integration` > Select the integration of your device > Click the device you wish to add > Click
-the `pencil icon` found in the top right corner > Enter an area in area field.  
+You can add devices to an area by going to `Settings` found at the bottom of the sidebar.
+
+1. Click `Devices and integration`
+2. Select the integration of your device
+3. Click the device you wish to add
+4. Click the `pencil icon` found in the top right corner
+5. Enter an area in area field.
+
 You can also set an entity of that device to a different area by going to the advanced settings of that entity.
 
 If you created an entity in your `configuration.yaml` you may need to enter a `unique_id` first before you set an area
@@ -111,7 +120,7 @@ weather entity for the weather chip.
 
 The options available are:
 
-| Name                 | Type                      | Default                                                 | Description                                                    | 
+| Name                 | Type                      | Default                                                 | Description                                                    |
 |:---------------------|:--------------------------|:--------------------------------------------------------|:---------------------------------------------------------------|
 | `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object). |
 | `card_options`       | object (optional)         | unset                                                   | Card options for cards, see [Card Options](#card-options).     |
@@ -223,7 +232,7 @@ views: []
 
 ### Card Options
 
-The `card_options` entry enables you to specify a card type for an entity or to hide the card from the dashboard.  
+The `card_options` entry enables you to specify a card type for an entity or to hide the card from the dashboard.
 You can also provide a device ID and hide all entities linked to that device.
 See [Instructions on to find a device ID](https://community.home-assistant.io/t/device-id-entity-id-where-to-find/289230/4?u=aaliankhan).
 
@@ -248,8 +257,8 @@ views: []
 
 ![Light Views](./docs/light_view.png)
 
-Mushroom strategy includes pre-built views to control/view specific domains.  
-All devices that are in an area where `hidden` is set to false/undefined are shown.
+Mushroom strategy includes pre-built views to control/view specific domains.
+All devices that are in an area where `hidden` is set to false/undefined are shown*.
 
 By default, all pre-built views below are shown:
 
@@ -260,9 +269,9 @@ By default, all pre-built views below are shown:
 | `cover`         | object* | View to control all covers and covers of each area.                          |
 | `switch`        | object* | View to control all switches and switches of each area.                      |
 | `climate`       | object* | View to control climate devices such as thermostats. Seperated by each area. |
-| `camera`        | object* | View to show all cameras using WebRTC cards. Seperated by each area.         | 
+| `camera`        | object* | View to show all cameras using WebRTC cards. Seperated by each area.         |
 
-*) See [View Options](#view-options).
+* See [View Options](#view-options).
 
 #### View Options
 
@@ -338,7 +347,7 @@ views: []
 
 ![Chips](./docs/chips.png)
 
-Mushroom strategy has chips that indicate the number of devices which are active for a specific domain.  
+Mushroom strategy has chips that indicate the number of devices which are active for a specific domain.
 All devices that are in an area where `hidden` is set to false/undefined are counted.
 By default, all chips are enabled.
 
@@ -498,6 +507,7 @@ strategy:
         cards:
           - type: markdown
             content: I am cool
+views: []
 ```
 
 ## Credits
