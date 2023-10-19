@@ -48,17 +48,24 @@ class HomeView extends AbstractView {
       this.#createAreaCards(),
     ]).then(([chips, personCards, areaCards]) => {
       const options       = Helper.strategyOptions;
-      const homeViewCards = [
-        {
+
+      const homeViewCards = [];
+      if (chips.length) {
+        homeViewCards.push({
           type: "custom:mushroom-chips-card",
           alignment: "center",
           chips: chips,
-        },
-        {
+        });
+      }
+
+      if (personCards.length) {
+        homeViewCards.push({
           type: "horizontal-stack",
           cards: personCards,
-        },
-        {
+        });
+      }
+      if (!Helper.strategyOptions.hide_greeting) {
+        homeViewCards.push({
           type: "custom:mushroom-template-card",
           primary: "{% set time = now().hour %} {% if (time >= 18) %} Good Evening, {{user}}! {% elif (time >= 12) %} Good Afternoon, {{user}}! {% elif (time >= 5) %} Good Morning, {{user}}! {% else %} Hello, {{user}}! {% endif %}",
           icon: "mdi:hand-wave",
@@ -72,9 +79,8 @@ class HomeView extends AbstractView {
           hold_action: {
             action: "none",
           },
-        },
-      ];
-
+        });
+      }
       // Add quick access cards.
       if (options.quick_access_cards) {
         homeViewCards.push(...options.quick_access_cards);
@@ -102,6 +108,9 @@ class HomeView extends AbstractView {
    */
   async #createChips() {
     const chips       = [];
+    if (Helper.strategyOptions.hide_chips) {
+      return chips;
+    }
     const chipOptions = Helper.strategyOptions.chips;
 
     // TODO: Get domains from config.
@@ -155,6 +164,9 @@ class HomeView extends AbstractView {
    */
   #createPersonCards() {
     const cards = [];
+    if (Helper.strategyOptions.hide_persons) {
+      return cards;
+    }
 
     import("../cards/PersonCard").then(personModule => {
       for (const person of Helper.entities.filter(entity => {
@@ -184,12 +196,13 @@ class HomeView extends AbstractView {
      *
      * @type {[{}]}
      */
-    const groupedCards = [
-      {
+    const groupedCards = [];
+    if (!Helper.strategyOptions.hide_areas_title) {
+      groupedCards.push({
         type: "custom:mushroom-title-card",
         title: "Areas",
-      },
-    ];
+      });
+    }
     let areaCards      = [];
 
     for (const [i, area] of Helper.areas.entries()) {

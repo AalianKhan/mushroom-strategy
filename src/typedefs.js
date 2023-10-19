@@ -119,6 +119,10 @@
  * @property {Object[]} [quick_access_cards] List of cards to show between welcome card and rooms cards.
  * @property {Object[]} [extra_cards] List of cards to show below room cards.
  * @property {Object[]} [extra_views] List of views to add to the dashboard.
+ * @property {boolean} [hide_chips] Set to true to not show any chips
+ * @property {boolean} [hide_persons] Set to true to not show any persons
+ * @property {boolean} [hide_greeting] Set to true to not show greeting
+ * @property {boolean} [hide_areas_title] Set to true to not show areas title
  * @memberOf typedefs.generic
  */
 

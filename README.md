@@ -130,6 +130,10 @@ The options available are:
 | `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                        |
 | `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                         |
 | `domains`            | object (optional)         | All supported domains                                   | See [Supported domains](#supported-domains).                   |
+| `hide_chips`         | boolean (optional)        | false                                                   | Set to true to not show any chips                              |
+| `hide_persons`       | boolean (optional)        | false                                                   | Set to true to not show any persons                            |
+| `hide_greeting`      | boolean (optional)        | false                                                   | Set to true to not show greeting                               |
+| `hide_areas_title`   | boolean (optional)        | false                                                   | Set to true to not show areas title                            |
 
 #### Example
 
