@@ -119,10 +119,7 @@
  * @property {Object[]} [quick_access_cards] List of cards to show between welcome card and rooms cards.
  * @property {Object[]} [extra_cards] List of cards to show below room cards.
  * @property {Object[]} [extra_views] List of views to add to the dashboard.
- * @property {boolean} [hide_chips] Set to true to not show any chips
- * @property {boolean} [hide_persons] Set to true to not show any persons
- * @property {boolean} [hide_greeting] Set to true to not show greeting
- * @property {boolean} [hide_areas_title] Set to true to not show areas title
+ * @property {Object.<homeViewOptions>} [homeView] Options for the home view.
  * @memberOf typedefs.generic
  */
 
@@ -135,6 +132,12 @@
  * @property {boolean} climate_count Chip to display the number of climates which are not off.
  * @property {string} weather_entity Entity ID for the weather chip to use, accepts `weather.` only.
  * @property {Object[]} extra_chips List of extra chips.
+ * @memberOf typedefs.generic
+ */
+
+/**
+ * @typedef {Object} homeViewOptions Options for the home view.
+ * @property {string[]} [hidden] Elements to hide from the home view.
  * @memberOf typedefs.generic
  */
 
@@ -186,7 +189,7 @@
  * @property {string} object_id Object ID of entity.
  *                              Example: `kitchen`.
  * @property {string} name Name of the entity.
- *                         Based on `friendly_name` attribute with fall back to object ID.
+ *                         Based on `friendly_name` attribute with fall-back to object ID.
  *                         Example: `Kitchen Ceiling`.
  * @property {string} last_updated Time the state was written to the state machine in UTC time.
  *                                 Note that writing the exact same state including attributes will not result in this
@@ -232,7 +235,7 @@
  * @typedef {Object} stateContext State context.
  * @property {string} context_id Unique identifier for the context.
  * @property {string} user_id Unique identifier of the user that started the change.
- *                            Will be None if action was not started by a user (i.e. started by an automation)
+ *                            Will be None if action was not started by a user (i.e., started by an automation)
  * @property {string} parent_id Unique identifier of the parent context that started the change, if available.
  *                              For example, if an automation is triggered, the context of the trigger will be set as
  *                              parent.
