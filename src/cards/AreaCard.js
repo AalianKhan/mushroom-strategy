@@ -84,8 +84,8 @@ class AreaCard extends AbstractCard {
     }
 
     if (!card.badge_icon) {
+      const lock = this.options?.lock || Helper.getStateEntities(this.entity, "lock")[0]?.entity_id;
       const window = this.options?.window || Helper.getStateEntities(this.entity, "binary_sensor", "window")[0]?.entity_id;
-      const lock = this.options?.lock || Helper.getStateEntities(this.entity, "binary_sensor", "lock")[0]?.entity_id;
       const door = this.options?.door || Helper.getStateEntities(this.entity, "binary_sensor", "door")[0]?.entity_id;
 
       let badgeConditions = []
