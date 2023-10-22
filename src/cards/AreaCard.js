@@ -65,40 +65,13 @@ class AreaCard extends AbstractCard {
       ...this.options,
     };
 
-    let temperature = this.options?.temperature;
-    let humidity = this.options?.humidity;
-    let lux = this.options?.illuminance;
-    let window = this.options?.window;
-    let lock = this.options?.lock;
-    let door = this.options?.door;
+    let temperature = options?.temperature || Helper.getStateEntities(this.entity, "sensor", "temperature")[0]?.entity_id;
+    let humidity = options?.humidity || Helper.getStateEntities(this.entity, "sensor", "humidity")[0]?.entity_id;
+    let lux = options?.illuminance || Helper.getStateEntities(this.entity, "sensor", "illuminance")[0]?.entity_id;
+    let window = options?.window || Helper.getStateEntities(this.entity, "binary_sensor", "window")[0]?.entity_id;
+    let lock = options?.lock || Helper.getStateEntities(this.entity, "binary_sensor", "lock")[0]?.entity_id;
+    let door = options?.door || Helper.getStateEntities(this.entity, "binary_sensor", "door")[0]?.entity_id;
     
-    // Search for sensors if not configured
-    if (!(temperature || humidity || lux)) {
-      const sensors  = Helper.getDeviceEntities(this.entity, "sensor");
-      
-      if (sensors.length) {
-        const sensorStates = Helper.getStateEntities(this.entity, "sensor");
-        for (const sensor of sensors) {
-          const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
-          if (sensorState.state === "unavailable") continue;
-          switch (sensorState.attributes.device_class) {
-            case "temperature":
-              temperature = sensor.entity_id;
-              break;
-            case "humidity":
-              humidity = sensor.entity_id;
-              break;
-            case "illuminance":
-              lux = sensor.entity_id;
-              break;
-            default:
-              // Handle other device classes if needed
-              break;
-          }
-        }
-      }
-    }
-
     // If configured or found, create template
     if (temperature || humidity || lux) {
       let secondary = ``;
@@ -114,32 +87,6 @@ class AreaCard extends AbstractCard {
 
       if (!card.secondary) {
         card.secondary = secondary;
-      }
-    }
-    
-    // Search for binary sensors if not configured
-    if (!(window || lock || door)) {
-      const binary_sensors  = Helper.getDeviceEntities(this.entity, "binary_sensor");
-      if (binary_sensors.length) {
-        const binary_sensorStates = Helper.getStateEntities(this.entity, "binary_sensor");
-        for (const binary_sensor of binary_sensors) {
-          const binary_sensorState = binary_sensorStates.find(state => state.entity_id === binary_sensor.entity_id);
-          if (!binary_sensorState.state === "unavailable") continue;
-          switch (binary_sensorState.attributes.device_class) {
-            case "window":
-              window = binary_sensor.entity_id;
-              break;
-            case "lock":
-              lock = binary_sensor.entity_id;
-              break;
-            case "door":
-              door = binary_sensor.entity_id;
-              break;
-            default:
-              // Handle other device classes if needed
-              break;
-          }
-        }
       }
     }
 

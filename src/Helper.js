@@ -331,7 +331,7 @@ class Helper {
   }
 
   /**
-   * Get state entities, filtered by area and domain.
+   * Get state entities, filtered by area, domain and optionally deviceClass.
    *
    * The result excludes hidden and disabled entities.
    *
@@ -340,7 +340,7 @@ class Helper {
    *
    * @return {stateObject[]} Array of state entities.
    */
-  static getStateEntities(area, domain) {
+  static getStateEntities(area, domain, deviceClass = null) {
     if (!this.isInitialized()) {
       console.warn("Helper class should be initialized before calling this method!");
     }
@@ -355,7 +355,15 @@ class Helper {
 
     // Get states whose entity-id starts with the given string.
     const stateEntities = Object.values(this.#hassStates).filter(
-        state => state.entity_id.startsWith(`${domain}.`),
+        state => {
+          if (deviceClass
+            && state.attributes.device_class !== deviceClass
+          ) {
+            return false;
+          }
+          
+          return state.entity_id.startsWith(`${domain}.`)
+        },
     );
 
     for (const state of stateEntities) {
