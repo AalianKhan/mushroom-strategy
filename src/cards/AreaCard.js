@@ -110,7 +110,144 @@ class AreaCard extends AbstractCard {
       }
     }
 
+    let chips = []
+
+    let motion = this.options?.motion || this.options?.occupancy || this.options?.presence;
+    if (motion) {
+      chips.push(this.makeChip('conditional', motion, {
+        icon: 'mdi:motion-sensor',
+        tap_action: {
+          action: 'more-info'
+        }
+      }))
+    }
+
+    // Ideally, I would only see covers than are open when elevation is low / night
+    // While I should see closed covers when elevation high / day
+    // Helper.getStateEntities(this.entity, "cover").forEach(device => {
+    //   chips.push(this.makeChip('entity', device.entity_id))
+    // });
+
+    // Ideally, there should only be 1 chip shown for all media players, climate
+    Helper.getDeviceEntities(this.entity, "media_player").forEach(device => {
+      chips.push(this.makeChip('conditional', device.entity_id, {}, {state: "playing"}))
+      chips.push(this.makeChip('conditional', device.entity_id, {}, {state: "on"}))
+    });
+
+    Helper.getDeviceEntities(this.entity, "climate").forEach(device => {
+      chips.push(this.makeChip('conditional', device.entity_id, {}, {state_not: "off"}))
+    })
+
+    // How can a single chip be achieved without requiring light_group configuration?
+    let lightGroup = this.options?.light_group;
+    if (lightGroup) {
+      let lightChip = {
+        type: 'conditional',
+        conditions: [
+          {entity: lightGroup, state: 'on'}
+        ],
+        chip: {
+          type: 'template',
+          entity: lightGroup,
+          icon: 'mdi:lightbulb-group',
+          // content: `{{ ['${lightGroup}'] | expand | selectattr('state','eq','on') | list | count }}`,
+          tap_action: {
+            action: 'toggle'
+          },
+          double_tap_action: {
+            action: 'more-info'
+          },
+          hold_action: {
+            action: 'more-info'
+          },
+        }
+      }
+      chips.push(lightChip)
+    }
+
+    if (chips.length) {
+      // See https://community.home-assistant.io/t/mushroom-cards-build-a-beautiful-dashboard-easily/388590/8146
+      card = {
+        type: 'custom:stack-in-card',
+        mode: 'vertical',
+        cards: [
+          {
+            ...card,
+            card_mod: {
+              style: `ha-card {
+                border: none;
+              }`
+            }
+          },
+          {
+            type: 'custom:mushroom-chips-card',
+            chips: chips.map(chip => {
+              const card_mod = {
+                style: `:host {
+                  --chip-height: 25px;
+                  --chip-box-shadow: 0px 1px 4px rgba(0,0,0,0.2);
+                  --chip-border-width: 0px;
+                  --chip-spacing: 2px;
+                }
+                `
+              }
+              if (chip.type === 'conditional') {
+                return {
+                  ...chip,
+                  chip: {
+                    ...chip.chip,
+                    card_mod,
+                  }
+                }
+              }
+
+              return {
+                ...chip,
+                card_mod
+              }
+            }),
+            alignment: 'start',
+            card_mod: {
+              style: `ha-card {
+                margin-bottom: 10px;
+                margin-left: 12px;
+              }`
+            }
+          }
+        ]
+      }
+    }
+
     return card;
+  }
+
+  makeChip(type, entity_id, options = {}, condition = {state: 'on'}) {
+    const chip = {
+      type: type !== 'conditional' ? type : 'entity',
+      content_info: 'none',
+      tap_action: {
+        action: 'toggle'
+      },
+      double_tap_action: {
+        action: 'more-info'
+      },
+      hold_action: {
+        action: 'more-info'
+      },
+      entity: entity_id,
+      ...options,
+    }
+
+    return type !== 'conditional' ? chip : {
+      type,
+      conditions: [
+        {
+          entity: entity_id,
+          ...condition
+        }
+      ],
+      chip
+    }
   }
 }
 
