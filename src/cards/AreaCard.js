@@ -72,7 +72,7 @@ class AreaCard extends AbstractCard {
 
       let secondaries = [];
       if (temperature) {
-        secondaries.push(`❄️{{ states('${temperature}') | int }}°`);
+        secondaries.push(`🌡️{{ states('${temperature}') | int }}°`);
       }
       if (humidity) {
         secondaries.push(`💧{{ states('${humidity}')}}%`);
