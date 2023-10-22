@@ -211,119 +211,14 @@ class HomeView extends AbstractView {
         }
       }
 
-      let cardOptions   = Helper.strategyOptions.areas[area.area_id ?? "undisclosed"];
-      let temperature = Helper.strategyOptions.areas[area.area_id]?.temperature;
-      let humidity = Helper.strategyOptions.areas[area.area_id]?.humidity;
-      let lux = Helper.strategyOptions.areas[area.area_id]?.illuminance;
-      let window = Helper.strategyOptions.areas[area.area_id]?.window;
-      let lock = Helper.strategyOptions.areas[area.area_id]?.lock;
-      let door = Helper.strategyOptions.areas[area.area_id]?.door;
-      
-      // Search for sensors if not configured
-      if (!(temperature || humidity || lux)) {
-        const sensors  = Helper.getDeviceEntities(area, "sensor");
-        
-        if (sensors.length) {
-          const sensorStates = Helper.getStateEntities(area, "sensor");
-          for (const sensor of sensors) {
-            const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
-            if (sensorState.state === "unavailable") continue;
-            switch (sensorState.attributes.device_class) {
-              case "temperature":
-                temperature = sensor.entity_id;
-                break;
-              case "humidity":
-                humidity = sensor.entity_id;
-                break;
-              case "illuminance":
-                lux = sensor.entity_id;
-                break;
-              default:
-                // Handle other device classes if needed
-                break;
-            }
-          }
-        }
-      }
-
-      // If configured or found, create template
-      if (temperature || humidity || lux) {
-        let secondary = ``;
-        if (temperature) {
-          secondary = secondary + `❄️{{ states('${temperature}') | int }}°`
-        }
-        if (humidity) {
-          secondary = secondary + `💧{{ states('${humidity}')}}%`
-        }
-        if (lux) {
-          secondary = secondary + `☀️{{ states('${lux}')}}lx`
-        }
-        cardOptions = {
-          ...{
-            secondary: secondary,
-          },
-          ...cardOptions,
-        }
-      }
-      
-      // Search for binary sensors if not configured
-      if (!(window || lock || door)) {
-        const binary_sensors  = Helper.getDeviceEntities(area, "binary_sensor");
-        if (binary_sensors.length) {
-          const binary_sensorStates = Helper.getStateEntities(area, "binary_sensor");
-          for (const binary_sensor of binary_sensors) {
-            const binary_sensorState = binary_sensorStates.find(state => state.entity_id === binary_sensor.entity_id);
-            if (!binary_sensorState.state === "unavailable") continue;
-            switch (binary_sensorState.attributes.device_class) {
-              case "window":
-                window = binary_sensor.entity_id;
-                break;
-              case "lock":
-                lock = binary_sensor.entity_id;
-                break;
-              case "door":
-                door = binary_sensor.entity_id;
-                break;
-              default:
-                // Handle other device classes if needed
-                break;
-            }
-          }
-        }
-      }
-
-      // If configured or found, create template
-      if (window || door || lock) {
-        let badge;
-        if (window) {
-          badge = `{% if is_state('${window}', 'on') %}mdi:window-open-variant`;
-          if (door) {
-            badge = badge + `{% elif is_state('${door}', 'on') %}mdi:door-open`
-          } 
-          if (lock) {
-            badge = badge + `{% elif is_state('${lock}', 'on') %}mdi:lock-open`
-          }
-        } else if (door) {
-          badge = `{% if is_state('${door}', 'on') %}mdi:door-open`;
-          if (lock) {
-            badge = badge + `{% elif is_state('${lock}', 'on') %}mdi:lock-open`
-          }
-        } else if (lock) {
-          badge = `{% if is_state('${lock}', 'on') %}mdi:lock-open`
-        }
-        badge = badge + `{% endif %}`
-        cardOptions = {
-          ...{
-            badge_icon: badge,
-            badge_color: "red",
-          },
-          ...cardOptions,
-        }
-      }
-
       // Get a card for the area.
       if (!Helper.strategyOptions.areas[area.area_id]?.hidden) {
-        areaCards.push(new module.AreaCard(area, cardOptions).getCard());
+        let options = {
+          ...Helper.strategyOptions.areas["_"],
+          ...Helper.strategyOptions.areas[area.area_id ?? "undisclosed"],
+        };
+
+        areaCards.push(new module.AreaCard(area, options).getCard());
       }
 
       // Horizontally group every two area cards if all cards are created.
