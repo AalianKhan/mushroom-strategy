@@ -1,3 +1,5 @@
+Changing something.
+
 # Contributing to Mushroom Strategy
 
 First off, thanks for taking the time to contribute!
