@@ -120,16 +120,17 @@ weather entity for the weather chip.
 
 The options available are:
 
-| Name                 | Type                      | Default                                                 | Description                                                    |
-|:---------------------|:--------------------------|:--------------------------------------------------------|:---------------------------------------------------------------|
-| `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object). |
-| `card_options`       | object (optional)         | unset                                                   | Card options for cards, see [Card Options](#card-options).     |
-| `views`              | object (optional)         | All default views                                       | See available [Pre-built views](#pre-built-views).             |
-| `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                           |
-| `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.    |
-| `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                        |
-| `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                         |
-| `domains`            | object (optional)         | All supported domains                                   | See [Supported domains](#supported-domains).                   |
+| Name                 | Type                      | Default                                                 | Description                                                            |
+|:---------------------|:--------------------------|:--------------------------------------------------------|:-----------------------------------------------------------------------|
+| `areas`              | object (optional)         | unset                                                   | One or more areas in a list, see [areas object](#area-object).         |
+| `card_options`       | object (optional)         | unset                                                   | Card options for cards, see [Card Options](#card-options).             |
+| `views`              | object (optional)         | All default views                                       | See available [Pre-built views](#pre-built-views).                     |
+| `chips`              | object                    | All count chips enabled with auto selected weather card | See [chips](#chips).                                                   |
+| `quick_access_cards` | array of cards (optional) | unset                                                   | List of cards to show between welcome card and rooms cards.            |
+| `extra_cards`        | array of cards (optional  | unset                                                   | List of cards to show below room cards.                                |
+| `extra_views`        | array of views (optional) | unset                                                   | List of views to add to the dashboard.                                 |
+| `domains`            | object (optional)         | All supported domains                                   | See [Supported domains](#supported-domains).                           |
+| `homeView`           | object (optional)         | unset                                                   | Options for the home view, see [Home View Options](#home-view-options) |
 
 #### Example
 
@@ -343,6 +344,36 @@ strategy:
 views: []
 ```
 
+### Home View Options
+
+Home View options will let you configure the Home View.
+
+| Option   | type  | Description                                   |
+|:---------|:------|:----------------------------------------------|
+| `hidden` | array | Array of elements to hide from the home view. |
+
+#### hidden
+
+The following elements are supported:
+* Chips
+* Persons
+* Greeting
+* AreaTitle
+* Areas
+
+#### Example
+
+```YAML
+strategy:
+  type: custom:mushroom-strategy
+  options:
+    homeView:
+      hidden:
+        - Greeting
+        - AreaTitle
+views: []
+```
+
 ### Chips
 
 ![Chips](./docs/chips.png)
@@ -402,6 +433,10 @@ strategy:
       switches:
         hidden: true
         icon: mdi:toggle-switch
+    homeView:
+      hidden:
+        - Greeting
+        - AreaTitle
     chips:
       weather_entity: weather.forecast_home
       climate_count: false
@@ -518,6 +553,7 @@ views: []
 ## Contributors
 
 * [DigiLive](https://github.com/DigiLive)
+* [Johan Frick](https://github.com/johanfrick)
 
 <!-- Badges References -->
 
