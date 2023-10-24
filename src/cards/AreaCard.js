@@ -66,45 +66,53 @@ class AreaCard extends AbstractCard {
     let card = super.getCard();
 
     if (!card.secondary) {
-      const temperature = this.options?.temperature || Helper.getStateEntities(this.entity, "sensor", "temperature")[0]?.entity_id;
-      const humidity = this.options?.humidity || Helper.getStateEntities(this.entity, "sensor", "humidity")[0]?.entity_id;
-      const lux = this.options?.illuminance || Helper.getStateEntities(this.entity, "sensor", "illuminance")[0]?.entity_id;
+      // Get or determine the relevant sensor entity IDs based on options or default behavior
+      const temperatureSensorId = this.options?.temperature || Helper.getStateEntities(this.entity, "sensor", "temperature")[0]?.entity_id;
+      const humiditySensorId = this.options?.humidity || Helper.getStateEntities(this.entity, "sensor", "humidity")[0]?.entity_id;
+      const illuminanceSensorId = this.options?.illuminance || Helper.getStateEntities(this.entity, "sensor", "illuminance")[0]?.entity_id;
 
+      // Collect secondary pieces of information for the card, based on available sensors
       let secondaries = [];
-      if (temperature) {
-        secondaries.push(`🌡️{{ states('${temperature}') | int }}°`);
+      if (temperatureSensorId) {
+        secondaries.push(`🌡️{{ states('${temperatureSensorId}') | int }}°`);
       }
-      if (humidity) {
-        secondaries.push(`💧{{ states('${humidity}') | int }}%`);
+      if (humiditySensorId) {
+        secondaries.push(`💧{{ states('${humiditySensorId}') | int }}%`);
       }
-      if (lux) {
-        secondaries.push(`☀️{{ states('${lux}')}}lx`);
+      if (illuminanceSensorId) {
+        secondaries.push(`☀️{{ states('${illuminanceSensorId}')}}lx`);
       }
+
+      // Set the secondary information on the card as a combined string
       card.secondary = secondaries.join(" ");
     }
 
     if (!card.badge_icon) {
-      const lock = this.options?.lock || Helper.getStateEntities(this.entity, "lock")[0]?.entity_id;
-      const window = this.options?.window || Helper.getStateEntities(this.entity, "binary_sensor", "window")[0]?.entity_id;
-      const door = this.options?.door || Helper.getStateEntities(this.entity, "binary_sensor", "door")[0]?.entity_id;
+      // Get or determine the relevant lock or binary sensor entity IDs
+      const lockId = this.options?.lock || Helper.getStateEntities(this.entity, "lock")[0]?.entity_id;
+      const windowBinarySensorId = this.options?.window || Helper.getStateEntities(this.entity, "binary_sensor", "window")[0]?.entity_id;
+      const doorBinarySensorId = this.options?.door || Helper.getStateEntities(this.entity, "binary_sensor", "door")[0]?.entity_id;
 
+      // Construct badge conditions based on the existence and states of the entities
       let badgeConditions = []
-      if (lock) {
-        badgeConditions.push({entity: lock, state: 'unlocked', icon: 'mdi:lock-open'})
+      if (lockId) {
+        badgeConditions.push({entity: lockId, state: 'unlocked', icon: 'mdi:lock-open'})
       }
-      if (window) {
-        badgeConditions.push({entity: window, state: 'on', icon: 'mdi:window-open-variant'})
+      if (windowBinarySensorId) {
+        badgeConditions.push({entity: windowBinarySensorId, state: 'on', icon: 'mdi:window-open-variant'})
       }
-      if (door) {
-        badgeConditions.push({entity: door, state: 'on', icon: 'mdi:door-open'})
+      if (doorBinarySensorId) {
+        badgeConditions.push({entity: doorBinarySensorId, state: 'on', icon: 'mdi:door-open'})
       }
 
+      // If there are badge conditions, construct a template for the badge icon based on conditions
       if (badgeConditions.length) {
         let badge = badgeConditions
           .map(condition => `is_state('${condition.entity}', '${condition.state}') %}${condition.icon}{%`)
           .join(' elif ')
         badge = `{% if ${badge} endif %}`
 
+        // Set badge properties on the card
         card.badge_color = "red";
         card.badge_icon = badge;
       }
