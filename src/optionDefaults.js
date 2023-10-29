@@ -111,5 +111,10 @@ export const optionDefaults = {
       showControls: false,
       hidden: false,
     },
+    number: {
+      title: "Numbers",
+      showControls: false,
+      hidden: false,
+    },
   }
 }

@@ -316,6 +316,7 @@ The following domains are supported and enabled by default:
 * media_player
 * sensor
 * binary_sensor
+* number
 * default (Miscellaneous)
 
 For these domains, the following options are supported:
