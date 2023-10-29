@@ -355,11 +355,11 @@ Home View options will let you configure the Home View.
 #### hidden
 
 The following elements are supported:
-* Chips
-* Persons
-* Greeting
-* AreaTitle
-* Areas
+* chips
+* persons
+* greeting
+* areasTitle
+* areas
 
 #### Example
 
@@ -369,8 +369,8 @@ strategy:
   options:
     homeView:
       hidden:
-        - Greeting
-        - AreaTitle
+        - greeting
+        - areasTitle
 views: []
 ```
 
