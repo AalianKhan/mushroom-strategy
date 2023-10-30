@@ -1,32 +1,42 @@
 {
-    "name": "mushroom-strategy",
-    "version": "v1.0.0",
-    "description": "Automatically create a dashboard using Mushroom cards",
-    "keywords": [
-        "strategy",
-        "mushroom"
-    ],
-    "homepage": "https://github.com/AalianKhan/mushroom-strategy",
-    "bugs": "https://github.com/AalianKhan/mushroom-strategy/issues",
-    "license": "MIT",
-    "author": {
-        "name": "Aalian Khan"
-    },
-    "contributors": [
-        {
-            "name": "Ferry Cools"
-        }
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/AalianKhan/mushroom-strategy"
-    },
-    "devDependencies": {
-        "webpack": "^5",
-        "webpack-cli": "^5.1.4"
-    },
-    "scripts": {
-        "build": "webpack",
-        "build-dev": "webpack --config webpack.dev.config.js"
+  "name": "mushroom-strategy",
+  "version": "2.0.0",
+  "description": "Automatically create a dashboard using Mushroom cards",
+  "keywords": [
+    "strategy",
+    "mushroom"
+  ],
+  "homepage": "https://github.com/AalianKhan/mushroom-strategy",
+  "bugs": "https://github.com/AalianKhan/mushroom-strategy/issues",
+  "license": "MIT",
+  "author": {
+    "name": "Aalian Khan"
+  },
+  "contributors": [
+    {
+      "name": "Ferry Cools"
     }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AalianKhan/mushroom-strategy"
+  },
+  "dependencies": {
+    "deepmerge": "^4"
+  },
+  "devDependencies": {
+    "home-assistant-js-websocket": "^9",
+    "superstruct": "^1",
+    "ts-node": "^10",
+    "ts-loader": "^9",
+    "typescript": "^5",
+    "version-bump-prompt": "^6",
+    "webpack": "^5",
+    "webpack-cli": "^5"
+  },
+  "scripts": {
+    "build-dev": "webpack --config webpack.dev.config.ts",
+    "build": "webpack",
+    "bump": "bump -t --preid alpha package.json package-lock.json README.md ./src/mushroom-strategy.ts"
+  }
 }
