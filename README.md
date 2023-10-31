@@ -316,16 +316,17 @@ The following domains are supported and enabled by default:
 * media_player
 * sensor
 * binary_sensor
+* number
 * default (Miscellaneous)
 
 For these domains, the following options are supported:
 
-| Option         | type    | Description                                                                |
-|:---------------|:--------|:---------------------------------------------------------------------------|
-| `title`        | string  | Title of the domain in a view.                                             |
-| `showControls` | boolean | Weather to show controls int a view, to switch all entities of the domain. |
-| `hidden`       | boolean | Set to `true` to exclude the view from the dashboard.                      |
-| `order`        | number  | Ordering position of the domain entities in a view.                        |
+| Option         | type    | Description                                                               |
+|:---------------|:--------|:--------------------------------------------------------------------------|
+| `title`        | string  | Title of the domain in a view.                                            |
+| `showControls` | boolean | Weather to show controls in a view, to switch all entities of the domain. |
+| `hidden`       | boolean | Set to `true` to exclude the domain from the dashboard.                   |
+| `order`        | number  | Ordering position of the domain entities in a view.                       |
 
 #### Example
 
