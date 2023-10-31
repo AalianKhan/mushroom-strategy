@@ -325,7 +325,7 @@ For these domains, the following options are supported:
 |:---------------|:--------|:--------------------------------------------------------------------------|
 | `title`        | string  | Title of the domain in a view.                                            |
 | `showControls` | boolean | Weather to show controls in a view, to switch all entities of the domain. |
-| `hidden`       | boolean | Set to `true` to exclude the view from the dashboard.                     |
+| `hidden`       | boolean | Set to `true` to exclude the domain from the dashboard.                   |
 | `order`        | number  | Ordering position of the domain entities in a view.                       |
 
 #### Example
