@@ -29,10 +29,8 @@ class NumberCard extends AbstractCard {
    */
   constructor(entity, options = {}) {
     super(entity);
-    this.mergeOptions(
-        this.#defaultOptions,
-        options,
-    );
+
+    this.mergeOptions(this.#defaultOptions, options);
   }
 }
 

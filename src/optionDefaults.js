@@ -117,4 +117,4 @@ export const optionDefaults = {
       hidden: false,
     },
   }
-}
+};
