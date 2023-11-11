@@ -11,26 +11,32 @@
 
 ![customizable](./docs/customizable.png)
 
-## What is Mushroom dashboard strategy?
+## What is the Mushroom dashboard strategy?
 
-Mushroom dashboard strategy provides a strategy for Home assistant to automatically create a dashboard using Mushroom
-cards, the area configuration and entity configuration.
-
-My goal is to propose a way to create powerful dashboards without the need of spending hours manually creating them.
-
-**Note:** This is my first javascript code and GitHub repository. Any recommendations are always welcome.
+Easily installable from [HACs][hacsUrl], the Mushroom dashboard strategy provides a strategy for Home Assistant to automatically create a dashboard. It 
+uses the area configuration to create a home view with room cards which lead you to subviews to view all 
+devices and entities in that room. It also creates various other views for controlling all lights, fans and
+other domains. With many options, you can create it how you like it one time and it will dynamically update
+whenever you move or add a new device leaving you with a perfect dashboard. 
 
 ### Features
 
-- 🛠 Automatically create dashboard with three lines of yaml.
+- 🛠 Automatically create a dashboard with just three lines of YAML.
 - 😍 Built-in Views for device-specific controls.
 - 🎨 Many options to customize to fit your needs.
 
-## [Wiki](https://github.com/AalianKhan/mushroom-strategy/wiki)
+## Want to get started 🚩? 
+Visit the [Wiki](https://github.com/AalianKhan/mushroom-strategy/wiki)
+
+## Needs some help 🙏?
+Visit the [discussions](https://github.com/AalianKhan/mushroom-strategy/discussions) page
+
+## Have an idea or want to report a bug 🪲?
+Visit the [issues](https://github.com/AalianKhan/mushroom-strategy/issues/new/choose) page
 
 ## Credits
 
-* The cards used are from [Mushroom][mushroomUrl], [Mini graph card][mini-graphUrl] and [WebRTC][webRtcUrl]
+* The cards used are from [Mushroom][mushroomUrl] and [Mini graph card][mini-graphUrl]
 * Took inspiration from [Balloob battery strategy][balloobBatteryUrl]
 
 ## Contributors
@@ -55,8 +61,6 @@ My goal is to propose a way to create powerful dashboards without the need of sp
 [mushroom-chipsUrl]: https://github.com/piitaya/lovelace-mushroom/blob/main/docs/cards/chips.md
 
 [mini-graphUrl]: https://github.com/kalkih/mini-graph-card
-
-[webRtcUrl]: https://github.com/AlexxIT/WebRTC
 
 [balloobBatteryUrl]: https://gist.github.com/balloob/4a70c83287ddba4e9085cb578ffb161f
 
