@@ -118,6 +118,25 @@
  */
 
 /**
+ * @typedef {abstractOptions & Object} deviceCardOptions Area Card options.
+ * @property {string} [name] The name of the area
+ * @property {string} [icon] Icon to render. May contain templates.
+ * @property {string} [icon_color] Icon color to render. May contain templates.
+ * @property {string} [primary] Primary info to render. May contain templates.
+ * @property {deviceTapAction} [tap_action] Home assistant action to perform on tap.
+ * @memberOf typedefs.cards
+ */
+
+/**
+ * @typedef {Object} deviceTapAction Home assistant action to perform on double_tap.
+ * @property {{device_id: "this"}} target The target entity id.
+ * @property {"call-service"} action Calls a hass service.
+ * @property {"browser_mod.popup"} service The hass service to call
+ * @property {{dismissable: true, autoclose: false, content: Object,}} data The data payload for the service.
+ * @memberOf typedefs.cards
+ */
+
+/**
  * @typedef {abstractOptions & Object} HaAreaCardOptions HA Area Card options.
  * @property {string} area The id of the area.
  * @property {string} navigation_path The id of the area to navigate to.

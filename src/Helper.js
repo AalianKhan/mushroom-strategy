@@ -265,7 +265,7 @@ class Helper {
    * Callback function for filtering entities.
    *
    * Entities of which all the conditions below are met are kept:
-   * 1. Or/Neither the entity's linked device (if any) or/nor the entity itself is lined to the given area.
+   * 1. Or/Neither the entity's linked device (if any) or/nor the entity itself is linked to the given area.
    *    (See variable areaMatch)
    * 2. The entity's domain matches the given domain.
    * 3. The entity is not hidden and is not disabled.
@@ -441,6 +441,66 @@ class Helper {
     }
 
     return this.#getObjectKeysByPropertyValue(this.#strategyOptions.domains, "hidden", false);
+  }
+
+  /**
+   * Get the devices ids of the devices that have deviceCard enabled in the strategy option
+   *
+   * @return {deviceEntity[]} An array of device Entity.
+   */
+  static getDeviceIds() {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+    
+    const deviceIds = this.#getObjectKeysByPropertyValue(this.#strategyOptions.card_options, "deviceCard", true);
+
+    // // Get the ID of the devices which are linked to the given area.
+    // deviceIds.forEach(deviceId => {
+    //   const Devices = this.#devices.filter(device => {
+    //     return device.device_id === deviceId;
+    //   }).map(device => {
+  
+    //     return device;
+    //   });
+    // });
+
+    let devices = [];
+    
+    deviceIds.forEach (deviceId => {
+      devices = this.#devices.filter(device => {
+        return device.id === deviceId;
+      }).map(device => {
+            
+          return device;
+      });
+    })
+
+    return devices;
+  }
+
+  /**
+   * Get the entities linked to device.
+   *
+   * @param {deviceEntity} device The device Entity.
+   * @return {string[]} An array of entity ids.
+   */
+  static getEntitiesIdsLinkedToDevice(device, domain) {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
+    
+
+    return this.#entities.filter(entity => {
+        return entity.device_id === device.id
+        && entity.entity_id.startsWith(`${domain}.`)
+        && entity.hidden_by == null && entity.disabled_by == null;
+      })
+      .sort((a, b) => {
+        /** @type hassEntity */
+        return a.original_name?.localeCompare(b.original_name);
+      });
   }
 }
 

@@ -12,7 +12,7 @@ class AbstractCard {
   /**
    * Entity to create the card for.
    *
-   * @type {hassEntity | areaEntity}
+   * @type {hassEntity | areaEntity | deviceEntity}
    */
   entity;
 
@@ -32,7 +32,7 @@ class AbstractCard {
   /**
    * Class constructor.
    *
-   * @param {hassEntity | areaEntity} entity The hass entity to create a card for.
+   * @param {hassEntity | areaEntity | deviceEntity} entity The hass entity to create a card for.
    * @throws {Error} If the Helper module isn't initialized.
    */
   constructor(entity) {

@@ -1,4 +1,5 @@
 import {Helper} from "./Helper";
+import { DeviceCard } from "./cards/DeviceCard";
 import {SensorCard} from "./cards/SensorCard";
 import {TitleCard} from "./cards/TitleCard";
 
@@ -92,6 +93,167 @@ class MushroomStrategy {
       if (domain === "default") {
         continue;
       }
+
+      if (domain === "device") {
+        let deviceCards = [];
+        let popupCards = [];
+        const devices = Helper.getDeviceIds();
+
+        // Create a Title card for the device domain.
+        if (devices.length) {
+          deviceCards.push({
+            type: "custom:mushroom-title-card",
+            title: "Devices",
+          });
+          
+          // Create a Device card for each device.
+          for (const device of devices) {
+            let deviceOptions = Helper.strategyOptions.card_options?.[device] ?? {};
+            let domainCards = [];
+            
+            for (const domain of exposedDomainIds) {
+              if (domain === "default" || domain === "device") {
+                continue;
+              }
+
+              // To be replaced by a method
+
+              // Create cards for popup
+              const className = Helper.sanitizeClassName(domain + "Card");
+  
+              try {
+                domainCards = await import(`./cards/${className}`).then(cardModule => {
+                  let domainCards = [];
+                  const entities  = Helper.getEntitiesIdsLinkedToDevice(device, domain);
+        
+                  if (entities.length) {
+                    // Create a Title card for the current domain.
+                    const titleCard = new TitleCard(
+                        [area],
+                        Helper.strategyOptions.domains[domain],
+                    ).createCard();
+        
+                    if (domain === "sensor") {
+                      // Create a card for each entity-sensor of the current area.
+                      const sensorStates = Helper.getStateEntities(area, "sensor");
+                      const sensorCards  = [];
+        
+                      for (const sensor of entities) {
+                        // Find the state of the current sensor.
+                        const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
+                        let cardOptions   = Helper.strategyOptions.card_options?.[sensor.entity_id] ?? {};
+                        let deviceOptions   = Helper.strategyOptions.card_options?.[sensor.device_id] ?? {};
+        
+                        if (!cardOptions.hidden && !deviceOptions.hidden) {
+                          if (sensorState?.attributes.unit_of_measurement) {
+                            cardOptions = {
+                              ...{
+                                type: "custom:mini-graph-card",
+                                entities: [sensor.entity_id],
+                              },
+                              ...cardOptions,
+                            };
+                          }
+        
+                          sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
+                        }
+                      }
+        
+                      if (sensorCards.length) {
+                        domainCards.push({
+                          type: "vertical-stack",
+                          cards: sensorCards,
+                        });
+        
+                        domainCards.unshift(titleCard);
+                      }
+        
+                      return domainCards;
+                    }
+        
+                    // Create a card for each domain-entity of the current area.
+                    for (const entity of entities) {
+                      let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
+                      let deviceOptions   = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
+        
+                      if (!cardOptions.hidden && !deviceOptions.hidden) {
+                        domainCards.push(new cardModule[className](entity, cardOptions).getCard());
+                      }
+                    }
+        
+                    if (domain === "binary_sensor") {
+                      // Horizontally group every two binary sensor cards.
+                      const horizontalCards = [];
+        
+                      for (let i = 0; i < domainCards.length; i += 2) {
+                        horizontalCards.push({
+                          type: "horizontal-stack",
+                          cards: domainCards.slice(i, i + 2),
+                        });
+                      }
+        
+                      domainCards = horizontalCards;
+                    }
+        
+                    if (domainCards.length) {
+                      domainCards.unshift(titleCard);
+                    }
+                  }
+        
+                  return domainCards;
+                });
+              } catch (e) {
+                console.error(Helper.debug ? e : "An error occurred while creating the domain cards for the device popup!");
+              }
+
+              // let domainCards = createDomainCards(domain, Helper.getEntitiesIdsLinkedToDevice(device, domain))
+              
+              if (domainCards.length) {
+                popupCards.push({
+                  type: "vertical-stack",
+                  cards: domainCards,
+                });
+              }
+            }
+
+            deviceOptions = {
+              ...{
+                tap_action: {
+                  action: "call-service",
+                  service: "browser_mod.popup",
+                  data: {
+                    dismissable: true,
+                    autoclose: false,
+                    content: {
+                      type: "vertical-stack",
+                      cards: popupCards,
+                    },
+                  },
+                  target: {
+                    device_id: "this"
+                  },
+                }
+              },
+              ...deviceOptions,
+            }
+
+            if (!deviceOptions.hidden) {
+              deviceCards.push(new DeviceCard(device, deviceOptions).getCard());
+            }
+
+              
+          }
+
+          if (deviceCards.length) {
+            viewCards.push({
+              type: "vertical-stack",
+              cards: deviceCards,
+            });
+          }
+        }
+      }
+      
+      // To be replaced by a method
 
       const className = Helper.sanitizeClassName(domain + "Card");
 
@@ -245,6 +407,97 @@ class MushroomStrategy {
       cards: viewCards,
     };
   }
+
+  // async createDomainCards(domain, entities) {
+  //   // Create vertically stacked cards for a domain 
+  //   const className = Helper.sanitizeClassName(domain + "Card");
+
+  //   try {
+  //     domainCards = await import(`./cards/${className}`).then(cardModule => {
+  //       let domainCards = [];
+
+  //       if (entities.length) {
+  //         // Create a Title card for the current domain.
+  //         const titleCard = new TitleCard(
+  //             [area],
+  //             Helper.strategyOptions.domains[domain],
+  //         ).createCard();
+
+  //         if (domain === "sensor") {
+  //           // Create a card for each entity-sensor of the current area.
+  //           const sensorStates = Helper.getStateEntities(area, "sensor");
+  //           const sensorCards  = [];
+
+  //           for (const sensor of entities) {
+  //             // Find the state of the current sensor.
+  //             const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
+  //             let cardOptions   = Helper.strategyOptions.card_options?.[sensor.entity_id] ?? {};
+  //             let deviceOptions   = Helper.strategyOptions.card_options?.[sensor.device_id] ?? {};
+
+  //             if (!cardOptions.hidden && !deviceOptions.hidden) {
+  //               if (sensorState?.attributes.unit_of_measurement) {
+  //                 cardOptions = {
+  //                   ...{
+  //                     type: "custom:mini-graph-card",
+  //                     entities: [sensor.entity_id],
+  //                   },
+  //                   ...cardOptions,
+  //                 };
+  //               }
+
+  //               sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
+  //             }
+  //           }
+
+  //           if (sensorCards.length) {
+  //             domainCards.push({
+  //               type: "vertical-stack",
+  //               cards: sensorCards,
+  //             });
+
+  //             domainCards.unshift(titleCard);
+  //           }
+
+  //           return domainCards;
+  //         }
+
+  //         // Create a card for each domain-entity of the current area.
+  //         for (const entity of entities) {
+  //           let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
+  //           let deviceOptions   = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
+
+  //           if (!cardOptions.hidden && !deviceOptions.hidden) {
+  //             domainCards.push(new cardModule[className](entity, cardOptions).getCard());
+  //           }
+  //         }
+
+  //         if (domain === "binary_sensor") {
+  //           // Horizontally group every two binary sensor cards.
+  //           const horizontalCards = [];
+
+  //           for (let i = 0; i < domainCards.length; i += 2) {
+  //             horizontalCards.push({
+  //               type: "horizontal-stack",
+  //               cards: domainCards.slice(i, i + 2),
+  //             });
+  //           }
+
+  //           domainCards = horizontalCards;
+  //         }
+
+  //         if (domainCards.length) {
+  //           domainCards.unshift(titleCard);
+  //         }
+  //       }
+
+  //       return domainCards;
+  //     });
+  //   } catch (e) {
+  //     console.error(Helper.debug ? e : "An error occurred while creating the domain cards for the device popup!");
+  //   }
+    
+  //   return domainCards;
+  // }
 }
 
 // noinspection JSUnresolvedReference
