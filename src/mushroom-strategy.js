@@ -1,5 +1,5 @@
 import {Helper} from "./Helper";
-import { DeviceCard } from "./cards/DeviceCard";
+import {DeviceCard} from "./cards/DeviceCard";
 import {SensorCard} from "./cards/SensorCard";
 import {TitleCard} from "./cards/TitleCard";
 
@@ -37,8 +37,8 @@ class MushroomStrategy {
     for (let viewId of Helper.getExposedViewIds()) {
       try {
         const viewType = Helper.sanitizeClassName(viewId + "View");
-        viewModule     = await import(`./views/${viewType}`);
-        const view     = await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView();
+        viewModule = await import(`./views/${viewType}`);
+        const view = await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView();
 
         views.push(view);
 
@@ -85,8 +85,8 @@ class MushroomStrategy {
    */
   static async generateView(info) {
     const exposedDomainIds = Helper.getExposedDomainIds();
-    const area             = info.view.strategy.options.area;
-    const viewCards        = [...(area.extra_cards ?? [])];
+    const area = info.view.strategy.options.area;
+    const viewCards = [...(area.extra_cards ?? [])];
 
     // Create cards for each domain.
     for (const domain of exposedDomainIds) {
@@ -105,109 +105,21 @@ class MushroomStrategy {
             type: "custom:mushroom-title-card",
             title: "Devices",
           });
-          
+
           // Create a Device card for each device.
           for (const device of devices) {
             let deviceOptions = Helper.strategyOptions.card_options?.[device] ?? {};
             let domainCards = [];
-            
+
+            // Create domain cards for popup
             for (const domain of exposedDomainIds) {
               if (domain === "default" || domain === "device") {
                 continue;
               }
 
-              // To be replaced by a method
+              // Replaced by a method
+              domainCards = await MushroomStrategy.#getDomainCards(domain, area, device);
 
-              // Create cards for popup
-              const className = Helper.sanitizeClassName(domain + "Card");
-  
-              try {
-                domainCards = await import(`./cards/${className}`).then(cardModule => {
-                  let domainCards = [];
-                  const entities  = Helper.getEntitiesIdsLinkedToDevice(device, domain);
-        
-                  if (entities.length) {
-                    // Create a Title card for the current domain.
-                    const titleCard = new TitleCard(
-                        [area],
-                        Helper.strategyOptions.domains[domain],
-                    ).createCard();
-        
-                    if (domain === "sensor") {
-                      // Create a card for each entity-sensor of the current area.
-                      const sensorStates = Helper.getStateEntities(area, "sensor");
-                      const sensorCards  = [];
-        
-                      for (const sensor of entities) {
-                        // Find the state of the current sensor.
-                        const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
-                        let cardOptions   = Helper.strategyOptions.card_options?.[sensor.entity_id] ?? {};
-                        let deviceOptions   = Helper.strategyOptions.card_options?.[sensor.device_id] ?? {};
-        
-                        if (!cardOptions.hidden && !deviceOptions.hidden) {
-                          if (sensorState?.attributes.unit_of_measurement) {
-                            cardOptions = {
-                              ...{
-                                type: "custom:mini-graph-card",
-                                entities: [sensor.entity_id],
-                              },
-                              ...cardOptions,
-                            };
-                          }
-        
-                          sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
-                        }
-                      }
-        
-                      if (sensorCards.length) {
-                        domainCards.push({
-                          type: "vertical-stack",
-                          cards: sensorCards,
-                        });
-        
-                        domainCards.unshift(titleCard);
-                      }
-        
-                      return domainCards;
-                    }
-        
-                    // Create a card for each domain-entity of the current area.
-                    for (const entity of entities) {
-                      let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
-                      let deviceOptions   = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
-        
-                      if (!cardOptions.hidden && !deviceOptions.hidden) {
-                        domainCards.push(new cardModule[className](entity, cardOptions).getCard());
-                      }
-                    }
-        
-                    if (domain === "binary_sensor") {
-                      // Horizontally group every two binary sensor cards.
-                      const horizontalCards = [];
-        
-                      for (let i = 0; i < domainCards.length; i += 2) {
-                        horizontalCards.push({
-                          type: "horizontal-stack",
-                          cards: domainCards.slice(i, i + 2),
-                        });
-                      }
-        
-                      domainCards = horizontalCards;
-                    }
-        
-                    if (domainCards.length) {
-                      domainCards.unshift(titleCard);
-                    }
-                  }
-        
-                  return domainCards;
-                });
-              } catch (e) {
-                console.error(Helper.debug ? e : "An error occurred while creating the domain cards for the device popup!");
-              }
-
-              // let domainCards = createDomainCards(domain, Helper.getEntitiesIdsLinkedToDevice(device, domain))
-              
               if (domainCards.length) {
                 popupCards.push({
                   type: "vertical-stack",
@@ -230,18 +142,16 @@ class MushroomStrategy {
                     },
                   },
                   target: {
-                    device_id: "this"
+                    device_id: ""
                   },
                 }
               },
               ...deviceOptions,
-            }
+            };
 
             if (!deviceOptions.hidden) {
               deviceCards.push(new DeviceCard(device, deviceOptions).getCard());
             }
-
-              
           }
 
           if (deviceCards.length) {
@@ -252,97 +162,14 @@ class MushroomStrategy {
           }
         }
       }
-      
+
       // To be replaced by a method
 
       const className = Helper.sanitizeClassName(domain + "Card");
 
       let domainCards = [];
 
-      try {
-        domainCards = await import(`./cards/${className}`).then(cardModule => {
-          let domainCards = [];
-          const entities  = Helper.getDeviceEntities(area, domain);
-
-          if (entities.length) {
-            // Create a Title card for the current domain.
-            const titleCard = new TitleCard(
-                [area],
-                Helper.strategyOptions.domains[domain],
-            ).createCard();
-
-            if (domain === "sensor") {
-              // Create a card for each entity-sensor of the current area.
-              const sensorStates = Helper.getStateEntities(area, "sensor");
-              const sensorCards  = [];
-
-              for (const sensor of entities) {
-                // Find the state of the current sensor.
-                const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
-                let cardOptions   = Helper.strategyOptions.card_options?.[sensor.entity_id] ?? {};
-                let deviceOptions   = Helper.strategyOptions.card_options?.[sensor.device_id] ?? {};
-
-                if (!cardOptions.hidden && !deviceOptions.hidden) {
-                  if (sensorState?.attributes.unit_of_measurement) {
-                    cardOptions = {
-                      ...{
-                        type: "custom:mini-graph-card",
-                        entities: [sensor.entity_id],
-                      },
-                      ...cardOptions,
-                    };
-                  }
-
-                  sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
-                }
-              }
-
-              if (sensorCards.length) {
-                domainCards.push({
-                  type: "vertical-stack",
-                  cards: sensorCards,
-                });
-
-                domainCards.unshift(titleCard);
-              }
-
-              return domainCards;
-            }
-
-            // Create a card for each domain-entity of the current area.
-            for (const entity of entities) {
-              let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
-              let deviceOptions   = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
-
-              if (!cardOptions.hidden && !deviceOptions.hidden) {
-                domainCards.push(new cardModule[className](entity, cardOptions).getCard());
-              }
-            }
-
-            if (domain === "binary_sensor") {
-              // Horizontally group every two binary sensor cards.
-              const horizontalCards = [];
-
-              for (let i = 0; i < domainCards.length; i += 2) {
-                horizontalCards.push({
-                  type: "horizontal-stack",
-                  cards: domainCards.slice(i, i + 2),
-                });
-              }
-
-              domainCards = horizontalCards;
-            }
-
-            if (domainCards.length) {
-              domainCards.unshift(titleCard);
-            }
-          }
-
-          return domainCards;
-        });
-      } catch (e) {
-        console.error(Helper.debug ? e : "An error occurred while creating the domain cards!");
-      }
+      domainCards = await MushroomStrategy.#getDomainCards(domain, area);
 
       if (domainCards.length) {
         viewCards.push({
@@ -356,7 +183,7 @@ class MushroomStrategy {
       // Create cards for any other domain.
       // Collect device entities of the current area.
       const areaDevices = Helper.devices.filter(device => device.area_id === area.area_id)
-          .map(device => device.id);
+        .map(device => device.id);
 
       // Collect the remaining entities of which all conditions below are met:
       // 1. The entity is linked to a device which is linked to the current area,
@@ -364,9 +191,9 @@ class MushroomStrategy {
       // 2. The entity is not hidden and is not disabled.
       const miscellaneousEntities = Helper.entities.filter(entity => {
         return (areaDevices.includes(entity.device_id) || entity.area_id === area.area_id)
-            && entity.hidden_by == null
-            && entity.disabled_by == null
-            && !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0]);
+          && entity.hidden_by == null
+          && entity.disabled_by == null
+          && !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0]);
       });
 
       // Create a column of miscellaneous entity cards.
@@ -382,7 +209,7 @@ class MushroomStrategy {
 
             for (const entity of miscellaneousEntities) {
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
-              let deviceOptions   = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
+              let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
 
               if (!cardOptions.hidden && !deviceOptions.hidden) {
                 miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
@@ -408,96 +235,96 @@ class MushroomStrategy {
     };
   }
 
-  // async createDomainCards(domain, entities) {
-  //   // Create vertically stacked cards for a domain 
-  //   const className = Helper.sanitizeClassName(domain + "Card");
+  static async #getDomainCards(domain, area, device) {
+    let domainCards = [];
+    const className = Helper.sanitizeClassName(domain + "Card");
 
-  //   try {
-  //     domainCards = await import(`./cards/${className}`).then(cardModule => {
-  //       let domainCards = [];
+    try {
+      domainCards = await import(`./cards/${className}`).then(cardModule => {
+        let domainCards = [];
+        const entities = device ? Helper.getEntitiesIdsLinkedToDevice(device, domain) : Helper.getDeviceEntities(area, domain);
 
-  //       if (entities.length) {
-  //         // Create a Title card for the current domain.
-  //         const titleCard = new TitleCard(
-  //             [area],
-  //             Helper.strategyOptions.domains[domain],
-  //         ).createCard();
+        if (entities.length) {
+          // Create a Title card for the current domain.
+          const titleCard = new TitleCard(
+            [area],
+            Helper.strategyOptions.domains[domain],
+          ).createCard();
 
-  //         if (domain === "sensor") {
-  //           // Create a card for each entity-sensor of the current area.
-  //           const sensorStates = Helper.getStateEntities(area, "sensor");
-  //           const sensorCards  = [];
+          if (domain === "sensor") {
+            // Create a card for each entity-sensor of the current area.
+            const sensorStates = Helper.getStateEntities(area, "sensor");
+            const sensorCards = [];
 
-  //           for (const sensor of entities) {
-  //             // Find the state of the current sensor.
-  //             const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
-  //             let cardOptions   = Helper.strategyOptions.card_options?.[sensor.entity_id] ?? {};
-  //             let deviceOptions   = Helper.strategyOptions.card_options?.[sensor.device_id] ?? {};
+            for (const sensor of entities) {
+              // Find the state of the current sensor.
+              const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
+              let cardOptions = Helper.strategyOptions.card_options?.[sensor.entity_id] ?? {};
+              let deviceOptions = Helper.strategyOptions.card_options?.[sensor.device_id] ?? {};
 
-  //             if (!cardOptions.hidden && !deviceOptions.hidden) {
-  //               if (sensorState?.attributes.unit_of_measurement) {
-  //                 cardOptions = {
-  //                   ...{
-  //                     type: "custom:mini-graph-card",
-  //                     entities: [sensor.entity_id],
-  //                   },
-  //                   ...cardOptions,
-  //                 };
-  //               }
+              if (!cardOptions.hidden && !deviceOptions.hidden) {
+                if (sensorState?.attributes.unit_of_measurement) {
+                  cardOptions = {
+                    ...{
+                      type: "custom:mini-graph-card",
+                      entities: [sensor.entity_id],
+                    },
+                    ...cardOptions,
+                  };
+                }
 
-  //               sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
-  //             }
-  //           }
+                sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
+              }
+            }
 
-  //           if (sensorCards.length) {
-  //             domainCards.push({
-  //               type: "vertical-stack",
-  //               cards: sensorCards,
-  //             });
+            if (sensorCards.length) {
+              domainCards.push({
+                type: "vertical-stack",
+                cards: sensorCards,
+              });
 
-  //             domainCards.unshift(titleCard);
-  //           }
+              domainCards.unshift(titleCard);
+            }
 
-  //           return domainCards;
-  //         }
+            return domainCards;
+          }
 
-  //         // Create a card for each domain-entity of the current area.
-  //         for (const entity of entities) {
-  //           let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
-  //           let deviceOptions   = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
+          // Create a card for each domain-entity of the current area.
+          for (const entity of entities) {
+            let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id] ?? {};
+            let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id] ?? {};
 
-  //           if (!cardOptions.hidden && !deviceOptions.hidden) {
-  //             domainCards.push(new cardModule[className](entity, cardOptions).getCard());
-  //           }
-  //         }
+            if (!cardOptions.hidden && !deviceOptions.hidden) {
+              domainCards.push(new cardModule[className](entity, cardOptions).getCard());
+            }
+          }
 
-  //         if (domain === "binary_sensor") {
-  //           // Horizontally group every two binary sensor cards.
-  //           const horizontalCards = [];
+          if (domain === "binary_sensor") {
+            // Horizontally group every two binary sensor cards.
+            const horizontalCards = [];
 
-  //           for (let i = 0; i < domainCards.length; i += 2) {
-  //             horizontalCards.push({
-  //               type: "horizontal-stack",
-  //               cards: domainCards.slice(i, i + 2),
-  //             });
-  //           }
+            for (let i = 0; i < domainCards.length; i += 2) {
+              horizontalCards.push({
+                type: "horizontal-stack",
+                cards: domainCards.slice(i, i + 2),
+              });
+            }
 
-  //           domainCards = horizontalCards;
-  //         }
+            domainCards = horizontalCards;
+          }
 
-  //         if (domainCards.length) {
-  //           domainCards.unshift(titleCard);
-  //         }
-  //       }
+          if (domainCards.length) {
+            domainCards.unshift(titleCard);
+          }
+        }
 
-  //       return domainCards;
-  //     });
-  //   } catch (e) {
-  //     console.error(Helper.debug ? e : "An error occurred while creating the domain cards for the device popup!");
-  //   }
-    
-  //   return domainCards;
-  // }
+        return domainCards;
+      });
+    } catch (e) {
+      console.error(Helper.debug ? e : "An error occurred while creating the domain cards for the device popup!");
+    }
+    return domainCards;
+  }
 }
 
 // noinspection JSUnresolvedReference
