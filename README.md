@@ -265,6 +265,7 @@ By default, all pre-built views below are shown:
 
 | Available views | type    | Description                                                                  |
 |:----------------|:--------|:-----------------------------------------------------------------------------|
+| `home`          | object* | View to show the home screen.                                                |
 | `light`         | object* | View to control all lights and lights of each area.                          |
 | `fan`           | object* | View to control all fans and fans of each area.                              |
 | `cover`         | object* | View to control all covers and covers of each area.                          |
