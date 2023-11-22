@@ -11,7 +11,7 @@ It will make it a lot easier for us maintainers and smooth out the experience fo
 The community looks forward to your contributions.
 
 > And if you like the project, but just don't have time to contribute, that's fine.
-> There are other easy ways to support the project and show your appreciation, which we would also be very happy about:
+> There are other easy ways to support the project and show your appreciation, which we would also be thrilled about:
 > - Star the project
 > - Tweet about it
 > - Refer this project in your project's readme
@@ -58,14 +58,14 @@ We will then take care of the issue as soon as possible.
 > ### Legal Notice
 >
 > When contributing to this project, you must agree that you have authored 100% of the content, that you have the
-> necessary rights to the content and that the content you contribute may be provided under the project license.
+> necessary rights to the content, and that the content you contribute may be provided under the project license.
 
 ### Reporting Bugs
 
 #### Before Submitting a Bug Report
 
 A good bug report shouldn't leave others needing to chase you up for more information.
-Therefore, we ask you to investigate carefully, collect information and describe the issue in detail in your report.
+Therefore, we ask you to investigate carefully, collect information, and describe the issue in detail in your report.
 Please complete the following steps in advance to help us fix any potential bug as fast as possible.
 
 - Make sure that you are using the latest version.
@@ -87,7 +87,7 @@ Please complete the following steps in advance to help us fix any potential bug 
 
 #### How Do I Submit a Good Bug Report?
 
-> You must never report security related issues, vulnerabilities or bugs including sensitive information to the issue
+> You must never report security related issues, vulnerabilities, or bugs including sensitive information to the issue
 > tracker, or elsewhere in public.
 > Instead, sensitive bugs must be sent by email to <aaliankhan5@gmail.com>.
 
