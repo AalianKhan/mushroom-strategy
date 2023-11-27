@@ -62,6 +62,12 @@ class Helper {
   static #strategyOptions: generic.StrategyConfig;
 
   /**
+   * Indicates if the display is narrow (i.e. mobile)
+   * @type {boolean}
+   */
+  static #narrow: boolean;
+
+  /**
    * Set to true for more verbose information in the console.
    *
    * @type {boolean}
@@ -132,6 +138,14 @@ class Helper {
   }
 
   /**
+   * @returns {boolean}
+   * @static
+   */
+  static get narrow(): boolean {
+    return this.#narrow;
+  }
+
+  /**
    * Initialize this module.
    *
    * @param {generic.DashBoardInfo} info Strategy information object.
@@ -141,6 +155,7 @@ class Helper {
   static async initialize(info: generic.DashBoardInfo): Promise<void> {
     // Initialize properties.
     this.#hassStates = info.hass.states;
+    this.#narrow = window.matchMedia("(max-width: 870px)").matches;
     this.#strategyOptions = deepmerge(configurationDefaults, info.config?.strategy?.options ?? {});
     this.#debug = this.#strategyOptions.debug;
 

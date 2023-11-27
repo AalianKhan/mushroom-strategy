@@ -9,6 +9,7 @@ import {ActionConfig} from "../types/homeassistant/data/lovelace";
 import {TitleCardConfig} from "../types/lovelace-mushroom/cards/title-card-config";
 import {PersonCardConfig} from "../types/lovelace-mushroom/cards/person-card-config";
 
+const DEFAULT_AREAS_PER_ROW = 2;
 
 // noinspection JSUnusedGlobalSymbols Class is dynamically imported.
 /**
@@ -263,10 +264,16 @@ class HomeView extends AbstractView {
 
       // Horizontally group every two area cards if all cards are created.
       if (i === Helper.areas.length - 1) {
-        for (let i = 0; i < areaCards.length; i += 2) {
+        let cardsPerRow = Helper.strategyOptions.home_view?.areas_per_row ?? DEFAULT_AREAS_PER_ROW;
+
+        if (typeof cardsPerRow === 'object') {
+          cardsPerRow = (Helper.narrow ? cardsPerRow.narrow : cardsPerRow.wide) ?? DEFAULT_AREAS_PER_ROW;
+        }
+
+        for (let i = 0; i < areaCards.length; i += cardsPerRow) {
           groupedCards.push({
             type: "horizontal-stack",
-            cards: areaCards.slice(i, i + 2),
+            cards: areaCards.slice(i, i + cardsPerRow),
           } as StackCardConfig);
         }
       }
