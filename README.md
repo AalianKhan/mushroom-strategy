@@ -40,7 +40,7 @@ Please visit [Installation Guide](https://github.com/AalianKhan/mushroom-strateg
 
 ## Need some help?
 
-Visit the [discussions](https://github.com/AalianKhan/mushroom-strategy/discussions) page.
+Visit the [Discussions](https://github.com/AalianKhan/mushroom-strategy/discussions) page or the [Wiki](https://github.com/AalianKhan/mushroom-strategy/wiki).
 
 ## Have an idea or want to report a bug?
 
