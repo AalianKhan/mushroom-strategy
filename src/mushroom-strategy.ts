@@ -175,9 +175,17 @@ class MushroomStrategy extends HTMLTemplateElement {
                 deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
               }
 
-              if (!cardOptions?.hidden && !deviceOptions?.hidden) {
-                domainCards.push(new cardModule[className](entity, cardOptions).getCard());
+              if (cardOptions?.hidden || deviceOptions?.hidden) {
+                continue;
               }
+
+              if (entity.entity_category === "config" &&
+                (Helper.strategyOptions.domains[domain].hide_config_entities ||
+                  Helper.strategyOptions.domains.default.hide_config_entities)) {
+                continue;
+              }
+
+              domainCards.push(new cardModule[className](entity, cardOptions).getCard());
             }
 
             if (domain === "binary_sensor") {
@@ -246,9 +254,16 @@ class MushroomStrategy extends HTMLTemplateElement {
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
               let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
 
-              if (!cardOptions?.hidden && !deviceOptions?.hidden) {
-                miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
+              if (cardOptions?.hidden || deviceOptions?.hidden) {
+                continue;
               }
+
+              if (entity.entity_category === "config" &&
+                Helper.strategyOptions.domains.default.hide_config_entities) {
+                continue;
+              }
+
+              miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
             }
 
             return miscellaneousCards;

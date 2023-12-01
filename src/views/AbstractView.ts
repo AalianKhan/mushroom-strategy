@@ -98,6 +98,12 @@ abstract class AbstractView {
           continue;
         }
 
+        if (entity.entity_category === "config" &&
+          (Helper.strategyOptions.domains[this.#domain ?? ""].hide_config_entities ||
+            Helper.strategyOptions.domains.default.hide_config_entities)) {
+          continue;
+        }
+
         areaCards.push(new cardModule[className](entity, cardOptions).getCard());
       }
 

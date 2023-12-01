@@ -40,6 +40,7 @@ export namespace generic {
   export interface DomainConfig extends Partial<cards.ControllerCardConfig> {
     hidden?: boolean;
     order?: number;
+    hide_config_entities?: boolean
   }
 
   /**
