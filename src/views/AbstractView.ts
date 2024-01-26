@@ -149,7 +149,7 @@ abstract class AbstractView {
         entity =>
           entity.entity_id.startsWith(domain + ".")
           && !entity.hidden_by
-          && !Helper.strategyOptions.card_options?.entity_id?.hidden
+          && !Helper.strategyOptions.card_options?.[entity.entity_id]?.hidden
       ).map(entity => entity.entity_id),
     };
   }
