@@ -99,8 +99,8 @@ abstract class AbstractView {
         }
 
         if (entity.entity_category === "config" &&
-          (Helper.strategyOptions.domains[this.#domain ?? ""].hide_config_entities ||
-            Helper.strategyOptions.domains.default.hide_config_entities)) {
+          (Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities ||
+            Helper.strategyOptions.domains["_"].hide_config_entities)) {
           continue;
         }
 
