@@ -181,7 +181,7 @@ class MushroomStrategy extends HTMLTemplateElement {
 
               if (entity.entity_category === "config" &&
                 (Helper.strategyOptions.domains[domain].hide_config_entities ||
-                  Helper.strategyOptions.domains.default.hide_config_entities)) {
+                  Helper.strategyOptions.domains['_'].hide_config_entities)) {
                 continue;
               }
 

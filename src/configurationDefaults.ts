@@ -97,6 +97,8 @@ export const configurationDefaults: StrategyDefaults = {
       showControls: true,
       hidden: false,
     },
+    _: {
+    }
   },
   home_view: {
     hidden: [],
