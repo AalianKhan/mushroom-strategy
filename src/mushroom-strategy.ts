@@ -170,18 +170,21 @@ class MushroomStrategy extends HTMLTemplateElement {
             for (const entity of entities) {
               let deviceOptions;
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
+              let configEntityHidden =
+                    Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
+                    || Helper.strategyOptions.domains["_"].hide_config_entities;
 
               if (entity.device_id) {
                 deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
               }
 
+              // Don't include the entity if hidden in the strategy options.
               if (cardOptions?.hidden || deviceOptions?.hidden) {
                 continue;
               }
 
-              if (entity.entity_category === "config" &&
-                (Helper.strategyOptions.domains[domain].hide_config_entities ||
-                  Helper.strategyOptions.domains['_'].hide_config_entities)) {
+              // Don't include the config-entity if hidden in the strategy options.
+              if (entity.entity_category === "config" && configEntityHidden) {
                 continue;
               }
 
@@ -254,12 +257,13 @@ class MushroomStrategy extends HTMLTemplateElement {
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
               let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
 
+              // Don't include the entity if hidden in the strategy options.
               if (cardOptions?.hidden || deviceOptions?.hidden) {
                 continue;
               }
 
-              if (entity.entity_category === "config" &&
-                Helper.strategyOptions.domains.default.hide_config_entities) {
+              // Don't include the config-entity if hidden in the strategy options
+              if (entity.entity_category === "config" && Helper.strategyOptions.domains["_"].hide_config_entities) {
                 continue;
               }
 
