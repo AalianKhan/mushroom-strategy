@@ -93,14 +93,15 @@ abstract class AbstractView {
       for (const entity of entities) {
         let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
         let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
+        let configEntityHidden =
+              Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities
+              || Helper.strategyOptions.domains["_"].hide_config_entities;
 
         if (cardOptions?.hidden || deviceOptions?.hidden) {
           continue;
         }
 
-        if (entity.entity_category === "config" &&
-          (Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities ||
-            Helper.strategyOptions.domains["_"].hide_config_entities)) {
+        if (entity.entity_category === "config" && configEntityHidden) {
           continue;
         }
 

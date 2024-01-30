@@ -16,6 +16,9 @@ export const configurationDefaults: StrategyDefaults = {
   },
   debug: false,
   domains: {
+    _: {
+      hide_config_entities: false,
+    },
     default: {
       title: "Miscellaneous",
       showControls: false,
@@ -97,8 +100,6 @@ export const configurationDefaults: StrategyDefaults = {
       showControls: true,
       hidden: false,
     },
-    _: {
-    }
   },
   home_view: {
     hidden: [],
