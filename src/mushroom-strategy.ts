@@ -113,6 +113,9 @@ class MushroomStrategy extends HTMLTemplateElement {
         domainCards = await import(`./cards/${className}`).then(cardModule => {
           let domainCards = [];
           const entities = Helper.getDeviceEntities(area, domain);
+          let configEntityHidden =
+                Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
+                || Helper.strategyOptions.domains["_"].hide_config_entities;
 
           // Set the target for controller cards to entities without an area.
           if (area.area_id === "undisclosed") {
@@ -170,9 +173,6 @@ class MushroomStrategy extends HTMLTemplateElement {
             for (const entity of entities) {
               let deviceOptions;
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
-              let configEntityHidden =
-                    Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
-                    || Helper.strategyOptions.domains["_"].hide_config_entities;
 
               if (entity.device_id) {
                 deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
