@@ -1,6 +1,6 @@
 {
   "name": "mushroom-strategy",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Automatically create a dashboard using Mushroom cards",
   "keywords": [
     "strategy",
@@ -37,6 +37,6 @@
   "scripts": {
     "build-dev": "webpack --config webpack.dev.config.ts",
     "build": "webpack",
-    "bump": "bump -t --preid alpha package.json package-lock.json README.md ./src/mushroom-strategy.ts"
+    "bump": "bump --preid alpha package.json package-lock.json README.md ./src/mushroom-strategy.ts"
   }
 }
