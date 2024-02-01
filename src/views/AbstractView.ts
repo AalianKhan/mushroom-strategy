@@ -69,6 +69,9 @@ abstract class AbstractView {
    */
   async createViewCards(): Promise<(StackCardConfig | TitleCardConfig)[]> {
     const viewCards: LovelaceCardConfig[] = [];
+    const configEntityHidden =
+          Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities
+          || Helper.strategyOptions.domains["_"].hide_config_entities;
 
     // Create cards for each area.
     for (const area of Helper.areas) {
@@ -95,6 +98,10 @@ abstract class AbstractView {
         let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
 
         if (cardOptions?.hidden || deviceOptions?.hidden) {
+          continue;
+        }
+
+        if (entity.entity_category === "config" && configEntityHidden) {
           continue;
         }
 

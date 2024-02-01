@@ -67,13 +67,13 @@ Visit the [issues](https://github.com/AalianKhan/mushroom-strategy/issues/new/ch
 
 [sponsorBadge]: https://img.shields.io/badge/Sponsor_him-%E2%9D%A4-%23db61a2.svg?&logo=github&color=%23fe8e86
 
-[releaseBadge]: https://img.shields.io/badge/Release-v2.0.3-blue
+[releaseBadge]: https://img.shields.io/badge/Release-v2.1.0-blue
 
 <!-- Other References -->
 
 [hacsUrl]: https://hacs.xyz
 
-[releaseUrl]: https://github.com/AalianKhan/mushroom-strategy/releases/tag/v2.0.3
+[releaseUrl]: https://github.com/AalianKhan/mushroom-strategy/releases/tag/v2.1.0
 
 [mushroomUrl]: https://github.com/piitaya/lovelace-mushroom
 
