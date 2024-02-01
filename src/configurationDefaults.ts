@@ -24,6 +24,11 @@ export const configurationDefaults: StrategyDefaults = {
       showControls: false,
       hidden: false,
     },
+    device: {
+      title: "Devices",
+      showControls: false,
+      hidden: false,
+    },
     light: {
       title: "Lights",
       showControls: true,
