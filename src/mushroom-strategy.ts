@@ -113,6 +113,9 @@ class MushroomStrategy extends HTMLTemplateElement {
         domainCards = await import(`./cards/${className}`).then(cardModule => {
           let domainCards = [];
           const entities = Helper.getDeviceEntities(area, domain);
+          let configEntityHidden =
+                Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
+                || Helper.strategyOptions.domains["_"].hide_config_entities;
 
           // Set the target for controller cards to entities without an area.
           if (area.area_id === "undisclosed") {
@@ -175,9 +178,17 @@ class MushroomStrategy extends HTMLTemplateElement {
                 deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
               }
 
-              if (!cardOptions?.hidden && !deviceOptions?.hidden) {
-                domainCards.push(new cardModule[className](entity, cardOptions).getCard());
+              // Don't include the entity if hidden in the strategy options.
+              if (cardOptions?.hidden || deviceOptions?.hidden) {
+                continue;
               }
+
+              // Don't include the config-entity if hidden in the strategy options.
+              if (entity.entity_category === "config" && configEntityHidden) {
+                continue;
+              }
+
+              domainCards.push(new cardModule[className](entity, cardOptions).getCard());
             }
 
             if (domain === "binary_sensor") {
@@ -246,9 +257,17 @@ class MushroomStrategy extends HTMLTemplateElement {
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
               let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
 
-              if (!cardOptions?.hidden && !deviceOptions?.hidden) {
-                miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
+              // Don't include the entity if hidden in the strategy options.
+              if (cardOptions?.hidden || deviceOptions?.hidden) {
+                continue;
               }
+
+              // Don't include the config-entity if hidden in the strategy options
+              if (entity.entity_category === "config" && Helper.strategyOptions.domains["_"].hide_config_entities) {
+                continue;
+              }
+
+              miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
             }
 
             return miscellaneousCards;
@@ -273,7 +292,7 @@ class MushroomStrategy extends HTMLTemplateElement {
 
 customElements.define("ll-strategy-mushroom-strategy", MushroomStrategy);
 
-const version = "v2.0.0";
+const version = "v2.1.0";
 console.info(
   "%c Mushroom Strategy %c ".concat(version, " "),
   "color: white; background: coral; font-weight: 700;", "color: coral; background: white; font-weight: 700;"
