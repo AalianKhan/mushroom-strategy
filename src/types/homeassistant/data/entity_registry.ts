@@ -51,6 +51,7 @@ export interface EntityRegistryEntry {
   unique_id: string;
   translation_key?: string;
   options: EntityRegistryOptions | null;
+  labels: string[];
 }
 
 export interface SensorEntityOptions {

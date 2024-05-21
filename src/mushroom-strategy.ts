@@ -43,11 +43,10 @@ class MushroomStrategy extends HTMLTemplateElement {
       try {
         const viewType = Helper.sanitizeClassName(viewId + "View");
         viewModule = await import(`./views/${viewType}`);
-        const view: LovelaceViewConfig = await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView();
+        (await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView())
+          .filter((v: LovelaceViewConfig) => v.cards?.length)
+          .forEach((v: LovelaceViewConfig) => views.push(v));
 
-        if (view.cards?.length) {
-          views.push(view);
-        }
       } catch (e) {
         Helper.logError(`View '${viewId}' couldn't be loaded!`, e);
       }
