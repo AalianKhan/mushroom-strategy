@@ -6,6 +6,7 @@ import {DeviceRegistryEntry} from "./types/homeassistant/data/device_registry";
 import {AreaRegistryEntry} from "./types/homeassistant/data/area_registry";
 import {generic} from "./types/strategy/generic";
 import StrategyArea = generic.StrategyArea;
+import {LabelRegistryEntry} from "./types/homeassistant/data/label_registry";
 
 /**
  * Helper Class
@@ -36,6 +37,14 @@ class Helper {
    * @private
    */
   static #areas: StrategyArea[] = [];
+
+  /**
+   * An array of entities from Home Assistant's label registry.
+   *
+   * @type {LabelRegistryEntry[]}
+   * @private
+   */
+  static #labels: LabelRegistryEntry[] = [];
 
   /**
    * An array of state entities from Home Assistant's Hass object.
@@ -122,6 +131,16 @@ class Helper {
   }
 
   /**
+   * Get the labels from Home Assistant's label registry.
+   *
+   * @returns {EntityRegistryEntry[]}
+   * @static
+   */
+  static get labels(): LabelRegistryEntry[] {
+    return this.#labels;
+  }
+
+  /**
    * Get the current debug mode of the mushroom strategy.
    *
    * @returns {boolean}
@@ -148,10 +167,11 @@ class Helper {
       // Query the registries of Home Assistant.
 
       // noinspection ES6MissingAwait False positive? https://youtrack.jetbrains.com/issue/WEB-63746
-      [Helper.#entities, Helper.#devices, Helper.#areas] = await Promise.all([
+      [Helper.#entities, Helper.#devices, Helper.#areas, Helper.#labels] = await Promise.all([
         info.hass.callWS({type: "config/entity_registry/list"}) as Promise<EntityRegistryEntry[]>,
         info.hass.callWS({type: "config/device_registry/list"}) as Promise<DeviceRegistryEntry[]>,
         info.hass.callWS({type: "config/area_registry/list"}) as Promise<AreaRegistryEntry[]>,
+        info.hass.callWS({type: "config/label_registry/list"}) as Promise<any[]>,
       ]);
     } catch (e) {
       Helper.logError("An error occurred while querying Home assistant's registries!", e);
@@ -233,7 +253,7 @@ class Helper {
      *
      * @type {string[]}
      */
-    const states: string[] = [];
+    const entities: EntityRegistryEntry[] = [];
 
     if (!this.isInitialized()) {
       console.warn("Helper class should be initialized before calling this method!");
@@ -248,16 +268,40 @@ class Helper {
       });
 
       // Get the entities of which all conditions of the callback function are met. @see areaFilterCallback.
-      const newStates = this.#entities.filter(
+       this.#entities.filter(
         this.#areaFilterCallback, {
           area: area,
           domain: domain,
           areaDeviceIds: areaDeviceIds,
-        })
-        .map((entity) => `states['${entity.entity_id}']`);
+        }).forEach(entity => entities.push(entity))
 
-      states.push(...newStates);
     }
+
+    return this.getCountEntityTemplate(entities, operator, value);
+  }
+
+  static getCountEntityTemplate(entities: EntityRegistryEntry[], operator: string, value: string): string {
+    // noinspection JSMismatchedCollectionQueryUpdate (False positive per 17-04-2023)
+    /**
+     * Array of entity state-entries, filtered by domain.
+     *
+     * Each element contains a template-string which is used to access home assistant's state machine (state object) in
+     * a template.
+     * E.g. "states['light.kitchen']"
+     *
+     * The array excludes hidden and disabled entities.
+     *
+     * @type {string[]}
+     */
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
+    // Get the ID of the devices which are linked to the given area.
+
+    // Get the entities of which all conditions of the callback function are met. @see areaFilterCallback.
+    const states = entities
+      .map((entity) => `states['${entity.entity_id}']`);
 
     return `{% set entities = [${states}] %} {{ entities | selectattr('state','${operator}','${value}') | list | count }}`;
   }

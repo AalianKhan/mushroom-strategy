@@ -28,24 +28,14 @@ abstract class AbstractView {
   };
 
   /**
-   * A card to switch all entities in the view.
-   *
-   * @type {StackCardConfig}
-   */
-  viewControllerCard: StackCardConfig = {
-    cards: [],
-    type: "",
-  };
-
-  /**
    * The domain of which we operate the devices.
    *
    * @private
    * @readonly
    */
   protected readonly prefix: string;
-  readonly #domain?: string;
 
+  protected abstract viewControllerCardConfig(entities: EntityRegistryEntry[], content?: string): cards.ControllerCardOptions;
 
   /**
    * Class constructor.
@@ -55,30 +45,39 @@ abstract class AbstractView {
    * @throws {Error} If trying to instantiate this class.
    * @throws {Error} If the Helper module isn't initialized.
    */
-  protected constructor(domain: string = "") {
+  protected constructor(protected readonly domain: string = '') {
     if (!Helper.isInitialized()) {
       throw new Error("The Helper module must be initialized before using this one.");
     }
-    this.#domain = domain;
-    this.prefix = this.#domain ? `ms_${this.#domain}_` : ''
+    this.domain = domain;
+    this.prefix = this.domain ? `ms_${this.domain}_` : ''
   }
+
+  createCard(entities: EntityRegistryEntry[], label?: string): StackCardConfig {
+    return new ControllerCard(
+      this.toTargetEntities(entities),
+      {
+        ...this.viewControllerCardConfig(entities, label),
+        ...("controllerCardOptions" in this.config ? this.config.controllerCardOptions : {}) as cards.ControllerCardConfig,
+      }).createCard();
+  };
 
   /**
    * Create the cards to include in the view.
    *
    * @return {Promise<(StackCardConfig | TitleCardConfig)[]>} An array of card objects.
    */
-  async createViewCards(label?: string, labelFilter: (entity: EntityRegistryEntry) => boolean = () => true): Promise<(StackCardConfig | TitleCardConfig)[]> {
+  async createViewCards(labelFilter: (entity: EntityRegistryEntry) => boolean, label?: string): Promise<(StackCardConfig | TitleCardConfig)[]> {
     const viewCards: StackCardConfig[] = [];
     const configEntityHidden =
-            Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities
+            Helper.strategyOptions.domains[this.domain ?? "_"].hide_config_entities
             || Helper.strategyOptions.domains["_"].hide_config_entities;
 
     // Create cards for each area.
     for (const area of Helper.areas) {
       const areaCards: abstractCardConfig[] = [];
-      const entities = Helper.getDeviceEntities(area, this.#domain ?? "").filter(labelFilter);
-      const className = Helper.sanitizeClassName(this.#domain + "Card");
+      const entities = Helper.getDeviceEntities(area, this.domain).filter(labelFilter);
+      const className = Helper.sanitizeClassName(this.domain + "Card");
       const cardModule = await import(`../cards/${className}`);
 
       // Set the target for controller cards to the current area.
@@ -88,9 +87,7 @@ abstract class AbstractView {
 
       // Set the target for controller cards to entities without an area.
       if (area.area_id === "undisclosed") {
-        target = {
-          entity_id: entities.map(entity => entity.entity_id),
-        }
+        target = this.toTargetEntities(entities);
       }
 
       // Create a card for each domain-entity of the current area.
@@ -125,7 +122,8 @@ abstract class AbstractView {
 
     // Add a Controller Card for all the entities in the view.
     if (viewCards.length) {
-      viewCards.unshift(this.viewControllerCard);
+      const entities = this.entitiesOfDomain(this.domain).filter(labelFilter);
+      viewCards.unshift(this.createCard(entities, label));
     }
 
     return viewCards;
@@ -139,22 +137,22 @@ abstract class AbstractView {
    * @returns {Promise<LovelaceViewConfig[]>} The view arrays of domain.
    */
   async getView(): Promise<LovelaceViewConfig[]> {
-    const msLabelsOfDomain = this.#domain ?
-      this.labelsOfDomain(this.#domain).filter(label => label.startsWith(this.prefix)) :
+    const msLabelsOfDomain = this.domain ?
+      this.labelsOfDomain(this.domain).filter(label => label.startsWith(this.prefix)) :
       [];
-
     const views = (await Promise.all(msLabelsOfDomain
-      .map(async label => await this.createViewCards(label.replace(this.prefix, ''), entity => entity.labels.includes(label)))))
+      .map(async label => await this.createViewCards(entity => entity.labels.includes(label), label.replace(this.prefix, ''),))))
       .map((cards, index) => ({
         ...this.config,
         cards,
         title: msLabelsOfDomain[index].replace(this.prefix, ""),
         path: msLabelsOfDomain[index].replace(this.prefix, "").toLowerCase(),
+        icon: Helper.labels.find(label => label.name === msLabelsOfDomain[index])?.icon || this.config.icon,
       }));
 
     const mainView = ({
       ...this.config,
-      cards: await this.createViewCards(undefined, entity => !this.prefix || !entity.labels.some(label => label.startsWith(this.prefix))),
+      cards: await this.createViewCards(entity => !this.prefix || !entity.labels.some(label => label.startsWith(this.prefix))),
     });
 
 
@@ -177,26 +175,16 @@ abstract class AbstractView {
   };
 
   /**
-   * Get a target of entity IDs for the given domain.
+   * Get a target of entity IDs for the given domain.)
    *
-   * @param {string} domain - The target domain to retrieve entity IDs from.
+   * @param {EntityRegistryEntry[]} entities - List of target entries.
    * @return {HassServiceTarget} - A target for a service call.
    */
-  targetDomain(domain: string): HassServiceTarget {
+  toTargetEntities(entities: EntityRegistryEntry[]): HassServiceTarget {
     return {
-      entity_id: this.targetDomainEntities(domain)
+      entity_id: entities
         .map(entity => entity.entity_id)
     };
-  }
-
-  /**
-   * Get a target of entities for the given domain.
-   *
-   * @param {string} domain - The target domain to retrieve entity IDs from.
-   * @return {EntityRegistryEntry} - Entries for a service call.
-   */
-  private targetDomainEntities(domain: string): EntityRegistryEntry[] {
-    return this.entitiesOfDomain(domain);
   }
 
   /**

@@ -1,8 +1,8 @@
 import {Helper} from "../Helper";
-import {ControllerCard} from "../cards/ControllerCard";
 import {AbstractView} from "./AbstractView";
 import {views} from "../types/strategy/views";
 import {cards} from "../types/strategy/cards";
+import {EntityRegistryEntry} from "../types/homeassistant/data/entity_registry";
 
 // noinspection JSUnusedGlobalSymbols Class is dynamically imported.
 /**
@@ -48,10 +48,10 @@ class VacuumView extends AbstractView {
    * @type {cards.ControllerCardOptions}
    * @private
    */
-  #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Vacuums",
-    subtitle: Helper.getCountTemplate(VacuumView.#domain, "ne", "off") + " vacuums on",
-  };
+  viewControllerCardConfig = (entities: EntityRegistryEntry[], content: string = 'vacuums'): cards.ControllerCardOptions => ({
+    title: `All ${content}`,
+    subtitle: Helper.getCountEntityTemplate(entities, "ne", "off") + ` ${content} on`,
+  });
 
   /**
    * Class constructor.
@@ -62,14 +62,6 @@ class VacuumView extends AbstractView {
     super(VacuumView.#domain);
 
     this.config = Object.assign(this.config, this.#defaultConfig, options);
-
-    // Create a Controller card to switch all entities of the domain.
-    this.viewControllerCard = new ControllerCard(
-      this.targetDomain(VacuumView.#domain),
-      {
-        ...this.#viewControllerCardConfig,
-        ...("controllerCardOptions" in this.config ? this.config.controllerCardOptions : {}) as cards.ControllerCardConfig,
-      }).createCard();
   }
 }
 

@@ -8,6 +8,7 @@ import {TemplateCardConfig} from "../types/lovelace-mushroom/cards/template-card
 import {ActionConfig} from "../types/homeassistant/data/lovelace";
 import {TitleCardConfig} from "../types/lovelace-mushroom/cards/title-card-config";
 import {PersonCardConfig} from "../types/lovelace-mushroom/cards/person-card-config";
+import {cards} from "../types/strategy/cards";
 
 
 // noinspection JSUnusedGlobalSymbols Class is dynamically imported.
@@ -33,6 +34,8 @@ class HomeView extends AbstractView {
     subview: false,
   };
 
+  viewControllerCardConfig = (): cards.ControllerCardOptions => ({});
+
   /**
    * Class constructor.
    *
@@ -57,7 +60,7 @@ class HomeView extends AbstractView {
       this.#createAreaSection(),
     ]).then(([chips, personCards, areaCards]) => {
       const options = Helper.strategyOptions;
-      const homeViewCards = [];
+      const homeViewCards: (StackCardConfig | TemplateCardConfig | ChipsCardConfig)[] = [];
 
       if (chips.length) {
         // TODO: Create the Chip card at this.#createChips()

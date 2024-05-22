@@ -1,8 +1,8 @@
 import {Helper} from "../Helper";
-import {ControllerCard} from "../cards/ControllerCard";
 import {AbstractView} from "./AbstractView";
 import {views} from "../types/strategy/views";
 import {cards} from "../types/strategy/cards";
+import {EntityRegistryEntry} from "../types/homeassistant/data/entity_registry";
 
 // noinspection JSUnusedGlobalSymbols Class is dynamically imported.
 /**
@@ -14,14 +14,6 @@ import {cards} from "../types/strategy/cards";
  * @extends AbstractView
  */
 class CoverView extends AbstractView {
-  /**
-   * Domain of the view's entities.
-   *
-   * @type {string}
-   * @static
-   * @private
-   */
-  static #domain: string = "cover";
 
   /**
    * Default configuration of the view.
@@ -48,28 +40,20 @@ class CoverView extends AbstractView {
    * @type {cards.ControllerCardOptions}
    * @private
    */
-  #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Covers",
-    subtitle: Helper.getCountTemplate(CoverView.#domain, "eq", "open") + " covers open",
-  };
+  viewControllerCardConfig = (entities: EntityRegistryEntry[], content: string = "covers"): cards.ControllerCardOptions => ({
+    title: `All ${content}`,
+    subtitle: Helper.getCountEntityTemplate(entities, "eq", "open") + ` ${content} open`,
+  });
 
   /**
    * Class constructor.
    *
    * @param {views.ViewConfig} [options={}] Options for the view.
    */
-  constructor(options: views.ViewConfig = {}) {
-    super(CoverView.#domain);
+  constructor(private options: views.ViewConfig = {}) {
+    super("cover");
 
     this.config = Object.assign(this.config, this.#defaultConfig, options);
-
-    // Create a Controller card to switch all entities of the domain.
-    this.viewControllerCard = new ControllerCard(
-      this.targetDomain(CoverView.#domain),
-      {
-        ...this.#viewControllerCardConfig,
-        ...("controllerCardOptions" in this.config ? this.config.controllerCardOptions : {}) as cards.ControllerCardConfig,
-      }).createCard();
   }
 }
 
