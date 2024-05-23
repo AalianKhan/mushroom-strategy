@@ -8,9 +8,9 @@
  * @property {string} name - The name of the label.
  */
 export interface LabelRegistryEntry {
-  "color"?: string,
-  "description"?: string,
-  "icon"?: string,
-  "label_id": string,
-  "name": string
+  color?: string,
+  description?: string,
+  icon?: string,
+  label_id: string,
+  name: string
 }

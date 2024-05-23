@@ -7,6 +7,8 @@ import {TitleCardConfig} from "../types/lovelace-mushroom/cards/title-card-confi
 import {HassServiceTarget} from "home-assistant-js-websocket";
 import abstractCardConfig = cards.AbstractCardConfig;
 import {EntityRegistryEntry} from "../types/homeassistant/data/entity_registry";
+import {generic} from "../types/strategy/generic";
+import ViewConfig = generic.ViewConfig;
 
 /**
  * Abstract View Class.
@@ -136,22 +138,25 @@ abstract class AbstractView {
    *
    * @returns {Promise<LovelaceViewConfig[]>} The view arrays of domain.
    */
-  async getView(): Promise<LovelaceViewConfig[]> {
+  async getView(): Promise<(ViewConfig)[]> {
     const msLabelsOfDomain = this.domain ?
       this.labelsOfDomain(this.domain).filter(label => label.startsWith(this.prefix)) :
       [];
     const views = (await Promise.all(msLabelsOfDomain
       .map(async label => await this.createViewCards(entity => entity.labels.includes(label), label.replace(this.prefix, ''),))))
       .map((cards, index) => ({
-        ...this.config,
-        cards,
-        title: msLabelsOfDomain[index].replace(this.prefix, ""),
-        path: msLabelsOfDomain[index].replace(this.prefix, "").toLowerCase(),
         icon: Helper.labels.find(label => label.name === msLabelsOfDomain[index])?.icon || this.config.icon,
+        title: msLabelsOfDomain[index].replace(this.prefix, ""),
+        ...this.config,
+        ...Helper.strategyOptions.views[msLabelsOfDomain[index]],
+        id: msLabelsOfDomain[index],
+        path: msLabelsOfDomain[index].replace(this.prefix, "").toLowerCase(),
+        cards,
       }));
 
     const mainView = ({
       ...this.config,
+      id: this.domain ?? this.config.title?.toLowerCase(),
       cards: await this.createViewCards(entity => !this.prefix || !entity.labels.some(label => label.startsWith(this.prefix))),
     });
 

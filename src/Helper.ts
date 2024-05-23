@@ -7,6 +7,7 @@ import {AreaRegistryEntry} from "./types/homeassistant/data/area_registry";
 import {generic} from "./types/strategy/generic";
 import StrategyArea = generic.StrategyArea;
 import {LabelRegistryEntry} from "./types/homeassistant/data/label_registry";
+import ViewConfig = generic.ViewConfig;
 
 /**
  * Helper Class
@@ -201,13 +202,6 @@ class Helper {
       return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
     });
 
-    // Sort custom and default views of the strategy options by order first and then by title.
-    this.#strategyOptions.views = Object.fromEntries(
-      Object.entries(this.#strategyOptions.views).sort(([, a], [, b]) => {
-        return (a.order ?? Infinity) - (b.order ?? Infinity) || (a.title ?? "undefined").localeCompare(b.title ?? "undefined");
-      }),
-    );
-
     // Sort custom and default domains of the strategy options by order first and then by title.
     this.#strategyOptions.domains = Object.fromEntries(
       Object.entries(this.#strategyOptions.domains).sort(([, a], [, b]) => {
@@ -216,6 +210,16 @@ class Helper {
     );
 
     this.#initialized = true;
+  }
+
+  static sortViews(views: ViewConfig[]): ViewConfig[] {
+    const cleanedViews = views.filter(view => !this.#strategyOptions.views[view.id]?.hidden)
+    const sortedViews = cleanedViews.filter(item => !Number.isInteger(item.order));
+
+    cleanedViews.filter(item => Number.isInteger(item.order))
+      .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
+      .forEach((item) => sortedViews.splice(item.order ?? Infinity, 0, item));
+    return sortedViews
   }
 
   /**
@@ -421,8 +425,7 @@ class Helper {
     if (!this.isInitialized()) {
       console.warn("Helper class should be initialized before calling this method!");
     }
-
-    return this.#getObjectKeysByPropertyValue(this.#strategyOptions.views, "hidden", false);
+    return Object.keys(this.#strategyOptions.views);
   }
 
   /**
