@@ -8,6 +8,7 @@
  */
 export interface AreaRegistryEntry {
   area_id: string;
+  floor_id: string | null;
   name: string;
   picture: string | null;
   aliases: string[];

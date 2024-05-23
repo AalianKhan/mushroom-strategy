@@ -7,6 +7,7 @@ import {StackCardConfig} from "./types/homeassistant/lovelace/cards/types";
 import {EntityCardConfig} from "./types/lovelace-mushroom/cards/entity-card-config";
 import {HassServiceTarget} from "home-assistant-js-websocket";
 import StrategyArea = generic.StrategyArea;
+import ViewConfig = generic.ViewConfig;
 
 /**
  * Mushroom Dashboard Strategy.<br>
@@ -39,19 +40,25 @@ class MushroomStrategy extends HTMLTemplateElement {
     let viewModule;
 
     // Create a view for each exposed domain.
+    let tabViews:ViewConfig[] = [];
     for (let viewId of Helper.getExposedViewIds()) {
       try {
         const viewType = Helper.sanitizeClassName(viewId + "View");
         viewModule = await import(`./views/${viewType}`);
-        const view: LovelaceViewConfig = await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView();
+        (await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView())
+          .filter((v:ViewConfig) => v.cards?.length)
+          .forEach((v:ViewConfig) => tabViews.push(v));
 
-        if (view.cards?.length) {
-          views.push(view);
-        }
       } catch (e) {
         Helper.logError(`View '${viewId}' couldn't be loaded!`, e);
       }
     }
+
+    // Add custom views.
+    if (Helper.strategyOptions.extra_views) {
+      tabViews.push(...Helper.strategyOptions.extra_views);
+    }
+    views.push(...Helper.sortViews(tabViews));
 
     // Create subviews for each area.
     for (let area of Helper.areas) {
@@ -68,11 +75,6 @@ class MushroomStrategy extends HTMLTemplateElement {
           },
         });
       }
-    }
-
-    // Add custom views.
-    if (Helper.strategyOptions.extra_views) {
-      views.push(...Helper.strategyOptions.extra_views);
     }
 
     // Return the created views.

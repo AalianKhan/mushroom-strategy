@@ -1,8 +1,8 @@
 import {Helper} from "../Helper";
-import {ControllerCard} from "../cards/ControllerCard";
 import {AbstractView} from "./AbstractView";
 import {views} from "../types/strategy/views";
 import {cards} from "../types/strategy/cards";
+import {EntityRegistryEntry} from "../types/homeassistant/data/entity_registry";
 
 // noinspection JSUnusedGlobalSymbols Class is dynamically imported.
 /**
@@ -45,10 +45,10 @@ class ClimateView extends AbstractView {
    * @type {cards.ControllerCardOptions}
    * @private
    */
-  #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Climates",
-    subtitle: Helper.getCountTemplate(ClimateView.#domain, "ne", "off") + " climates on",
-  };
+  viewControllerCardConfig = (entities: EntityRegistryEntry[], content: string = 'climates'): cards.ControllerCardOptions => ({
+    title: `All ${content}`,
+    subtitle: Helper.getCountEntityTemplate(entities, "ne", "off") + ` ${content} on`,
+  });
 
   /**
    * Class constructor.
@@ -59,14 +59,6 @@ class ClimateView extends AbstractView {
     super(ClimateView.#domain);
 
     this.config = Object.assign(this.config, this.#defaultConfig, options);
-
-    // Create a Controller card to switch all entities of the domain.
-    this.viewControllerCard = new ControllerCard(
-      this.targetDomain(ClimateView.#domain),
-      {
-        ...this.#viewControllerCardConfig,
-        ...("controllerCardOptions" in this.config ? this.config.controllerCardOptions : {}) as cards.ControllerCardConfig,
-      }).createCard();
   }
 }
 

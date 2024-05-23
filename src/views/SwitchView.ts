@@ -1,8 +1,8 @@
 import {Helper} from "../Helper";
-import {ControllerCard} from "../cards/ControllerCard";
 import {AbstractView} from "./AbstractView";
 import {views} from "../types/strategy/views";
 import {cards} from "../types/strategy/cards";
+import {EntityRegistryEntry} from "../types/homeassistant/data/entity_registry";
 
 // noinspection JSUnusedGlobalSymbols Class is dynamically imported.
 /**
@@ -21,7 +21,6 @@ class SwitchView extends AbstractView {
    * @static
    * @private
    */
-  static #domain: string = "switch";
 
   /**
    * Default configuration of the view.
@@ -48,10 +47,10 @@ class SwitchView extends AbstractView {
    * @type {cards.ControllerCardOptions}
    * @private
    */
-  #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Switches",
-    subtitle: Helper.getCountTemplate(SwitchView.#domain, "eq", "on") + " switches on",
-  };
+  viewControllerCardConfig = (entities: EntityRegistryEntry[], content: string = 'switches'): cards.ControllerCardOptions => ({
+    title: `All ${content}`,
+    subtitle: Helper.getCountEntityTemplate(entities, "eq", "on") + ` ${content} on`,
+  });
 
   /**
    * Class constructor.
@@ -59,17 +58,9 @@ class SwitchView extends AbstractView {
    * @param {views.ViewConfig} [options={}] Options for the view.
    */
   constructor(options: views.ViewConfig = {}) {
-    super(SwitchView.#domain);
+    super('switch');
 
     this.config = Object.assign(this.config, this.#defaultConfig, options);
-
-    // Create a Controller card to switch all entities of the domain.
-    this.viewControllerCard = new ControllerCard(
-      this.targetDomain(SwitchView.#domain),
-      {
-        ...this.#viewControllerCardConfig,
-        ...("controllerCardOptions" in this.config ? this.config.controllerCardOptions : {}) as cards.ControllerCardConfig,
-      }).createCard();
   }
 }
 

@@ -27,6 +27,7 @@ export namespace generic {
    * @property {boolean} [hidden] True if the entity should be hidden from the dashboard.
    */
   export interface ViewConfig extends LovelaceViewConfig {
+    id: string;
     hidden?: boolean;
     order?: number;
   }
@@ -110,7 +111,7 @@ export namespace generic {
       hidden: HiddenSectionType[]
     }
     quick_access_cards?: LovelaceCardConfig[];
-    views: { [k: string]: ViewConfig };
+    views: { [k: string]: Partial<ViewConfig> };
   }
 
   const hiddenSectionList = ["chips", "persons", "greeting", "areas", "areasTitle"] as const;
