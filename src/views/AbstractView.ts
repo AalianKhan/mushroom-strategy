@@ -145,9 +145,9 @@ abstract class AbstractView {
     const views = (await Promise.all(msLabelsOfDomain
       .map(async label => await this.createViewCards(entity => entity.labels.includes(label), label.replace(this.prefix, ''),))))
       .map((cards, index) => ({
-        icon: Helper.labels.find(label => label.name === msLabelsOfDomain[index])?.icon || this.config.icon,
         title: msLabelsOfDomain[index].replace(this.prefix, ""),
         ...this.config,
+        icon: Helper.labels.find(label => label.name === msLabelsOfDomain[index])?.icon || this.config.icon,
         ...Helper.strategyOptions.views[msLabelsOfDomain[index]],
         id: msLabelsOfDomain[index],
         path: msLabelsOfDomain[index].replace(this.prefix, "").toLowerCase(),
