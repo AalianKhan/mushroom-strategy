@@ -48,6 +48,14 @@ class Helper {
   static #labels: LabelRegistryEntry[] = [];
 
   /**
+   * An array of entities from Home Assistant's floor registry.
+   *
+   * @type {FloorRegistryEntry[]}
+   * @private
+   */
+  static #floor: any[] = [];
+
+  /**
    * An array of state entities from Home Assistant's Hass object.
    *
    * @type {HassEntities}
@@ -71,6 +79,7 @@ class Helper {
    */
   static #strategyOptions: generic.StrategyConfig;
 
+  static #floorLevelMap: { [key: string]: number };
   /**
    * Set to true for more verbose information in the console.
    *
@@ -142,6 +151,16 @@ class Helper {
   }
 
   /**
+   * Get the labels from Home Assistant's label registry.
+   *
+   * @returns {EntityRegistryEntry[]}
+   * @static
+   */
+  static get floor(): any[] {
+    return this.#labels;
+  }
+
+  /**
    * Get the current debug mode of the mushroom strategy.
    *
    * @returns {boolean}
@@ -168,11 +187,12 @@ class Helper {
       // Query the registries of Home Assistant.
 
       // noinspection ES6MissingAwait False positive? https://youtrack.jetbrains.com/issue/WEB-63746
-      [Helper.#entities, Helper.#devices, Helper.#areas, Helper.#labels] = await Promise.all([
+      [Helper.#entities, Helper.#devices, Helper.#areas, Helper.#labels, Helper.#floor] = await Promise.all([
         info.hass.callWS({type: "config/entity_registry/list"}) as Promise<EntityRegistryEntry[]>,
         info.hass.callWS({type: "config/device_registry/list"}) as Promise<DeviceRegistryEntry[]>,
         info.hass.callWS({type: "config/area_registry/list"}) as Promise<AreaRegistryEntry[]>,
         info.hass.callWS({type: "config/label_registry/list"}) as Promise<any[]>,
+        info.hass.callWS({type: "config/floor_registry/list"}) as Promise<any[]>,
       ]);
     } catch (e) {
       Helper.logError("An error occurred while querying Home assistant's registries!", e);
@@ -197,9 +217,11 @@ class Helper {
       return {...area, ...this.#strategyOptions.areas?.[area.area_id]};
     });
 
-    // Sort strategy areas by order first and then by name.
+    this.#floorLevelMap = this.#floor.reduce((acc, floor) => ({...acc, [floor.name.toLowerCase()]: floor.level}), {})
+
+    // Sort strategy areas by order first then by floor leven and then by name.
     this.#areas.sort((a, b) => {
-      return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
+      return (a.order ?? Infinity) - (b.order ?? Infinity) || (this.#floorLevelMap[a.floor_id ?? ''] ?? Infinity) - (this.#floorLevelMap[b.floor_id ?? ''] ?? Infinity) || a.name.localeCompare(b.name);
     });
 
     // Sort custom and default domains of the strategy options by order first and then by title.
@@ -272,7 +294,7 @@ class Helper {
       });
 
       // Get the entities of which all conditions of the callback function are met. @see areaFilterCallback.
-       this.#entities.filter(
+      this.#entities.filter(
         this.#areaFilterCallback, {
           area: area,
           domain: domain,

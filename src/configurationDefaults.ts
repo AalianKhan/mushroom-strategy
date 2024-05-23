@@ -7,6 +7,7 @@ import StrategyDefaults = generic.StrategyDefaults;
 export const configurationDefaults: StrategyDefaults = {
   areas: {
     undisclosed: {
+      floor_id: null,
       aliases: [],
       area_id: "undisclosed",
       name: "Undisclosed",
