@@ -9,6 +9,7 @@ import abstractCardConfig = cards.AbstractCardConfig;
 import {EntityRegistryEntry} from "../types/homeassistant/data/entity_registry";
 import {generic} from "../types/strategy/generic";
 import ViewConfig = generic.ViewConfig;
+import {views} from "../types/strategy/views";
 
 /**
  * Abstract View Class.
@@ -19,15 +20,6 @@ import ViewConfig = generic.ViewConfig;
  * @abstract
  */
 abstract class AbstractView {
-  /**
-   * Configuration of the view.
-   *
-   * @type {LovelaceViewConfig}
-   */
-  config: LovelaceViewConfig = {
-    icon: "mdi:view-dashboard",
-    subview: false,
-  };
 
   /**
    * The domain of which we operate the devices.
@@ -36,6 +28,8 @@ abstract class AbstractView {
    * @readonly
    */
   protected readonly prefix: string;
+
+  protected abstract defaultConfig: views.ViewConfig
 
   protected abstract viewControllerCardConfig(entities: EntityRegistryEntry[], content?: string): cards.ControllerCardOptions;
 
@@ -60,7 +54,7 @@ abstract class AbstractView {
       this.toTargetEntities(entities),
       {
         ...this.viewControllerCardConfig(entities, label),
-        ...("controllerCardOptions" in this.config ? this.config.controllerCardOptions : {}) as cards.ControllerCardConfig,
+        ...("controllerCardOptions" in this.defaultConfig ? this.defaultConfig.controllerCardOptions : {}) as cards.ControllerCardConfig,
       }).createCard();
   };
 
@@ -110,7 +104,7 @@ abstract class AbstractView {
 
       // Vertical stack the area cards if it has entities.
       if (areaCards.length) {
-        const titleCardOptions = ("controllerCardOptions" in this.config) ? this.config.controllerCardOptions : {};
+        const titleCardOptions = ("controllerCardOptions" in this.defaultConfig) ? this.defaultConfig.controllerCardOptions : {};
 
         // Create and insert a Controller card.
         areaCards.unshift(new ControllerCard(target, Object.assign({title: area.name}, titleCardOptions)).createCard());
@@ -139,24 +133,23 @@ abstract class AbstractView {
    * @returns {Promise<LovelaceViewConfig[]>} The view arrays of domain.
    */
   async getView(): Promise<(ViewConfig)[]> {
-    const msLabelsOfDomain = this.domain ?
-      this.labelsOfDomain(this.domain).filter(label => label.startsWith(this.prefix)) :
-      [];
+    const msLabelsOfDomain = this.domain ? this.labelsOfDomain(this.domain) : [];
     const views = (await Promise.all(msLabelsOfDomain
       .map(async label => await this.createViewCards(entity => entity.labels.includes(label), label.replace(this.prefix, ''),))))
       .map((cards, index) => ({
         title: msLabelsOfDomain[index].replace(this.prefix, ""),
-        ...this.config,
-        icon: Helper.labels.find(label => label.name === msLabelsOfDomain[index])?.icon || this.config.icon,
-        ...Helper.strategyOptions.views[msLabelsOfDomain[index]],
-        id: msLabelsOfDomain[index],
+        ...this.defaultConfig,
+        icon: Helper.labels.find(label => label.name === msLabelsOfDomain[index])?.icon || this.defaultConfig.icon,
         path: msLabelsOfDomain[index].replace(this.prefix, "").toLowerCase(),
+        ...Helper.strategyOptions.views[msLabelsOfDomain[index]],
+        id: msLabelsOfDomain[index], // prevent to override by strategyOptions
         cards,
       }));
 
     const mainView = ({
-      ...this.config,
-      id: this.domain ?? this.config.title?.toLowerCase(),
+      ...this.defaultConfig,
+      ...Helper.strategyOptions.views[this.domain ?? this.defaultConfig.title?.toLowerCase()],
+      id: this.defaultConfig.id, // prevent to override by strategyOptions
       cards: await this.createViewCards(entity => !this.prefix || !entity.labels.some(label => label.startsWith(this.prefix))),
     });
 
@@ -201,7 +194,7 @@ abstract class AbstractView {
   private labelsOfDomain(domain: string): string[] {
     const labels: string[] = this.entitiesOfDomain(domain)
       .flatMap(entity => entity.labels)
-    return [...new Set(labels)]
+    return [...new Set(labels)].filter(label => label.startsWith(this.prefix))
   }
 }
 

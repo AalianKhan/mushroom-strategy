@@ -40,14 +40,15 @@ class MushroomStrategy extends HTMLTemplateElement {
     let viewModule;
 
     // Create a view for each exposed domain.
-    let tabViews:ViewConfig[] = [];
-    for (let viewId of Helper.getExposedViewIds()) {
+    let tabViews: ViewConfig[] = [];
+    for (let viewId of Helper.getViewIds()) {
       try {
         const viewType = Helper.sanitizeClassName(viewId + "View");
         viewModule = await import(`./views/${viewType}`);
-        (await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView())
-          .filter((v:ViewConfig) => v.cards?.length)
-          .forEach((v:ViewConfig) => tabViews.push(v));
+        (await new viewModule[viewType]().getView())
+          .filter((v: ViewConfig) => !Helper.strategyOptions.views[v.id]?.hidden)
+          .filter((v: ViewConfig) => v.cards?.length)
+          .forEach((v: ViewConfig) => tabViews.push(v));
 
       } catch (e) {
         Helper.logError(`View '${viewId}' couldn't be loaded!`, e);

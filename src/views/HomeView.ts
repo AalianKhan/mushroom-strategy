@@ -27,7 +27,8 @@ class HomeView extends AbstractView {
    * @type {views.ViewConfig}
    * @private
    */
-  #defaultConfig: views.ViewConfig = {
+  defaultConfig= {
+    id: "home",
     title: "Home",
     icon: "mdi:home-assistant",
     path: "home",
@@ -38,13 +39,9 @@ class HomeView extends AbstractView {
 
   /**
    * Class constructor.
-   *
-   * @param {views.ViewConfig} [options={}] Options for the view.
    */
-  constructor(options: views.ViewConfig = {}) {
+  constructor() {
     super();
-
-    this.config = Object.assign(this.config, this.#defaultConfig, options);
   }
 
   /**

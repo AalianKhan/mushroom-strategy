@@ -27,9 +27,10 @@ class VacuumView extends AbstractView {
    * Default configuration of the view.
    *
    * @type {views.ViewConfig}
-   * @private
+   * @protected
    */
-  #defaultConfig: views.ViewConfig = {
+  defaultConfig: views.ViewConfig = {
+    id: VacuumView.#domain,
     title: "Vacuums",
     path: "vacuums",
     icon: "mdi:robot-vacuum",
@@ -55,13 +56,9 @@ class VacuumView extends AbstractView {
 
   /**
    * Class constructor.
-   *
-   * @param {views.ViewConfig} [options={}] Options for the view.
    */
-  constructor(options: views.ViewConfig = {}) {
+  constructor() {
     super(VacuumView.#domain);
-
-    this.config = Object.assign(this.config, this.#defaultConfig, options);
   }
 }
 
