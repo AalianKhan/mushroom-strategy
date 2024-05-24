@@ -46,12 +46,12 @@ abstract class AbstractView {
       throw new Error("The Helper module must be initialized before using this one.");
     }
     this.domain = domain;
-    this.prefix = this.domain ? `ms_${this.domain}_` : ''
+    this.prefix = this.domain ? Helper.getLabelPrefix(this.domain) : ''
   }
 
   createCard(entities: EntityRegistryEntry[], label?: string): StackCardConfig {
     return new ControllerCard(
-      this.toTargetEntities(entities),
+      Helper.toTargetEntities(entities),
       {
         ...this.viewControllerCardConfig(entities, label),
         ...("controllerCardOptions" in this.defaultConfig ? this.defaultConfig.controllerCardOptions : {}) as cards.ControllerCardConfig,
@@ -83,7 +83,7 @@ abstract class AbstractView {
 
       // Set the target for controller cards to entities without an area.
       if (area.area_id === "undisclosed") {
-        target = this.toTargetEntities(entities);
+        target = Helper.toTargetEntities(entities);
       }
 
       // Create a card for each domain-entity of the current area.
@@ -118,7 +118,7 @@ abstract class AbstractView {
 
     // Add a Controller Card for all the entities in the view.
     if (viewCards.length) {
-      const entities = this.entitiesOfDomain(this.domain).filter(labelFilter);
+      const entities = Helper.entitiesOfDomain(this.domain).filter(labelFilter);
       viewCards.unshift(this.createCard(entities, label));
     }
 
@@ -133,7 +133,7 @@ abstract class AbstractView {
    * @returns {Promise<LovelaceViewConfig[]>} The view arrays of domain.
    */
   async getView(): Promise<(ViewConfig)[]> {
-    const msLabelsOfDomain = this.domain ? this.labelsOfDomain(this.domain) : [];
+    const msLabelsOfDomain = this.domain ? Helper.labelsOfDomain(this.domain) : [];
     const views = (await Promise.all(msLabelsOfDomain
       .map(async label => await this.createViewCards(entity => entity.labels.includes(label), label.replace(this.prefix, ''),))))
       .map((cards, index) => ({
@@ -157,45 +157,9 @@ abstract class AbstractView {
     return [mainView, ...views];
   }
 
-  /**
-   * Get a target of entity IDs for the given domain.
-   *
-   * @param {string} domain - The target domain to retrieve entity IDs from.
-   * @return {HassServiceTarget} - A target for a service call.
-   */
-  entitiesOfDomain(domain: string) {
-    return Helper.entities.filter(
-      entity =>
-        entity.entity_id.startsWith(domain + ".")
-        && !entity.hidden_by
-        && !Helper.strategyOptions.card_options?.[entity.entity_id]?.hidden
-    )
-  };
 
-  /**
-   * Get a target of entity IDs for the given domain.)
-   *
-   * @param {EntityRegistryEntry[]} entities - List of target entries.
-   * @return {HassServiceTarget} - A target for a service call.
-   */
-  toTargetEntities(entities: EntityRegistryEntry[]): HassServiceTarget {
-    return {
-      entity_id: entities
-        .map(entity => entity.entity_id)
-    };
-  }
 
-  /**
-   * Get unique labels of domain.
-   *
-   * @param {string} domain - The target domain of entities.
-   * @return {string[]} - unique labels.
-   */
-  private labelsOfDomain(domain: string): string[] {
-    const labels: string[] = this.entitiesOfDomain(domain)
-      .flatMap(entity => entity.labels)
-    return [...new Set(labels)].filter(label => label.startsWith(this.prefix))
-  }
+
 }
 
 export {AbstractView};
