@@ -1,5 +1,5 @@
 import {configurationDefaults} from "./configurationDefaults";
-import {HassEntities, HassEntity} from "home-assistant-js-websocket";
+import {HassEntities, HassEntity, HassServiceTarget} from "home-assistant-js-websocket";
 import deepmerge from "deepmerge";
 import {EntityRegistryEntry} from "./types/homeassistant/data/entity_registry";
 import {DeviceRegistryEntry} from "./types/homeassistant/data/device_registry";
@@ -438,6 +438,35 @@ class Helper {
   }
 
   /**
+   * Get a target of entity IDs for the given domain.
+   *
+   * @param {string} domain - The target domain to retrieve entity IDs from.
+   * @return {EntityRegistryEntry[]} - A target for a service call.
+   */
+  static entitiesOfDomain(domain: string) {
+    return Helper.entities.filter(
+      entity =>
+        entity.entity_id.startsWith(domain + ".")
+        && !entity.hidden_by
+        && !Helper.strategyOptions.card_options?.[entity.entity_id]?.hidden
+    )
+  };
+
+  /**
+   * Get unique labels of domain.
+   *
+   * @param {string} domain - The target domain of entities.
+   * @return {string[]} - unique labels.
+   */
+  static labelsOfDomain(domain: string): string[] {
+    const labels: string[] = this.entitiesOfDomain(domain)
+      .flatMap(entity => entity.labels)
+    return [...new Set(labels)].filter(label => label.startsWith(this.getLabelPrefix(domain)))
+  }
+
+  static getLabelPrefix = (domain: string) => `ms_${domain}_`
+
+  /**
    * Get the ids of the views.
    *
    * @return {string[]} An array of view ids.
@@ -495,6 +524,19 @@ class Helper {
       : this.areaDeviceIds.includes(entity.device_id ?? "") || entity.area_id === this.area.area_id;
 
     return (entityUnhidden && domainMatches && entityLinked);
+  }
+
+  /**
+   * Get a target of entity IDs for the given domain.)
+   *
+   * @param {EntityRegistryEntry[]} entities - List of target entries.
+   * @return {HassServiceTarget} - A target for a service call.
+   */
+  static toTargetEntities(entities: EntityRegistryEntry[]): HassServiceTarget {
+    return {
+      entity_id: entities
+        .map(entity => entity.entity_id)
+    };
   }
 
   /**
