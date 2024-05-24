@@ -21,14 +21,16 @@ class SwitchView extends AbstractView {
    * @static
    * @private
    */
+  static #domain: string = "switch";
 
   /**
    * Default configuration of the view.
    *
    * @type {views.ViewConfig}
-   * @private
+   * @protected
    */
-  #defaultConfig: views.ViewConfig = {
+  defaultConfig: views.ViewConfig = {
+    id: SwitchView.#domain,
     title: "Switches",
     path: "switches",
     icon: "mdi:dip-switch",
@@ -54,13 +56,9 @@ class SwitchView extends AbstractView {
 
   /**
    * Class constructor.
-   *
-   * @param {views.ViewConfig} [options={}] Options for the view.
    */
-  constructor(options: views.ViewConfig = {}) {
-    super('switch');
-
-    this.config = Object.assign(this.config, this.#defaultConfig, options);
+  constructor() {
+    super(SwitchView.#domain);
   }
 }
 

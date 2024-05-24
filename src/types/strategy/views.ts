@@ -8,6 +8,7 @@ export namespace views {
    * @property {cards.ControllerCardConfig} [controllerCardOptions] Options for the Controller card.
    */
   export interface ViewConfig extends LovelaceViewConfig {
+    id: string;
     controllerCardOptions?: cards.ControllerCardOptions;
   }
 }

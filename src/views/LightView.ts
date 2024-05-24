@@ -27,9 +27,10 @@ class LightView extends AbstractView {
    * Default configuration of the view.
    *
    * @type {views.ViewConfig}
-   * @private
+   * @protected
    */
-  #defaultConfig: views.ViewConfig = {
+  defaultConfig: views.ViewConfig = {
+    id: LightView.#domain,
     title: "Lights",
     path: "lights",
     icon: "mdi:lightbulb-group",
@@ -55,13 +56,9 @@ class LightView extends AbstractView {
 
   /**
    * Class constructor.
-   *
-   * @param {views.ViewConfig} [options={}] Options for the view.
    */
-  constructor(options: views.ViewConfig = {}) {
+  constructor() {
     super(LightView.#domain);
-
-    this.config = Object.assign(this.config, this.#defaultConfig, options);
   }
 }
 

@@ -27,9 +27,10 @@ class CameraView extends AbstractView {
    * Default configuration of the view.
    *
    * @type {views.ViewConfig}
-   * @private
+   * @protected
    */
-  #defaultConfig: views.ViewConfig = {
+  defaultConfig: views.ViewConfig = {
+    id: CameraView.#domain,
     title: "Cameras",
     path: "cameras",
     icon: "mdi:cctv",
@@ -52,13 +53,9 @@ class CameraView extends AbstractView {
 
   /**
    * Class constructor.
-   *
-   * @param {views.ViewConfig} [options={}] Options for the view.
    */
-  constructor(options: views.ViewConfig = {}) {
+  constructor() {
     super(CameraView.#domain);
-
-    this.config = Object.assign(this.config, this.#defaultConfig, options);
   }
 }
 

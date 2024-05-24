@@ -235,10 +235,9 @@ class Helper {
   }
 
   static sortViews(views: ViewConfig[]): ViewConfig[] {
-    const cleanedViews = views.filter(view => !this.#strategyOptions.views[view.id]?.hidden)
-    const sortedViews = cleanedViews.filter(item => !Number.isInteger(item.order));
+    const sortedViews = views.filter(item => !Number.isInteger(item.order));
 
-    cleanedViews.filter(item => Number.isInteger(item.order))
+    views.filter(item => Number.isInteger(item.order))
       .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
       .forEach((item) => sortedViews.splice(item.order ?? Infinity, 0, item));
     return sortedViews
@@ -439,11 +438,11 @@ class Helper {
   }
 
   /**
-   * Get the ids of the views which aren't set to hidden in the strategy options.
+   * Get the ids of the views.
    *
    * @return {string[]} An array of view ids.
    */
-  static getExposedViewIds(): string[] {
+  static getViewIds(): string[] {
     if (!this.isInitialized()) {
       console.warn("Helper class should be initialized before calling this method!");
     }

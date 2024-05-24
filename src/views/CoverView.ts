@@ -16,12 +16,23 @@ import {EntityRegistryEntry} from "../types/homeassistant/data/entity_registry";
 class CoverView extends AbstractView {
 
   /**
+   * Domain of the view's entities.
+   *
+   * @type {string}
+   * @static
+   * @private
+   */
+  static #domain: string = "cover";
+
+
+  /**
    * Default configuration of the view.
    *
    * @type {views.ViewConfig}
    * @private
    */
-  #defaultConfig: views.ViewConfig = {
+  defaultConfig: views.ViewConfig = {
+    id: CoverView.#domain,
     title: "Covers",
     path: "covers",
     icon: "mdi:window-open",
@@ -47,13 +58,9 @@ class CoverView extends AbstractView {
 
   /**
    * Class constructor.
-   *
-   * @param {views.ViewConfig} [options={}] Options for the view.
    */
-  constructor(private options: views.ViewConfig = {}) {
-    super("cover");
-
-    this.config = Object.assign(this.config, this.#defaultConfig, options);
+  constructor() {
+    super(CoverView.#domain);
   }
 }
 
