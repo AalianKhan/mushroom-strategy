@@ -136,14 +136,13 @@ class MushroomStrategy extends HTMLTemplateElement {
           const labelLessEntities = entities
             .filter(entity => !entity.labels
               .some(label => label.startsWith(labelPrefix)));
-
           return [labelLessEntities, ...entriesGroupedByLabel]
             .flatMap((groupedEntities: EntityRegistryEntry[], index) => {
               let domainCards: LovelaceCardConfig[] = [];
 
               if (groupedEntities.length) {
                 // Create a Controller card for the current domain.
-                const title = msLabelsOfDomain[index - labelLessEntities.length]?.replace(labelPrefix, "") ?? Helper.strategyOptions.domains[domain].title;
+                const title = msLabelsOfDomain[index - 1]?.replace(labelPrefix, "") ?? Helper.strategyOptions.domains[domain].title;
                 const titleCard = new ControllerCard(
                   Helper.toTargetEntities(groupedEntities),
                   {
