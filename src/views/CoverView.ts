@@ -14,7 +14,6 @@ import {EntityRegistryEntry} from "../types/homeassistant/data/entity_registry";
  * @extends AbstractView
  */
 class CoverView extends AbstractView {
-
   /**
    * Domain of the view's entities.
    *
@@ -24,12 +23,11 @@ class CoverView extends AbstractView {
    */
   static #domain: string = "cover";
 
-
   /**
    * Default configuration of the view.
    *
    * @type {views.ViewConfig}
-   * @private
+   * @protected
    */
   defaultConfig: views.ViewConfig = {
     id: CoverView.#domain,
@@ -46,14 +44,16 @@ class CoverView extends AbstractView {
   };
 
   /**
-   * Default configuration of the view's Controller card.
+   * Get default configuration of the view's Controller card.
    *
-   * @type {cards.ControllerCardOptions}
-   * @private
+   * @param {EntityRegistryEntry[]} [entities] relevant entities for this card
+   * @param {string?} groupName can be used to define alternative domain name for card
+   *
+   * @return {cards.ControllerCardOptions}
    */
-  viewControllerCardConfig = (entities: EntityRegistryEntry[], content: string = "covers"): cards.ControllerCardOptions => ({
-    title: `All ${content}`,
-    subtitle: Helper.getCountEntityTemplate(entities, "eq", "open") + ` ${content} open`,
+  viewControllerCardConfig = (entities: EntityRegistryEntry[], groupName: string = "covers"): cards.ControllerCardOptions => ({
+    title: `All ${groupName}`,
+    subtitle: Helper.getCountEntityTemplate(entities, "eq", "open") + ` ${groupName} open`,
   });
 
   /**

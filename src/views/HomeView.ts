@@ -25,7 +25,7 @@ class HomeView extends AbstractView {
    * Default configuration of the view.
    *
    * @type {views.ViewConfig}
-   * @private
+   * @protected
    */
   defaultConfig= {
     id: "home",
@@ -35,6 +35,11 @@ class HomeView extends AbstractView {
     subview: false,
   };
 
+  /**
+   * Get default configuration of the view's Controller card.
+   *
+   * @return {cards.ControllerCardOptions}
+   */
   viewControllerCardConfig = (): cards.ControllerCardOptions => ({});
 
   /**

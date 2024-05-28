@@ -9,7 +9,7 @@ import {HassServiceTarget} from "home-assistant-js-websocket";
 import StrategyArea = generic.StrategyArea;
 import ViewConfig = generic.ViewConfig;
 import {EntityRegistryEntry} from "./types/homeassistant/data/entity_registry";
-import {capitalizeFirstLetter} from "./types/lovelace-mushroom/utils/string";
+import {capitalizeFirstLetter} from "./utils/string";
 
 /**
  * Mushroom Dashboard Strategy.<br>
@@ -131,7 +131,7 @@ class MushroomStrategy extends HTMLTemplateElement {
           const msLabelsOfDomain = Helper.labelsOfDomain(domain);
           const entriesGroupedByLabel = msLabelsOfDomain
             .map(label => entities
-              .filter(entity => entity.labels.includes(label)))
+              .filter(entity => entity.labels.includes(label.label_id)))
 
           const labelLessEntities = entities
             .filter(entity => !entity.labels
@@ -142,7 +142,7 @@ class MushroomStrategy extends HTMLTemplateElement {
 
               if (groupedEntities.length) {
                 // Create a Controller card for the current domain.
-                const title = msLabelsOfDomain[index - 1]?.replace(labelPrefix, "") ?? Helper.strategyOptions.domains[domain].title;
+                const title = msLabelsOfDomain[index - 1]?.name?.replace(labelPrefix, "") ?? Helper.strategyOptions.domains[domain].title;
                 const titleCard = new ControllerCard(
                   Helper.toTargetEntities(groupedEntities),
                   {

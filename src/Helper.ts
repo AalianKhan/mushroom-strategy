@@ -8,6 +8,8 @@ import {generic} from "./types/strategy/generic";
 import StrategyArea = generic.StrategyArea;
 import {LabelRegistryEntry} from "./types/homeassistant/data/label_registry";
 import ViewConfig = generic.ViewConfig;
+import {FloorRegistryEntry} from "./types/homeassistant/data/floor_registry";
+import {isDefined} from "./utils/object";
 
 /**
  * Helper Class
@@ -79,6 +81,10 @@ class Helper {
    */
   static #strategyOptions: generic.StrategyConfig;
 
+  /**
+   * map key is floor_id value is level of the floor
+   * @private
+   */
   static #floorLevelMap: { [key: string]: number };
   /**
    * Set to true for more verbose information in the console.
@@ -151,16 +157,6 @@ class Helper {
   }
 
   /**
-   * Get the labels from Home Assistant's label registry.
-   *
-   * @returns {EntityRegistryEntry[]}
-   * @static
-   */
-  static get floor(): any[] {
-    return this.#labels;
-  }
-
-  /**
    * Get the current debug mode of the mushroom strategy.
    *
    * @returns {boolean}
@@ -217,7 +213,10 @@ class Helper {
       return {...area, ...this.#strategyOptions.areas?.[area.area_id]};
     });
 
-    this.#floorLevelMap = this.#floor.reduce((acc, floor) => ({...acc, [floor.name.toLowerCase()]: floor.level}), {})
+    this.#floorLevelMap = this.#floor.reduce((acc: { [florName: string]: number }, floor: FloorRegistryEntry) => ({
+      ...acc,
+      [floor.floor_id]: floor.level
+    }), {})
 
     // Sort strategy areas by order first then by floor leven and then by name.
     this.#areas.sort((a, b) => {
@@ -234,6 +233,10 @@ class Helper {
     this.#initialized = true;
   }
 
+  /**
+   * sort views according to order or mushroom strategy default
+   * @param views
+   */
   static sortViews(views: ViewConfig[]): ViewConfig[] {
     const sortedViews = views.filter(item => !Number.isInteger(item.order));
 
@@ -308,13 +311,11 @@ class Helper {
   static getCountEntityTemplate(entities: EntityRegistryEntry[], operator: string, value: string): string {
     // noinspection JSMismatchedCollectionQueryUpdate (False positive per 17-04-2023)
     /**
-     * Array of entity state-entries, filtered by domain.
+     * Array of entity state-entries.
      *
      * Each element contains a template-string which is used to access home assistant's state machine (state object) in
      * a template.
      * E.g. "states['light.kitchen']"
-     *
-     * The array excludes hidden and disabled entities.
      *
      * @type {string[]}
      */
@@ -453,15 +454,23 @@ class Helper {
   };
 
   /**
-   * Get unique labels of domain.
+   * Get unique labels of domain. Compare name of label for more user flexibility, because the name can be renamed unlike the id.
    *
    * @param {string} domain - The target domain of entities.
-   * @return {string[]} - unique labels.
+   * @return {LabelRegistryEntry[]} - unique labels.
    */
-  static labelsOfDomain(domain: string): string[] {
+  static labelsOfDomain(domain: string): LabelRegistryEntry[] {
     const labels: string[] = this.entitiesOfDomain(domain)
       .flatMap(entity => entity.labels)
-    return [...new Set(labels)].filter(label => label.startsWith(this.getLabelPrefix(domain)))
+    return [...new Set(labels)]
+      .map(label => this.getLabelById(label))
+      .filter(isDefined)
+      .filter((label) => label.name.startsWith(this.getLabelPrefix(domain)))
+  }
+
+
+  static getLabelById(labelId: string): LabelRegistryEntry | undefined {
+    return this.#labels.find(label => label.label_id === labelId)
   }
 
   static getLabelPrefix = (domain: string) => `ms_${domain}_`

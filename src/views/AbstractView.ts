@@ -31,7 +31,7 @@ abstract class AbstractView {
 
   protected abstract defaultConfig: views.ViewConfig
 
-  protected abstract viewControllerCardConfig(entities: EntityRegistryEntry[], content?: string): cards.ControllerCardOptions;
+  protected abstract viewControllerCardConfig(entities: EntityRegistryEntry[], groupName?: string): cards.ControllerCardOptions;
 
   /**
    * Class constructor.
@@ -49,11 +49,11 @@ abstract class AbstractView {
     this.prefix = this.domain ? Helper.getLabelPrefix(this.domain) : ''
   }
 
-  createCard(entities: EntityRegistryEntry[], label?: string): StackCardConfig {
+  createCard(entities: EntityRegistryEntry[], groupName?: string): StackCardConfig {
     return new ControllerCard(
       Helper.toTargetEntities(entities),
       {
-        ...this.viewControllerCardConfig(entities, label),
+        ...this.viewControllerCardConfig(entities, groupName),
         ...("controllerCardOptions" in this.defaultConfig ? this.defaultConfig.controllerCardOptions : {}) as cards.ControllerCardConfig,
       }).createCard();
   };
@@ -63,7 +63,7 @@ abstract class AbstractView {
    *
    * @return {Promise<(StackCardConfig | TitleCardConfig)[]>} An array of card objects.
    */
-  async createViewCards(labelFilter: (entity: EntityRegistryEntry) => boolean, label?: string): Promise<(StackCardConfig | TitleCardConfig)[]> {
+  async createViewCards(labelFilter: (entity: EntityRegistryEntry) => boolean, groupName?: string): Promise<(StackCardConfig | TitleCardConfig)[]> {
     const viewCards: StackCardConfig[] = [];
     const configEntityHidden =
             Helper.strategyOptions.domains[this.domain ?? "_"].hide_config_entities
@@ -119,7 +119,7 @@ abstract class AbstractView {
     // Add a Controller Card for all the entities in the view.
     if (viewCards.length) {
       const entities = Helper.entitiesOfDomain(this.domain).filter(labelFilter);
-      viewCards.unshift(this.createCard(entities, label));
+      viewCards.unshift(this.createCard(entities, groupName));
     }
 
     return viewCards;
@@ -135,16 +135,20 @@ abstract class AbstractView {
   async getView(): Promise<(ViewConfig)[]> {
     const msLabelsOfDomain = this.domain ? Helper.labelsOfDomain(this.domain) : [];
     const views = (await Promise.all(msLabelsOfDomain
-      .map(async label => await this.createViewCards(entity => entity.labels.includes(label), label.replace(this.prefix, ''),))))
-      .map((cards, index) => ({
-        title: msLabelsOfDomain[index].replace(this.prefix, ""),
-        ...this.defaultConfig,
-        icon: Helper.labels.find(label => label.name === msLabelsOfDomain[index])?.icon || this.defaultConfig.icon,
-        path: msLabelsOfDomain[index].replace(this.prefix, "").toLowerCase(),
-        ...Helper.strategyOptions.views[msLabelsOfDomain[index]],
-        id: msLabelsOfDomain[index], // prevent to override by strategyOptions
-        cards,
-      }));
+      .map(async label => await this.createViewCards(entity => entity.labels.includes(label.label_id), label.name.replace(this.prefix, ''),))))
+      .map((cards, index) => {
+        const label = msLabelsOfDomain[index];
+        const title = label.name.replace(this.prefix, "");
+        return {
+          title,
+          ...this.defaultConfig,
+          icon: Helper.getLabelById(label.label_id)?.icon || this.defaultConfig.icon,
+          path: title.replace(this.prefix, "").toLowerCase(),
+          ...Helper.strategyOptions.views[label.name],
+          id: label.name, // as long as the label id can not be seen in the UI use the name as id. this id need to map to the view id in the lovelace config
+          cards,
+        }
+      });
 
     const mainView = ({
       ...this.defaultConfig,
@@ -156,10 +160,6 @@ abstract class AbstractView {
 
     return [mainView, ...views];
   }
-
-
-
-
 }
 
 export {AbstractView};

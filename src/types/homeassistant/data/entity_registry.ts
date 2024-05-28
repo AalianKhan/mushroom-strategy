@@ -33,6 +33,7 @@ export interface EntityRegistryDisplayEntry {
  * @property {string} unique_id
  * @property {string} [translation_key]
  * @property {EntityRegistryOptions | null} options
+ * @property {string[]} labels An array of label_id's
  */
 export interface EntityRegistryEntry {
   id: string;

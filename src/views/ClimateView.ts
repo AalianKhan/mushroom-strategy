@@ -41,14 +41,16 @@ class ClimateView extends AbstractView {
   };
 
   /**
-   * Default configuration of the view's Controller card.
+   * Get default configuration of the view's Controller card.
    *
-   * @type {cards.ControllerCardOptions}
-   * @private
+   * @param {EntityRegistryEntry[]} [entities] relevant entities for this card
+   * @param {string?} groupName can be used to define alternative domain name for card
+   *
+   * @return {cards.ControllerCardOptions}
    */
-  viewControllerCardConfig = (entities: EntityRegistryEntry[], content: string = 'climates'): cards.ControllerCardOptions => ({
-    title: `All ${content}`,
-    subtitle: Helper.getCountEntityTemplate(entities, "ne", "off") + ` ${content} on`,
+  viewControllerCardConfig = (entities: EntityRegistryEntry[], groupName: string = 'climates'): cards.ControllerCardOptions => ({
+    title: `All ${groupName}`,
+    subtitle: Helper.getCountEntityTemplate(entities, "ne", "off") + ` ${groupName} on`,
   });
 
   /**

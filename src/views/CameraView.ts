@@ -44,11 +44,11 @@ class CameraView extends AbstractView {
    * Default configuration of the view's Controller card.
    *
    * @type {cards.ControllerCardOptions}
-   * @private
+   * @protected
    */
-  viewControllerCardConfig = (entities: EntityRegistryEntry[], content: string = 'cameras'): cards.ControllerCardOptions => ({
-    title: `All ${content}`,
-    subtitle: Helper.getCountEntityTemplate(entities, "ne", "off") + ` ${content} on`,
+  viewControllerCardConfig = (entities: EntityRegistryEntry[], groupName: string = 'cameras'): cards.ControllerCardOptions => ({
+    title: `All ${groupName}`,
+    subtitle: Helper.getCountEntityTemplate(entities, "ne", "off") + ` ${groupName} on`,
   });
 
   /**
