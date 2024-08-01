@@ -56,6 +56,8 @@ Visit the [issues](https://github.com/AalianKhan/mushroom-strategy/issues/new/ch
 
 * [Johan Frick](https://github.com/johanfrick)
 
+* [Marcel Tinner](https://github.com/mtinner)
+
 ## Credits
 
 * The cards used are from [Mushroom][mushroomUrl] and [Mini graph card][miniGraphUrl].

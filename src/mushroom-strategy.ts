@@ -7,6 +7,9 @@ import {StackCardConfig} from "./types/homeassistant/lovelace/cards/types";
 import {EntityCardConfig} from "./types/lovelace-mushroom/cards/entity-card-config";
 import {HassServiceTarget} from "home-assistant-js-websocket";
 import StrategyArea = generic.StrategyArea;
+import ViewConfig = generic.ViewConfig;
+import {EntityRegistryEntry} from "./types/homeassistant/data/entity_registry";
+import {capitalizeFirstLetter} from "./utils/string";
 
 /**
  * Mushroom Dashboard Strategy.<br>
@@ -39,19 +42,26 @@ class MushroomStrategy extends HTMLTemplateElement {
     let viewModule;
 
     // Create a view for each exposed domain.
-    for (let viewId of Helper.getExposedViewIds()) {
+    let tabViews: ViewConfig[] = [];
+    for (let viewId of Helper.getViewIds()) {
       try {
         const viewType = Helper.sanitizeClassName(viewId + "View");
         viewModule = await import(`./views/${viewType}`);
-        const view: LovelaceViewConfig = await new viewModule[viewType](Helper.strategyOptions.views[viewId]).getView();
+        (await new viewModule[viewType]().getView())
+          .filter((v: ViewConfig) => !Helper.strategyOptions.views[v.id]?.hidden)
+          .filter((v: ViewConfig) => v.cards?.length)
+          .forEach((v: ViewConfig) => tabViews.push(v));
 
-        if (view.cards?.length) {
-          views.push(view);
-        }
       } catch (e) {
         Helper.logError(`View '${viewId}' couldn't be loaded!`, e);
       }
     }
+
+    // Add custom views.
+    if (Helper.strategyOptions.extra_views) {
+      tabViews.push(...Helper.strategyOptions.extra_views);
+    }
+    views.push(...Helper.sortViews(tabViews));
 
     // Create subviews for each area.
     for (let area of Helper.areas) {
@@ -68,11 +78,6 @@ class MushroomStrategy extends HTMLTemplateElement {
           },
         });
       }
-    }
-
-    // Add custom views.
-    if (Helper.strategyOptions.extra_views) {
-      views.push(...Helper.strategyOptions.extra_views);
     }
 
     // Return the created views.
@@ -107,11 +112,10 @@ class MushroomStrategy extends HTMLTemplateElement {
 
       const className = Helper.sanitizeClassName(domain + "Card");
 
-      let domainCards = [];
+      let allDomainCards: LovelaceCardConfig[] = [];
 
       try {
-        domainCards = await import(`./cards/${className}`).then(cardModule => {
-          let domainCards = [];
+        allDomainCards = await import(`./cards/${className}`).then(cardModule => {
           const entities = Helper.getDeviceEntities(area, domain);
           let configEntityHidden =
                 Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
@@ -123,103 +127,119 @@ class MushroomStrategy extends HTMLTemplateElement {
               entity_id: entities.map(entity => entity.entity_id),
             }
           }
+          const labelPrefix = Helper.getLabelPrefix(domain)
+          const msLabelsOfDomain = Helper.labelsOfDomain(domain);
+          const entriesGroupedByLabel = msLabelsOfDomain
+            .map(label => entities
+              .filter(entity => entity.labels.includes(label.label_id)))
 
-          if (entities.length) {
-            // Create a Controller card for the current domain.
-            const titleCard = new ControllerCard(
-              target,
-              Helper.strategyOptions.domains[domain],
-            ).createCard();
+          const labelLessEntities = entities
+            .filter(entity => !entity.labels
+              .some(label => label.startsWith(labelPrefix)));
+          return [labelLessEntities, ...entriesGroupedByLabel]
+            .flatMap((groupedEntities: EntityRegistryEntry[], index) => {
+              let domainCards: LovelaceCardConfig[] = [];
 
-            if (domain === "sensor") {
-              // Create a card for each entity-sensor of the current area.
-              const sensorStates = Helper.getStateEntities(area, "sensor");
-              const sensorCards: EntityCardConfig[] = [];
+              if (groupedEntities.length) {
+                // Create a Controller card for the current domain.
+                const title = msLabelsOfDomain[index - 1]?.name?.replace(labelPrefix, "") ?? Helper.strategyOptions.domains[domain].title;
+                const titleCard = new ControllerCard(
+                  Helper.toTargetEntities(groupedEntities),
+                  {
+                    ...Helper.strategyOptions.domains[domain],
+                    title: capitalizeFirstLetter(title),
+                  },
+                ).createCard();
 
-              for (const sensor of entities) {
-                // Find the state of the current sensor.
-                const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
-                let cardOptions = Helper.strategyOptions.card_options?.[sensor.entity_id];
-                let deviceOptions = Helper.strategyOptions.card_options?.[sensor.device_id ?? "null"];
+                if (domain === "sensor") {
+                  // Create a card for each entity-sensor of the current area.
+                  const sensorStates = Helper.getStateEntities(area, "sensor");
+                  const sensorCards: EntityCardConfig[] = [];
 
-                if (!cardOptions?.hidden && !deviceOptions?.hidden) {
-                  if (sensorState?.attributes.unit_of_measurement) {
-                    cardOptions = {
-                      ...{
-                        type: "custom:mini-graph-card",
-                        entities: [sensor.entity_id],
-                      },
-                      ...cardOptions,
-                    };
+                  for (const sensor of groupedEntities) {
+                    // Find the state of the current sensor.
+                    const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
+                    let cardOptions = Helper.strategyOptions.card_options?.[sensor.entity_id];
+                    let deviceOptions = Helper.strategyOptions.card_options?.[sensor.device_id ?? "null"];
+
+                    if (!cardOptions?.hidden && !deviceOptions?.hidden) {
+                      if (sensorState?.attributes.unit_of_measurement) {
+                        cardOptions = {
+                          ...{
+                            type: "custom:mini-graph-card",
+                            entities: [sensor.entity_id],
+                          },
+                          ...cardOptions,
+                        };
+                      }
+
+                      sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
+                    }
                   }
 
-                  sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
+                  if (sensorCards.length) {
+                    domainCards.push({
+                      type: "vertical-stack",
+                      cards: sensorCards,
+                    });
+
+                    domainCards.unshift(titleCard);
+                  }
+
+                  return domainCards;
+                }
+
+                // Create a card for each other domain-entity of the current area.
+                for (const entity of groupedEntities) {
+                  let deviceOptions;
+                  let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
+
+                  if (entity.device_id) {
+                    deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
+                  }
+
+                  // Don't include the entity if hidden in the strategy options.
+                  if (cardOptions?.hidden || deviceOptions?.hidden) {
+                    continue;
+                  }
+
+                  // Don't include the config-entity if hidden in the strategy options.
+                  if (entity.entity_category === "config" && configEntityHidden) {
+                    continue;
+                  }
+
+                  domainCards.push(new cardModule[className](entity, cardOptions).getCard());
+                }
+
+                if (domain === "binary_sensor") {
+                  // Horizontally group every two binary sensor cards.
+                  const horizontalCards = [];
+
+                  for (let i = 0; i < domainCards.length; i += 2) {
+                    horizontalCards.push({
+                      type: "horizontal-stack",
+                      cards: domainCards.slice(i, i + 2),
+                    });
+                  }
+
+                  domainCards = horizontalCards;
+                }
+
+                if (domainCards.length) {
+                  domainCards.unshift(titleCard);
                 }
               }
-
-              if (sensorCards.length) {
-                domainCards.push({
-                  type: "vertical-stack",
-                  cards: sensorCards,
-                });
-
-                domainCards.unshift(titleCard);
-              }
-
               return domainCards;
-            }
-
-            // Create a card for each other domain-entity of the current area.
-            for (const entity of entities) {
-              let deviceOptions;
-              let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
-
-              if (entity.device_id) {
-                deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
-              }
-
-              // Don't include the entity if hidden in the strategy options.
-              if (cardOptions?.hidden || deviceOptions?.hidden) {
-                continue;
-              }
-
-              // Don't include the config-entity if hidden in the strategy options.
-              if (entity.entity_category === "config" && configEntityHidden) {
-                continue;
-              }
-
-              domainCards.push(new cardModule[className](entity, cardOptions).getCard());
-            }
-
-            if (domain === "binary_sensor") {
-              // Horizontally group every two binary sensor cards.
-              const horizontalCards = [];
-
-              for (let i = 0; i < domainCards.length; i += 2) {
-                horizontalCards.push({
-                  type: "horizontal-stack",
-                  cards: domainCards.slice(i, i + 2),
-                });
-              }
-
-              domainCards = horizontalCards;
-            }
-
-            if (domainCards.length) {
-              domainCards.unshift(titleCard);
-            }
-          }
-
-          return domainCards;
+            })
         });
       } catch (e) {
         Helper.logError("An error occurred while creating the domain cards!", e);
       }
 
-      if (domainCards.length) {
+      if (allDomainCards.length) {
         viewCards.push({
           type: "vertical-stack",
-          cards: domainCards,
+          cards: allDomainCards,
         });
       }
     }

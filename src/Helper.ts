@@ -1,11 +1,15 @@
 import {configurationDefaults} from "./configurationDefaults";
-import {HassEntities, HassEntity} from "home-assistant-js-websocket";
+import {HassEntities, HassEntity, HassServiceTarget} from "home-assistant-js-websocket";
 import deepmerge from "deepmerge";
 import {EntityRegistryEntry} from "./types/homeassistant/data/entity_registry";
 import {DeviceRegistryEntry} from "./types/homeassistant/data/device_registry";
 import {AreaRegistryEntry} from "./types/homeassistant/data/area_registry";
 import {generic} from "./types/strategy/generic";
 import StrategyArea = generic.StrategyArea;
+import {LabelRegistryEntry} from "./types/homeassistant/data/label_registry";
+import ViewConfig = generic.ViewConfig;
+import {FloorRegistryEntry} from "./types/homeassistant/data/floor_registry";
+import {isDefined} from "./utils/object";
 
 /**
  * Helper Class
@@ -38,6 +42,22 @@ class Helper {
   static #areas: StrategyArea[] = [];
 
   /**
+   * An array of entities from Home Assistant's label registry.
+   *
+   * @type {LabelRegistryEntry[]}
+   * @private
+   */
+  static #labels: LabelRegistryEntry[] = [];
+
+  /**
+   * An array of entities from Home Assistant's floor registry.
+   *
+   * @type {FloorRegistryEntry[]}
+   * @private
+   */
+  static #floor: any[] = [];
+
+  /**
    * An array of state entities from Home Assistant's Hass object.
    *
    * @type {HassEntities}
@@ -61,6 +81,11 @@ class Helper {
    */
   static #strategyOptions: generic.StrategyConfig;
 
+  /**
+   * map key is floor_id value is level of the floor
+   * @private
+   */
+  static #floorLevelMap: { [key: string]: number };
   /**
    * Set to true for more verbose information in the console.
    *
@@ -122,6 +147,16 @@ class Helper {
   }
 
   /**
+   * Get the labels from Home Assistant's label registry.
+   *
+   * @returns {EntityRegistryEntry[]}
+   * @static
+   */
+  static get labels(): LabelRegistryEntry[] {
+    return this.#labels;
+  }
+
+  /**
    * Get the current debug mode of the mushroom strategy.
    *
    * @returns {boolean}
@@ -148,10 +183,12 @@ class Helper {
       // Query the registries of Home Assistant.
 
       // noinspection ES6MissingAwait False positive? https://youtrack.jetbrains.com/issue/WEB-63746
-      [Helper.#entities, Helper.#devices, Helper.#areas] = await Promise.all([
+      [Helper.#entities, Helper.#devices, Helper.#areas, Helper.#labels, Helper.#floor] = await Promise.all([
         info.hass.callWS({type: "config/entity_registry/list"}) as Promise<EntityRegistryEntry[]>,
         info.hass.callWS({type: "config/device_registry/list"}) as Promise<DeviceRegistryEntry[]>,
         info.hass.callWS({type: "config/area_registry/list"}) as Promise<AreaRegistryEntry[]>,
+        info.hass.callWS({type: "config/label_registry/list"}) as Promise<any[]>,
+        info.hass.callWS({type: "config/floor_registry/list"}) as Promise<any[]>,
       ]);
     } catch (e) {
       Helper.logError("An error occurred while querying Home assistant's registries!", e);
@@ -176,17 +213,15 @@ class Helper {
       return {...area, ...this.#strategyOptions.areas?.[area.area_id]};
     });
 
-    // Sort strategy areas by order first and then by name.
-    this.#areas.sort((a, b) => {
-      return (a.order ?? Infinity) - (b.order ?? Infinity) || a.name.localeCompare(b.name);
-    });
+    this.#floorLevelMap = this.#floor.reduce((acc: { [florName: string]: number }, floor: FloorRegistryEntry) => ({
+      ...acc,
+      [floor.floor_id]: floor.level
+    }), {})
 
-    // Sort custom and default views of the strategy options by order first and then by title.
-    this.#strategyOptions.views = Object.fromEntries(
-      Object.entries(this.#strategyOptions.views).sort(([, a], [, b]) => {
-        return (a.order ?? Infinity) - (b.order ?? Infinity) || (a.title ?? "undefined").localeCompare(b.title ?? "undefined");
-      }),
-    );
+    // Sort strategy areas by order first then by floor leven and then by name.
+    this.#areas.sort((a, b) => {
+      return (a.order ?? Infinity) - (b.order ?? Infinity) || (this.#floorLevelMap[a.floor_id ?? ''] ?? Infinity) - (this.#floorLevelMap[b.floor_id ?? ''] ?? Infinity) || a.name.localeCompare(b.name);
+    });
 
     // Sort custom and default domains of the strategy options by order first and then by title.
     this.#strategyOptions.domains = Object.fromEntries(
@@ -196,6 +231,19 @@ class Helper {
     );
 
     this.#initialized = true;
+  }
+
+  /**
+   * sort views according to order or mushroom strategy default
+   * @param views
+   */
+  static sortViews(views: ViewConfig[]): ViewConfig[] {
+    const sortedViews = views.filter(item => !Number.isInteger(item.order));
+
+    views.filter(item => Number.isInteger(item.order))
+      .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
+      .forEach((item) => sortedViews.splice(item.order ?? Infinity, 0, item));
+    return sortedViews
   }
 
   /**
@@ -233,7 +281,7 @@ class Helper {
      *
      * @type {string[]}
      */
-    const states: string[] = [];
+    const entities: EntityRegistryEntry[] = [];
 
     if (!this.isInitialized()) {
       console.warn("Helper class should be initialized before calling this method!");
@@ -248,16 +296,38 @@ class Helper {
       });
 
       // Get the entities of which all conditions of the callback function are met. @see areaFilterCallback.
-      const newStates = this.#entities.filter(
+      this.#entities.filter(
         this.#areaFilterCallback, {
           area: area,
           domain: domain,
           areaDeviceIds: areaDeviceIds,
-        })
-        .map((entity) => `states['${entity.entity_id}']`);
+        }).forEach(entity => entities.push(entity))
 
-      states.push(...newStates);
     }
+
+    return this.getCountEntityTemplate(entities, operator, value);
+  }
+
+  static getCountEntityTemplate(entities: EntityRegistryEntry[], operator: string, value: string): string {
+    // noinspection JSMismatchedCollectionQueryUpdate (False positive per 17-04-2023)
+    /**
+     * Array of entity state-entries.
+     *
+     * Each element contains a template-string which is used to access home assistant's state machine (state object) in
+     * a template.
+     * E.g. "states['light.kitchen']"
+     *
+     * @type {string[]}
+     */
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
+    // Get the ID of the devices which are linked to the given area.
+
+    // Get the entities of which all conditions of the callback function are met. @see areaFilterCallback.
+    const states = entities
+      .map((entity) => `states['${entity.entity_id}']`);
 
     return `{% set entities = [${states}] %} {{ entities | selectattr('state','${operator}','${value}') | list | count }}`;
   }
@@ -369,16 +439,52 @@ class Helper {
   }
 
   /**
-   * Get the ids of the views which aren't set to hidden in the strategy options.
+   * Get a target of entity IDs for the given domain.
+   *
+   * @param {string} domain - The target domain to retrieve entity IDs from.
+   * @return {EntityRegistryEntry[]} - A target for a service call.
+   */
+  static entitiesOfDomain(domain: string) {
+    return Helper.entities.filter(
+      entity =>
+        entity.entity_id.startsWith(domain + ".")
+        && !entity.hidden_by
+        && !Helper.strategyOptions.card_options?.[entity.entity_id]?.hidden
+    )
+  };
+
+  /**
+   * Get unique labels of domain. Compare name of label for more user flexibility, because the name can be renamed unlike the id.
+   *
+   * @param {string} domain - The target domain of entities.
+   * @return {LabelRegistryEntry[]} - unique labels.
+   */
+  static labelsOfDomain(domain: string): LabelRegistryEntry[] {
+    const labels: string[] = this.entitiesOfDomain(domain)
+      .flatMap(entity => entity.labels)
+    return [...new Set(labels)]
+      .map(label => this.getLabelById(label))
+      .filter(isDefined)
+      .filter((label) => label.name.startsWith(this.getLabelPrefix(domain)))
+  }
+
+
+  static getLabelById(labelId: string): LabelRegistryEntry | undefined {
+    return this.#labels.find(label => label.label_id === labelId)
+  }
+
+  static getLabelPrefix = (domain: string) => `ms_${domain}_`
+
+  /**
+   * Get the ids of the views.
    *
    * @return {string[]} An array of view ids.
    */
-  static getExposedViewIds(): string[] {
+  static getViewIds(): string[] {
     if (!this.isInitialized()) {
       console.warn("Helper class should be initialized before calling this method!");
     }
-
-    return this.#getObjectKeysByPropertyValue(this.#strategyOptions.views, "hidden", false);
+    return Object.keys(this.#strategyOptions.views);
   }
 
   /**
@@ -427,6 +533,19 @@ class Helper {
       : this.areaDeviceIds.includes(entity.device_id ?? "") || entity.area_id === this.area.area_id;
 
     return (entityUnhidden && domainMatches && entityLinked);
+  }
+
+  /**
+   * Get a target of entity IDs for the given domain.)
+   *
+   * @param {EntityRegistryEntry[]} entities - List of target entries.
+   * @return {HassServiceTarget} - A target for a service call.
+   */
+  static toTargetEntities(entities: EntityRegistryEntry[]): HassServiceTarget {
+    return {
+      entity_id: entities
+        .map(entity => entity.entity_id)
+    };
   }
 
   /**

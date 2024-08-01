@@ -8,6 +8,7 @@ import {TemplateCardConfig} from "../types/lovelace-mushroom/cards/template-card
 import {ActionConfig} from "../types/homeassistant/data/lovelace";
 import {TitleCardConfig} from "../types/lovelace-mushroom/cards/title-card-config";
 import {PersonCardConfig} from "../types/lovelace-mushroom/cards/person-card-config";
+import {cards} from "../types/strategy/cards";
 
 
 // noinspection JSUnusedGlobalSymbols Class is dynamically imported.
@@ -24,9 +25,10 @@ class HomeView extends AbstractView {
    * Default configuration of the view.
    *
    * @type {views.ViewConfig}
-   * @private
+   * @protected
    */
-  #defaultConfig: views.ViewConfig = {
+  defaultConfig= {
+    id: "home",
     title: "Home",
     icon: "mdi:home-assistant",
     path: "home",
@@ -34,14 +36,17 @@ class HomeView extends AbstractView {
   };
 
   /**
-   * Class constructor.
+   * Get default configuration of the view's Controller card.
    *
-   * @param {views.ViewConfig} [options={}] Options for the view.
+   * @return {cards.ControllerCardOptions}
    */
-  constructor(options: views.ViewConfig = {}) {
-    super();
+  viewControllerCardConfig = (): cards.ControllerCardOptions => ({});
 
-    this.config = Object.assign(this.config, this.#defaultConfig, options);
+  /**
+   * Class constructor.
+   */
+  constructor() {
+    super();
   }
 
   /**
@@ -57,7 +62,7 @@ class HomeView extends AbstractView {
       this.#createAreaSection(),
     ]).then(([chips, personCards, areaCards]) => {
       const options = Helper.strategyOptions;
-      const homeViewCards = [];
+      const homeViewCards: (StackCardConfig | TemplateCardConfig | ChipsCardConfig)[] = [];
 
       if (chips.length) {
         // TODO: Create the Chip card at this.#createChips()

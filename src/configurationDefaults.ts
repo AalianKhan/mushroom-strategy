@@ -7,6 +7,7 @@ import StrategyDefaults = generic.StrategyDefaults;
 export const configurationDefaults: StrategyDefaults = {
   areas: {
     undisclosed: {
+      floor_id: null,
       aliases: [],
       area_id: "undisclosed",
       name: "Undisclosed",
@@ -105,37 +106,13 @@ export const configurationDefaults: StrategyDefaults = {
     hidden: [],
   },
   views: {
-    home: {
-      order: 1,
-      hidden: false,
-    },
-    light: {
-      order: 2,
-      hidden: false,
-    },
-    fan: {
-      order: 3,
-      hidden: false,
-    },
-    cover: {
-      order: 4,
-      hidden: false,
-    },
-    switch: {
-      order: 5,
-      hidden: false,
-    },
-    climate: {
-      order: 6,
-      hidden: false,
-    },
-    camera: {
-      order: 7,
-      hidden: false,
-    },
-    vacuum: {
-      order: 8,
-      hidden: false,
-    },
+    home: {},
+    light: {},
+    fan: {},
+    cover: {},
+    switch: {},
+    climate: {},
+    camera: {},
+    vacuum: {},
   }
 };
