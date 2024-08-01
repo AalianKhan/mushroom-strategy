@@ -12,12 +12,6 @@ import {HassServiceTarget} from "home-assistant-js-websocket";
  */
 class ControllerCard {
   /**
-   * @type {HassServiceTarget} The target to control the entities of.
-   * @private
-   */
-  readonly #target: HassServiceTarget;
-
-  /**
    * Default configuration of the card.
    *
    * @type {cards.ControllerCardConfig}
@@ -38,8 +32,7 @@ class ControllerCard {
    * @param {HassServiceTarget} target The target to control the entities of.
    * @param {cards.ControllerCardOptions} options Controller Card options.
    */
-  constructor(target: HassServiceTarget, options: cards.ControllerCardOptions = {}) {
-    this.#target = target;
+  constructor(private target: HassServiceTarget, options: cards.ControllerCardOptions = {}) {
     this.#defaultConfig = {
       ...this.#defaultConfig,
       ...options,
@@ -66,25 +59,25 @@ class ControllerCard {
         cards: [
           {
             type: "custom:mushroom-template-card",
-            icon: this.#defaultConfig.iconOff,
-            layout: "vertical",
-            icon_color: "red",
-            tap_action: {
-              action: "call-service",
-              service: this.#defaultConfig.offService,
-              target: this.#target,
-              data: {},
-            },
-          },
-          {
-            type: "custom:mushroom-template-card",
             icon: this.#defaultConfig.iconOn,
             layout: "vertical",
             icon_color: "amber",
             tap_action: {
               action: "call-service",
               service: this.#defaultConfig.onService,
-              target: this.#target,
+              target: this.target,
+              data: {},
+            },
+          },
+          {
+            type: "custom:mushroom-template-card",
+            icon: this.#defaultConfig.iconOff,
+            layout: "vertical",
+            icon_color: "red",
+            tap_action: {
+              action: "call-service",
+              service: this.#defaultConfig.offService,
+              target: this.target,
               data: {},
             },
           },

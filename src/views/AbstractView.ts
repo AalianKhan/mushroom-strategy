@@ -77,14 +77,12 @@ abstract class AbstractView {
       const cardModule = await import(`../cards/${className}`);
 
       // Set the target for controller cards to the current area.
-      let target: HassServiceTarget = {
-        area_id: [area.area_id],
-      };
+      const target: HassServiceTarget = Helper.toTargetEntities(entities);
 
       // Set the target for controller cards to entities without an area.
-      if (area.area_id === "undisclosed") {
+      /*if (area.area_id === "undisclosed") {
         target = Helper.toTargetEntities(entities);
-      }
+      }*/
 
       // Create a card for each domain-entity of the current area.
       for (const entity of entities) {
