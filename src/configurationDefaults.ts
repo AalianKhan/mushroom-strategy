@@ -102,12 +102,12 @@ export const configurationDefaults: StrategyDefaults = {
     },
     select: {
       title: "Selects",
-      showControls: true,
+      showControls: false,
       hidden: false,
     },
     input_select: {
       title: "Input Selects",
-      showControls: true,
+      showControls: false,
       hidden: false,
     },
   },
