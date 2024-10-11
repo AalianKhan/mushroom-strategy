@@ -100,6 +100,16 @@ export const configurationDefaults: StrategyDefaults = {
       showControls: true,
       hidden: false,
     },
+    select: {
+      title: "Selects",
+      showControls: true,
+      hidden: false,
+    },
+    input_select: {
+      title: "Input Selects",
+      showControls: true,
+      hidden: false,
+    },
   },
   home_view: {
     hidden: [],
