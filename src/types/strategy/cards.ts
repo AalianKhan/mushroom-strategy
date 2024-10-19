@@ -16,6 +16,7 @@ import {MediaPlayerCardConfig} from "../lovelace-mushroom/cards/media-player-car
 import {NumberCardConfig} from "../lovelace-mushroom/cards/number-card-config";
 import {PersonCardConfig} from "../lovelace-mushroom/cards/person-card-config";
 import {VacuumCardConfig} from "../lovelace-mushroom/cards/vacuum-card-config";
+import {SelectCardConfig} from '../lovelace-mushroom/cards/select-card-config';
 
 export namespace cards {
   /**
@@ -58,6 +59,8 @@ export namespace cards {
   export type PictureEntityCardOptions = Omit<PictureEntityCardConfig, "type">;
   export type TemplateCardOptions = Omit<TemplateCardConfig, "type">;
   export type VacuumCardOptions = Omit<VacuumCardConfig, "type">;
+  export type SelectCardOptions = Omit<SelectCardConfig, "type">;
+  export type InputSelectCardOptions = Omit<SelectCardConfig, "type">;
 }
 
 
