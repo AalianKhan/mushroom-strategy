@@ -18,6 +18,7 @@ export const configurationDefaults: StrategyDefaults = {
   domains: {
     _: {
       hide_config_entities: false,
+      hide_diagnostic_entities: false,
     },
     default: {
       title: "Miscellaneous",
