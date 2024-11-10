@@ -263,6 +263,36 @@ class Helper {
   }
 
   /**
+   * Get entities for specific device from the entity registry, filtered by domain.
+   *
+   * The entity registry is a registry where Home-Assistant keeps track of all entities.
+   * A device is represented in Home Assistant via one or more entities.
+   *
+   * The result excludes hidden and disabled entities.
+   *
+   * @param {string} deviceId The id of the linked device for the entity.
+   * @param {string} domain The domain of the entity-id.
+   *
+   * @return {EntityRegistryEntry[]} Array of device entities.
+   * @static
+   */
+  static getEntitiesForDevice(deviceId: string, domain: string): EntityRegistryEntry[] {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
+    // Return the entities of which all conditions of the callback function are met. @see areaFilterCallback.
+    return this.#entities.filter(
+      this.#deviceFilterCallback, {
+        deviceId: deviceId,
+        domain: domain
+      })
+      .sort((a, b) => {
+        return (a.original_name ?? "undefined").localeCompare(b.original_name ?? "undefined");
+      });
+  }
+
+  /**
    * Get device entities from the entity registry, filtered by area and domain.
    *
    * The entity registry is a registry where Home-Assistant keeps track of all entities.
@@ -350,6 +380,43 @@ class Helper {
   }
 
   /**
+   * Get state entities for a specific device
+   *
+   * The result excludes hidden and disabled entities.
+   *
+   * @param {string} deviceId DeviceId of the device entity.
+   * @param {string} domain Domain of the entity-id.
+   *
+   * @return {HassEntity[]} Array of state entities.
+   */
+  static getStateEntitiesForDevice(deviceId: string, domain: string): HassEntity[] {
+    if (!this.isInitialized()) {
+      console.warn("Helper class should be initialized before calling this method!");
+    }
+
+    const states: HassEntity[] = [];
+
+    // Create a map for the hassEntities to improve lookup speed.
+    const entityMap: {
+      [s: string]: EntityRegistryEntry;
+    } = Object.fromEntries(this.#entities.map((entity) => [entity.entity_id, entity]));
+
+    // Get states whose entity-id starts with the given string.
+    const stateEntities = Object.values(this.#hassStates).filter(
+      (state) => state.entity_id.startsWith(`${domain}.`),
+    );
+
+    for (const state of stateEntities) {
+      const hassEntity = entityMap[state.entity_id];
+      if (hassEntity?.device_id === deviceId) {
+        states.push(state);
+      }
+    }
+
+    return states;
+  }
+
+  /**
    * Sanitize a classname.
    *
    * The name is sanitized by capitalizing the first character of the name or after an underscore.
@@ -393,6 +460,34 @@ class Helper {
 
     return this.#getObjectKeysByPropertyValue(this.#strategyOptions.domains, "hidden", false);
   }
+
+  /**
+   * Callback function for filtering entities.
+   *
+   * Entities of which all the conditions below are met are kept:
+   * 1. The entity is not hidden and is not disabled.
+   * 2. The entity's domain matches the given domain.
+   * 3. The entity's deviceId matches given deviceId
+   *
+   * @param {EntityRegistryEntry} entity The current hass entity to evaluate.
+   * @this {AreaFilterContext}
+   *
+   * @return {boolean} True to keep the entity.
+   * @static
+   */
+  static #deviceFilterCallback(
+    this: {
+      deviceId: string,
+      domain: string,
+    },
+    entity: EntityRegistryEntry): boolean {
+    const entityUnhidden = entity.hidden_by === null && entity.disabled_by === null;
+    const domainMatches = entity.entity_id.startsWith(`${this.domain}.`);
+    const deviceIdMatches = entity.device_id === this.deviceId;
+
+    return (entityUnhidden && domainMatches && deviceIdMatches);
+  }
+
 
   /**
    * Callback function for filtering entities.

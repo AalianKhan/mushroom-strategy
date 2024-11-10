@@ -10,6 +10,7 @@ import {cards} from "./cards";
 import {EntityRegistryEntry} from "../homeassistant/data/entity_registry";
 import {LovelaceChipConfig} from "../lovelace-mushroom/utils/lovelace/chip/types";
 import {HassServiceTarget} from "home-assistant-js-websocket";
+import {DeviceRegistryEntry} from "../homeassistant/data/device_registry";
 
 export namespace generic {
   /**
@@ -65,9 +66,20 @@ export namespace generic {
   }
 
   /**
-   * View Information Object.
+   * Options passed with ViewInfo when user opens area view
+   */
+  export type AreaOptions = StrategyConfig & { area: StrategyArea };
+
+  /**
+   * Options passed with ViewInfo when user opens device view
+   */
+  export type DeviceOptions = StrategyConfig & { device: DeviceRegistryEntry };
+
+  /**
+   * Generic View Information Object.
    *
-   * Home Assistant passes this object to the View Generator method.
+   * Home Assistant passes this object to the View Generator method with custom options
+   * depending on view type (area or device)
    *
    * @property {LovelaceViewConfig} view View configuration.
    * @property {LovelaceConfig} config Dashboard configuration.
@@ -75,10 +87,10 @@ export namespace generic {
    *
    * @see https://developers.home-assistant.io/docs/frontend/custom-ui/custom-strategy/#view-strategies
    */
-  export interface ViewInfo {
+  export interface ViewInfoGeneric<T> {
     view: LovelaceViewConfig & {
       strategy?: {
-        options?: StrategyConfig & { area: StrategyArea }
+        options?: T
       }
     };
     config: LovelaceConfig
@@ -86,12 +98,30 @@ export namespace generic {
   }
 
   /**
+   * View Information Object with Area Options attached
+   */
+  export type ViewInfoArea = ViewInfoGeneric<AreaOptions>;
+
+  /**
+   * View Information Object with Device Options attached
+   */
+  export type ViewInfoDevice = ViewInfoGeneric<DeviceOptions>;
+
+  /**
+   * View Information Object
+   *
+   * Home Assistant passes this object to the View Generator method.
+   */
+  export type ViewInfo = ViewInfoArea | ViewInfoDevice;
+
+  /**
    * Strategy Configuration.
    *
-   * @property {Object.<AreaRegistryEntry>} areas List of areas.
+   * @property {Object.<StrategyArea>} areas List of areas.
    * @property {Object.<CustomCardConfig>} [card_options] Card options for entities.
    * @property {chips} [chips] List of chips to show in the Home view.
    * @property {boolean} [debug] Set to true for more verbose debugging info.
+   * @property {Object.<DeviceConfig>} areas List of devices to use dedicated subviews.
    * @property {Object.<DomainConfig>} domains List of domains.
    * @property {object[]} [extra_cards] List of cards to show below room cards.
    * @property {object[]} [extra_views] List of views to add to the dashboard.
@@ -103,6 +133,7 @@ export namespace generic {
     card_options?: { [k: string]: CustomCardConfig };
     chips?: Chips;
     debug: boolean;
+    devices?: { [k: string]: DeviceConfig };
     domains: { [k: string]: DomainConfig };
     extra_cards?: LovelaceCardConfig[];
     extra_views?: ViewConfig[];
@@ -177,8 +208,20 @@ export namespace generic {
    *
    * @property {boolean} hidden True if the entity should be hidden from the dashboard.
    */
-  export interface CustomCardConfig extends LovelaceCardConfig {
+  export interface CustomCardConfig extends Partial<cards.AbstractCardConfig> {
     hidden?: boolean;
+  }
+
+  /**
+   * Device Configuration
+   *
+   * @property {string} exposed_entity_ids the list of entity ids which represent the primary entities for the device
+   * e.g. a climate entity for thermostat, or cover entity for window blinds. When provided, only these entities
+   * are displayed in the area view. Other supporting entities like switches, sensors are accessible through
+   * a dedicated device view that can be opened through a hold action on any of the exposed entities.
+   */
+  export interface DeviceConfig {
+    exposed_entity_ids: string[];
   }
 
   /**
@@ -213,5 +256,25 @@ export namespace generic {
    */
   export function isCallServiceActionTarget(obj: any): obj is HassServiceTarget {
     return obj && ["entity_id", "device_id", "area_id"].some(key => key in obj);
+  }
+
+  /**
+   * Checks if the given object is an instance of ViewInfoArea.
+   *
+   * @param {any} obj - The object to be checked.
+   * @return {boolean} - Returns true if the object is an instance of ViewInfoArea, otherwise false.
+   */
+  export function isViewInfoArea(obj: any): obj is ViewInfoArea {
+    return obj.view.strategy?.options && 'area' in obj.view.strategy?.options;
+  }
+
+  /**
+   * Checks if the given object is an instance of ViewInfoDevice.
+   *
+   * @param {any} obj - The object to check.
+   * @return {boolean} - True if the object is an instance of ViewInfoDevice, false otherwise.
+   */
+  export function isViewInfoDevice(obj: any): obj is ViewInfoDevice {
+    return obj.view.strategy?.options && 'device' in obj.view.strategy?.options;
   }
 }
