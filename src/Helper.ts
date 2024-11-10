@@ -423,9 +423,8 @@ class Helper {
       // nor the entity itself, neither the entity's linked device (if any) is linked to any area.
       ? !entity.area_id && (this.areaDeviceIds.includes(entity.device_id ?? "") || !entity.device_id)
       // Area is a hass entity;
-      // The entity's linked device or the entity itself is linked to the given area.
-      : this.areaDeviceIds.includes(entity.device_id ?? "") || entity.area_id === this.area.area_id;
-
+      // The entity's linked device (and entity area id is null) or the entity itself is linked to the given area.
+      : (this.areaDeviceIds.includes(entity.device_id ?? "") && (entity.area_id === null)) || entity.area_id === this.area.area_id;
     return (entityUnhidden && domainMatches && entityLinked);
   }
 
