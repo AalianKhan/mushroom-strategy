@@ -22,7 +22,7 @@ class ClimateChip extends AbstractChip {
     type: "template",
     icon: "mdi:thermostat",
     icon_color: "orange",
-    content: Helper.getCountTemplate("climate", [{operator: "ne", value: "off"}]),
+    content: Helper.getCountTemplate("climate", [{operator: "ne", value: "off"}, {operator: "ne", value: "unavailable"}]),
     tap_action: {
       action: "none",
     },
