@@ -254,6 +254,14 @@ class Helper {
           domain: domain,
           areaDeviceIds: areaDeviceIds,
         })
+        .filter((entity) => {
+          // Don't include entities/devices that have been explicity excluded in config
+          let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
+          let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
+
+          // Don't include the entity if hidden in the strategy options.
+          return !(cardOptions?.hidden || deviceOptions?.hidden);
+        })
         .map((entity) => `states['${entity.entity_id}']`);
 
       states.push(...newStates);
