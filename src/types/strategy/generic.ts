@@ -196,6 +196,17 @@ export namespace generic {
   }
 
   /**
+   * Entity Count Filter.
+   *
+   * @property {string} operator - Jinja2 selectattr filter operation name (eq, ne, ...)
+   * @property {string} value - Entity state value to filter upon
+   */
+    export interface EntityCountFilter {
+      operator: string;
+      value: string;
+  }
+
+  /**
    * Checks if the given object is an instance of CallServiceActionConfig.
    *
    * @param {any} obj - The object to be checked.

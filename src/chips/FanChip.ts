@@ -22,7 +22,7 @@ class FanChip extends AbstractChip {
     type: "template",
     icon: "mdi:fan",
     icon_color: "green",
-    content: Helper.getCountTemplate("fan", "eq", "on"),
+    content: Helper.getCountTemplate("fan", [{operator: "eq", value: "on"}]),
     tap_action: {
       action: "call-service",
       service: "fan.turn_off",

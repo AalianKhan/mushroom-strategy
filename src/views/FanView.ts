@@ -50,7 +50,7 @@ class FanView extends AbstractView {
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
     title: "All Fans",
-    subtitle: Helper.getCountTemplate(FanView.#domain, "eq", "on") + " fans on",
+    subtitle: Helper.getCountTemplate(FanView.#domain, [{operator: "eq", value: "on"}]) + " fans on",
   };
 
   /**

@@ -22,7 +22,7 @@ class SwitchChip extends AbstractChip {
     type: "template",
     icon: "mdi:dip-switch",
     icon_color: "blue",
-    content: Helper.getCountTemplate("switch", "eq", "on"),
+    content: Helper.getCountTemplate("switch", [{operator: "eq", value: "on"}]),
     tap_action: {
       action: "call-service",
       service: "switch.turn_off",

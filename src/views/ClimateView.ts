@@ -47,7 +47,7 @@ class ClimateView extends AbstractView {
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
     title: "All Climates",
-    subtitle: Helper.getCountTemplate(ClimateView.#domain, "ne", "off") + " climates on",
+    subtitle: Helper.getCountTemplate(ClimateView.#domain, [{operator: "ne", value: "off"}]) + " climates on",
   };
 
   /**

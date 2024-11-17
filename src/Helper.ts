@@ -214,13 +214,12 @@ class Helper {
    * States are compared against a given value by a given operator.
    *
    * @param {string} domain The domain of the entities.
-   * @param {string} operator The Comparison operator between state and value.
-   * @param {string} value The value to which the state is compared against.
+   * @param {generic.EntityCountFilter[]} criteria Zero or more filters used to constrain the results.
    *
    * @return {string} The template string.
    * @static
    */
-  static getCountTemplate(domain: string, operator: string, value: string): string {
+  static getCountTemplate(domain: string, criteria: generic.EntityCountFilter[]): string {
     // noinspection JSMismatchedCollectionQueryUpdate (False positive per 17-04-2023)
     /**
      * Array of entity state-entries, filtered by domain.
@@ -229,11 +228,14 @@ class Helper {
      * a template.
      * E.g. "states['light.kitchen']"
      *
+     * Entities are filtered/selected by applying each specified criteria, in series.
+     *
      * The array excludes hidden and disabled entities.
      *
      * @type {string[]}
      */
     const states: string[] = [];
+    let filter_statement: string = "";
 
     if (!this.isInitialized()) {
       console.warn("Helper class should be initialized before calling this method!");
@@ -258,8 +260,10 @@ class Helper {
 
       states.push(...newStates);
     }
-
-    return `{% set entities = [${states}] %} {{ entities | selectattr('state','${operator}','${value}') | list | count }}`;
+    for (const each of criteria) {
+      filter_statement += ` | selectattr('state','${each.operator}','${each.value}')`;
+    }
+    return `{% set entities = [${states}] %} {{ entities ${filter_statement} | list | count }}`;
   }
 
   /**

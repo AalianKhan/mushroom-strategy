@@ -50,7 +50,7 @@ class VacuumView extends AbstractView {
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
     title: "All Vacuums",
-    subtitle: Helper.getCountTemplate(VacuumView.#domain, "ne", "off") + " vacuums on",
+    subtitle: Helper.getCountTemplate(VacuumView.#domain, [{operator: "ne", value: "off"}]) + " vacuums on",
   };
 
   /**

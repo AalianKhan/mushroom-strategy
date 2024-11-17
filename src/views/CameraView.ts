@@ -47,7 +47,7 @@ class CameraView extends AbstractView {
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
     title: "All Cameras",
-    subtitle: Helper.getCountTemplate(CameraView.#domain, "ne", "off") + " cameras on",
+    subtitle: Helper.getCountTemplate(CameraView.#domain, [{operator: "ne", value: "off"}]) + " cameras on",
   };
 
   /**

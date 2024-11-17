@@ -22,7 +22,7 @@ class LightChip extends AbstractChip {
     type: "template",
     icon: "mdi:lightbulb-group",
     icon_color: "amber",
-    content: Helper.getCountTemplate("light", "eq", "on"),
+    content: Helper.getCountTemplate("light", [{operator: "eq", value: "on"}]),
     tap_action: {
       action: "call-service",
       service: "light.turn_off",

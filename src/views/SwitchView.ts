@@ -50,7 +50,7 @@ class SwitchView extends AbstractView {
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
     title: "All Switches",
-    subtitle: Helper.getCountTemplate(SwitchView.#domain, "eq", "on") + " switches on",
+    subtitle: Helper.getCountTemplate(SwitchView.#domain, [{operator: "eq", value: "on"}]) + " switches on",
   };
 
   /**
