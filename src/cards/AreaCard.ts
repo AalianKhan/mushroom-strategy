@@ -55,6 +55,10 @@ class AreaCard extends AbstractCard {
       this.#defaultConfig.tap_action.navigation_path = area.area_id;
     }
 
+    if (area.icon) {
+        this.#defaultConfig.icon = area.icon;
+    }
+
     this.config = Object.assign(this.config, this.#defaultConfig, options);
   }
 }
