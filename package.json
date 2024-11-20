@@ -27,7 +27,7 @@
   "devDependencies": {
     "home-assistant-js-websocket": "^9",
     "superstruct": "^1",
-    "ts-loader": "^9",
+    "ts-loader": "^9.5.0",
     "ts-node": "^10",
     "typescript": "^5",
     "version-bump-prompt": "^6",
