@@ -400,7 +400,7 @@ class Helper {
    * Entities of which all the conditions below are met are kept:
    * 1. The entity is not hidden and is not disabled.
    * 2. The entity's domain matches the given domain.
-   * 3. Or/Neither the entity's linked device (if any) or/nor the entity itself is linked to the given area.
+   * 3. The entity itself or else the entity's linked device is linked to the given area.
    *    (See variable areaMatch)
    *
    * @param {EntityRegistryEntry} entity The current hass entity to evaluate.
@@ -423,9 +423,9 @@ class Helper {
       // nor the entity itself, neither the entity's linked device (if any) is linked to any area.
       ? !entity.area_id && (this.areaDeviceIds.includes(entity.device_id ?? "") || !entity.device_id)
       // Area is a hass entity;
-      // The entity's linked device or the entity itself is linked to the given area.
-      : this.areaDeviceIds.includes(entity.device_id ?? "") || entity.area_id === this.area.area_id;
-
+      // The entity itself or the entity's device is linked to the given area.
+      // Note: entity.area_id is set to null when using device's area.
+      : entity.area_id === this.area.area_id || (!entity.area_id && this.areaDeviceIds.includes(entity.device_id ?? ""));
     return (entityUnhidden && domainMatches && entityLinked);
   }
 
