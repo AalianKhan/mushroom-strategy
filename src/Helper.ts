@@ -400,7 +400,7 @@ class Helper {
    * Entities of which all the conditions below are met are kept:
    * 1. The entity is not hidden and is not disabled.
    * 2. The entity's domain matches the given domain.
-   * 3. Or/Neither the entity's linked device (if any) or/nor the entity itself is linked to the given area.
+   * 3. The entity itself or else the entity's linked device is linked to the given area.
    *    (See variable areaMatch)
    *
    * @param {EntityRegistryEntry} entity The current hass entity to evaluate.
