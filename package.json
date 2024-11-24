@@ -1,6 +1,6 @@
 {
   "name": "mushroom-strategy",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Automatically create a dashboard using Mushroom cards",
   "keywords": [
     "strategy",
@@ -27,12 +27,12 @@
   "devDependencies": {
     "home-assistant-js-websocket": "^9",
     "superstruct": "^1",
+    "ts-loader": "^9.5.0",
     "ts-node": "^10",
-    "ts-loader": "^9",
     "typescript": "^5",
     "version-bump-prompt": "^6",
-    "webpack": "^5",
-    "webpack-cli": "^5"
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
   },
   "scripts": {
     "build-dev": "webpack --config webpack.dev.config.ts",
