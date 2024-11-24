@@ -22,7 +22,7 @@ class AreaCard extends AbstractCard {
   #defaultConfig: TemplateCardConfig = {
     type: "custom:mushroom-template-card",
     primary: undefined,
-    icon: "mdi:texture-box",
+    icon: undefined,
     icon_color: "blue",
     tap_action: {
       action: "navigate",
@@ -55,10 +55,7 @@ class AreaCard extends AbstractCard {
       this.#defaultConfig.tap_action.navigation_path = area.area_id;
     }
 
-    if (area.icon) {
-        this.#defaultConfig.icon = area.icon;
-    }
-
+    this.#defaultConfig.icon = area.icon ?? "mdi:texture-box";
     this.config = Object.assign(this.config, this.#defaultConfig, options);
   }
 }
