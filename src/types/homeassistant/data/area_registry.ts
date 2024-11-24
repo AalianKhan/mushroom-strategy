@@ -9,7 +9,7 @@
 export interface AreaRegistryEntry {
   area_id: string;
   name: string;
-  icon?: string;
+  icon: string | null;
   picture: string | null;
   aliases: string[];
 }
