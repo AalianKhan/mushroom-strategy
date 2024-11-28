@@ -7,11 +7,13 @@ import StrategyDefaults = generic.StrategyDefaults;
 export const configurationDefaults: StrategyDefaults = {
   areas: {
     undisclosed: {
-      aliases: [],
       area_id: "undisclosed",
-      icon: null,
+      floor_id: null,
       name: "Undisclosed",
       picture: null,
+      icon: null,
+      labels: [],
+      aliases: [],
       hidden: false,
     }
   },
