@@ -11,7 +11,7 @@ export const configurationDefaults: StrategyDefaults = {
       floor_id: null,
       name: "Undisclosed",
       picture: null,
-      icon: null,
+      icon: "mdi:floor-plan",
       labels: [],
       aliases: [],
       hidden: false,
