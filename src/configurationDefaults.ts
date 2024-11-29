@@ -36,6 +36,15 @@ export const configurationDefaults: StrategyDefaults = {
       offService: "light.turn_off",
       hidden: false,
     },
+    scene: {
+      title: "Scenes",
+      showControls: true,
+      iconOn: "mdi:lightbulb",
+      iconOff: "mdi:lightbulb-off",
+      onService: "scene.turn_on",
+      offService: "scene.turn_off",
+      hidden: false,
+    },
     fan: {
       title: "Fans",
       showControls: true,
@@ -148,6 +157,10 @@ export const configurationDefaults: StrategyDefaults = {
     },
     vacuum: {
       order: 8,
+      hidden: false,
+    },
+    scene: {
+      order: 9,
       hidden: false,
     },
   }
