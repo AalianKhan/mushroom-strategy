@@ -107,11 +107,11 @@ class MushroomStrategy extends HTMLTemplateElement {
 
       const className = Helper.sanitizeClassName(domain + "Card");
 
-      let domainCards = [];
+      let domainCards: EntityCardConfig[] = [];
 
       try {
         domainCards = await import(`./cards/${className}`).then(cardModule => {
-          let domainCards = [];
+          let domainCards: EntityCardConfig[] = [];
           const entities = Helper.getDeviceEntities(area, domain);
           let configEntityHidden =
                 Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
@@ -132,7 +132,7 @@ class MushroomStrategy extends HTMLTemplateElement {
             ).createCard();
 
             if (domain === "sensor") {
-              // Create a card for each entity-sensor of the current area.
+              // Create a card for each sensor-entity of the current area.
               const sensorStates = Helper.getStateEntities(area, "sensor");
               const sensorCards: EntityCardConfig[] = [];
 
@@ -140,18 +140,15 @@ class MushroomStrategy extends HTMLTemplateElement {
                 // Find the state of the current sensor.
                 const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
                 let cardOptions = Helper.strategyOptions.card_options?.[sensor.entity_id];
-                let deviceOptions = Helper.strategyOptions.card_options?.[sensor.device_id ?? "null"];
 
-                if (!cardOptions?.hidden && !deviceOptions?.hidden) {
-                  if (sensorState?.attributes.unit_of_measurement) {
-                    cardOptions = {
-                      ...{
-                        type: "custom:mini-graph-card",
-                        entities: [sensor.entity_id],
-                      },
-                      ...cardOptions,
-                    };
-                  }
+                if (sensorState?.attributes.unit_of_measurement) {
+                  cardOptions = {
+                    ...{
+                      type: "custom:mini-graph-card",
+                      entities: [sensor.entity_id],
+                    },
+                    ...cardOptions,
+                  };
 
                   sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
                 }
@@ -178,11 +175,6 @@ class MushroomStrategy extends HTMLTemplateElement {
                 deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
               }
 
-              // Don't include the entity if hidden in the strategy options.
-              if (cardOptions?.hidden || deviceOptions?.hidden) {
-                continue;
-              }
-
               // Don't include the config-entity if hidden in the strategy options.
               if (entity.entity_category === "config" && configEntityHidden) {
                 continue;
@@ -193,7 +185,7 @@ class MushroomStrategy extends HTMLTemplateElement {
 
             if (domain === "binary_sensor") {
               // Horizontally group every two binary sensor cards.
-              const horizontalCards = [];
+              const horizontalCards: EntityCardConfig[] = [];
 
               for (let i = 0; i < domainCards.length; i += 2) {
                 horizontalCards.push({
