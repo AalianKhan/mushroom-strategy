@@ -107,7 +107,8 @@ export namespace generic {
     extra_cards?: LovelaceCardConfig[];
     extra_views?: ViewConfig[];
     home_view: {
-      hidden: HiddenSectionType[]
+      hidden: HiddenSectionType[];
+      areas_per_row?: number | AreasPerRow;
     }
     quick_access_cards?: LovelaceCardConfig[];
     views: { [k: string]: ViewConfig };
@@ -115,6 +116,11 @@ export namespace generic {
 
   const hiddenSectionList = ["chips", "persons", "greeting", "areas", "areasTitle"] as const;
   export type HiddenSectionType = typeof hiddenSectionList[number];
+
+  export interface AreasPerRow {
+    narrow?: number;
+    wide?: number;
+  }
 
   /**
    * Represents the default configuration for a strategy.
