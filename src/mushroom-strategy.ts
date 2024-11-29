@@ -117,6 +117,10 @@ class MushroomStrategy extends HTMLTemplateElement {
                 Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
                 || Helper.strategyOptions.domains["_"].hide_config_entities;
 
+          let diagnosticEntityHidden =
+                Helper.strategyOptions.domains[domain ?? "_"].hide_diagnostic_entities
+                || Helper.strategyOptions.domains["_"].hide_diagnostic_entities;
+
           // Set the target for controller cards to entities without an area.
           if (area.area_id === "undisclosed") {
             target = {
@@ -137,6 +141,11 @@ class MushroomStrategy extends HTMLTemplateElement {
               const sensorCards: EntityCardConfig[] = [];
 
               for (const sensor of entities) {
+                // Don't include the diagnostic-entity if hidden in the strategy options.
+                if (sensor.entity_category === "diagnostic" && diagnosticEntityHidden) {
+                  continue;
+                }
+
                 // Find the state of the current sensor.
                 const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
                 let cardOptions = Helper.strategyOptions.card_options?.[sensor.entity_id];
@@ -185,6 +194,11 @@ class MushroomStrategy extends HTMLTemplateElement {
 
               // Don't include the config-entity if hidden in the strategy options.
               if (entity.entity_category === "config" && configEntityHidden) {
+                continue;
+              }
+
+              // Don't include the diagnostic-entity if hidden in the strategy options.
+              if (entity.entity_category === "diagnostic" && diagnosticEntityHidden) {
                 continue;
               }
 
@@ -264,6 +278,11 @@ class MushroomStrategy extends HTMLTemplateElement {
 
               // Don't include the config-entity if hidden in the strategy options
               if (entity.entity_category === "config" && Helper.strategyOptions.domains["_"].hide_config_entities) {
+                continue;
+              }
+
+              // Don't include the diagnostic-entity if hidden in the strategy options
+              if (entity.entity_category === "diagnostic" && Helper.strategyOptions.domains["_"].hide_diagnostic_entities) {
                 continue;
               }
 

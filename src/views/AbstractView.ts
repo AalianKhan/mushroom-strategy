@@ -72,6 +72,9 @@ abstract class AbstractView {
     const configEntityHidden =
           Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities
           || Helper.strategyOptions.domains["_"].hide_config_entities;
+    const diagnosticEntityHidden =
+          Helper.strategyOptions.domains[this.#domain ?? "_"].hide_diagnostic_entities
+          || Helper.strategyOptions.domains["_"].hide_diagnostic_entities;
 
     // Create cards for each area.
     for (const area of Helper.areas) {
@@ -102,6 +105,10 @@ abstract class AbstractView {
         }
 
         if (entity.entity_category === "config" && configEntityHidden) {
+          continue;
+        }
+
+        if (entity.entity_category === "diagnostic" && diagnosticEntityHidden) {
           continue;
         }
 
