@@ -30,7 +30,7 @@ class LightView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Lights",
+    title: Helper.customLocalize("light.lights"),
     path: "lights",
     icon: "mdi:lightbulb-group",
     subview: false,

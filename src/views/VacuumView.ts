@@ -30,7 +30,7 @@ class VacuumView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Vacuums",
+    title: Helper.customLocalize("vacuum.vacuums"),
     path: "vacuums",
     icon: "mdi:robot-vacuum",
     subview: false,

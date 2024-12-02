@@ -30,7 +30,7 @@ class ClimateView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Climates",
+    title: Helper.customLocalize("climate.climates"),
     path: "climates",
     icon: "mdi:thermostat",
     subview: false,

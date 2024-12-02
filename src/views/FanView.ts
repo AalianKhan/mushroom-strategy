@@ -30,7 +30,7 @@ class FanView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Fans",
+    title: Helper.customLocalize("fan.fans"),
     path: "fans",
     icon: "mdi:fan",
     subview: false,

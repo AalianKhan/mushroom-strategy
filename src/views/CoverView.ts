@@ -30,7 +30,7 @@ class CoverView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Covers",
+    title: Helper.customLocalize("cover.covers"),
     path: "covers",
     icon: "mdi:window-open",
     subview: false,

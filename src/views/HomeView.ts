@@ -27,7 +27,7 @@ class HomeView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Home",
+    title: Helper.customLocalize("generic.home"),
     icon: "mdi:home-assistant",
     path: "home",
     subview: false,

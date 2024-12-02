@@ -30,7 +30,7 @@ class SwitchView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Switches",
+    title: Helper.customLocalize("switch.switches"),
     path: "switches",
     icon: "mdi:dip-switch",
     subview: false,

@@ -30,7 +30,7 @@ class CameraView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Cameras",
+    title: Helper.customLocalize("camera.cameras"),
     path: "cameras",
     icon: "mdi:cctv",
     subview: false,
