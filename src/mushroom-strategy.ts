@@ -107,11 +107,11 @@ class MushroomStrategy extends HTMLTemplateElement {
 
       const className = Helper.sanitizeClassName(domain + "Card");
 
-      let domainCards = [];
+      let domainCards: EntityCardConfig[] = [];
 
       try {
         domainCards = await import(`./cards/${className}`).then(cardModule => {
-          let domainCards = [];
+          let domainCards: EntityCardConfig[] = [];
           const entities = Helper.getDeviceEntities(area, domain);
           let configEntityHidden =
                 Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
@@ -132,7 +132,7 @@ class MushroomStrategy extends HTMLTemplateElement {
             ).createCard();
 
             if (domain === "sensor") {
-              // Create a card for each entity-sensor of the current area.
+              // Create a card for each sensor-entity of the current area.
               const sensorStates = Helper.getStateEntities(area, "sensor");
               const sensorCards: EntityCardConfig[] = [];
 
@@ -140,18 +140,15 @@ class MushroomStrategy extends HTMLTemplateElement {
                 // Find the state of the current sensor.
                 const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
                 let cardOptions = Helper.strategyOptions.card_options?.[sensor.entity_id];
-                let deviceOptions = Helper.strategyOptions.card_options?.[sensor.device_id ?? "null"];
 
-                if (!cardOptions?.hidden && !deviceOptions?.hidden) {
-                  if (sensorState?.attributes.unit_of_measurement) {
-                    cardOptions = {
-                      ...{
-                        type: "custom:mini-graph-card",
-                        entities: [sensor.entity_id],
-                      },
-                      ...cardOptions,
-                    };
-                  }
+                if (sensorState?.attributes.unit_of_measurement) {
+                  cardOptions = {
+                    ...{
+                      type: "custom:mini-graph-card",
+                      entities: [sensor.entity_id],
+                    },
+                    ...cardOptions,
+                  };
 
                   sensorCards.push(new SensorCard(sensor, cardOptions).getCard());
                 }
@@ -178,11 +175,6 @@ class MushroomStrategy extends HTMLTemplateElement {
                 deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
               }
 
-              // Don't include the entity if hidden in the strategy options.
-              if (cardOptions?.hidden || deviceOptions?.hidden) {
-                continue;
-              }
-
               // Don't include the config-entity if hidden in the strategy options.
               if (entity.entity_category === "config" && configEntityHidden) {
                 continue;
@@ -193,7 +185,7 @@ class MushroomStrategy extends HTMLTemplateElement {
 
             if (domain === "binary_sensor") {
               // Horizontally group every two binary sensor cards.
-              const horizontalCards = [];
+              const horizontalCards: EntityCardConfig[] = [];
 
               for (let i = 0; i < domainCards.length; i += 2) {
                 horizontalCards.push({
@@ -226,22 +218,10 @@ class MushroomStrategy extends HTMLTemplateElement {
 
     if (!Helper.strategyOptions.domains.default.hidden) {
       // Create cards for any other domain.
-      // Collect device entities of the current area.
-      const areaDevices = Helper.devices.filter((device) => device.area_id === area.area_id)
-        .map((device) => device.id);
-
-      // Collect the remaining entities of which all conditions below are met:
-      // 1. The entity is not hidden.
-      // 2. The entity's domain isn't exposed (entities of exposed domains are already included).
-      // 3. The entity is linked to a device which is linked to the current area,
-      //    or the entity itself is linked to the current area.
-      const miscellaneousEntities = Helper.entities.filter((entity) => {
-        const entityLinked = areaDevices.includes(entity.device_id ?? "null") || entity.area_id === area.area_id;
-        const entityUnhidden = entity.hidden_by === null && entity.disabled_by === null;
-        const domainExposed = exposedDomainIds.includes(entity.entity_id.split(".", 1)[0]);
-
-        return entityUnhidden && !domainExposed && entityLinked;
-      });
+      // Collect entities of the current area and unexposed domains.
+      const miscellaneousEntities = Helper.getDeviceEntities(area).filter(
+        entity => !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0])
+      );
 
       // Create a column of miscellaneous entity cards.
       if (miscellaneousEntities.length) {
@@ -256,11 +236,6 @@ class MushroomStrategy extends HTMLTemplateElement {
             for (const entity of miscellaneousEntities) {
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
               let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
-
-              // Don't include the entity if hidden in the strategy options.
-              if (cardOptions?.hidden || deviceOptions?.hidden) {
-                continue;
-              }
 
               // Don't include the config-entity if hidden in the strategy options
               if (entity.entity_category === "config" && Helper.strategyOptions.domains["_"].hide_config_entities) {
