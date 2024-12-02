@@ -77,23 +77,27 @@ class HomeView extends AbstractView {
       }
 
       if (!Helper.strategyOptions.home_view.hidden.includes("greeting")) {
-        homeViewCards.push({
-          type: "custom:mushroom-template-card",
-          primary: "{% set time = now().hour %} {% if (time >= 18) %} Good Evening, {{user}}! {% elif (time >= 12) %} Good Afternoon, {{user}}! {% elif (time >= 5) %} Good Morning, {{user}}! {% else %} Hello, {{user}}! {% endif %}",
-          icon: "mdi:hand-wave",
-          icon_color: "orange",
-          tap_action: {
-            action: "none",
-          } as ActionConfig,
-          double_tap_action: {
-            action: "none",
-          } as ActionConfig,
-          hold_action: {
-            action: "none",
-          } as ActionConfig,
-        } as TemplateCardConfig);
+        const greeting =
+                homeViewCards.push({
+                  type: "custom:mushroom-template-card",
+                  primary:
+                    `{% set time = now().hour %} {% if (time >= 18) %} ${Helper.customLocalize("generic.good_evening")},{{user}}!
+                     {% elif (time >= 12) %} ${Helper.customLocalize("generic.good_afternoon")}, {{user}}!
+                     {% elif (time >= 5) %} ${Helper.customLocalize("generic.good_morning")}, {{user}}!
+                     {% else %} ${Helper.customLocalize("generic.hello")}, {{user}}! {% endif %}`,
+                  icon: "mdi:hand-wave",
+                  icon_color: "orange",
+                  tap_action: {
+                    action: "none",
+                  } as ActionConfig,
+                  double_tap_action: {
+                    action: "none",
+                  } as ActionConfig,
+                  hold_action: {
+                    action: "none",
+                  } as ActionConfig,
+                } as TemplateCardConfig);
       }
-
 
       // Add quick access cards.
       if (options.quick_access_cards) {

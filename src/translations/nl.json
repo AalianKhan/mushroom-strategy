@@ -1,0 +1,59 @@
+{
+  "camera": {
+    "cameras": "Cameras",
+    "all_cameras": "Alle Cameras"
+  },
+  "climate": {
+    "climates": "Klimaatregelingen",
+    "all_climates": "Alle Klimaatregelingen"
+  },
+  "covers": {
+    "covers": "Bedekkingen",
+    "all_covers": "Alle Bedekkingen"
+  },
+  "fan": {
+    "fans": "Ventilatoren",
+    "all_fans": "Alle Ventilatoren"
+  },
+  "generic": {
+    "on": "Aan",
+    "open": "Open",
+    "all": "Alle",
+    "busy": "Bezig",
+    "good_afternoon": "Goede middag",
+    "good_evening": "Goede avond",
+    "good_morning": "Goede morgen",
+    "hello": "Hallo",
+    "miscellaneous": "Overige",
+    "numbers": "Nummers",
+    "off": "Uit"
+  },
+  "input_select": {
+    "input_selects": "Lijsten"
+  },
+  "light": {
+    "lights": "Lampen",
+    "all_lights": "Alle Lampen"
+  },
+  "lock": {
+    "locks": "Sloten"
+  },
+  "media_player": {
+    "media_players": "Mediaspelers"
+  },
+  "select": {
+    "selects": "Statuslijsten"
+  },
+  "sensor": {
+    "sensors": "Sensoren",
+    "binary": "Binaire"
+  },
+  "switch": {
+    "switches": "Schakelaars",
+    "all_switches": "Alle Schakelaars"
+  },
+  "vacuum": {
+    "vacuums": "Afzuiging",
+    "all_vacuums": "Alle Afzuiging"
+  }
+}

@@ -49,8 +49,10 @@ class LightView extends AbstractView {
    * @private
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Lights",
-    subtitle: Helper.getCountTemplate(LightView.#domain, "eq", "on") + " lights on",
+    title: Helper.customLocalize("light.all_lights"),
+    subtitle:
+      `${Helper.getCountTemplate(LightView.#domain, "eq", "on")} ${Helper.customLocalize("light.lights")} `
+      + Helper.customLocalize("generic.on"),
   };
 
   /**

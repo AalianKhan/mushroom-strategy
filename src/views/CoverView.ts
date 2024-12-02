@@ -49,8 +49,10 @@ class CoverView extends AbstractView {
    * @private
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Covers",
-    subtitle: Helper.getCountTemplate(CoverView.#domain, "eq", "open") + " covers open",
+    title: Helper.customLocalize("cover.all_covers"),
+    subtitle:
+      `${Helper.getCountTemplate(CoverView.#domain, "eq", "open")} ${Helper.customLocalize("cover.covers")} `
+      + Helper.customLocalize("generic.open"),
   };
 
   /**
