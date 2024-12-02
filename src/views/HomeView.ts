@@ -229,7 +229,7 @@ class HomeView extends AbstractView {
     if (!Helper.strategyOptions.home_view.hidden.includes("areasTitle")) {
       groupedCards.push({
           type: "custom:mushroom-title-card",
-          title: "Areas",
+          title: Helper.customLocalize("generic.areas"),
         },
       );
     }

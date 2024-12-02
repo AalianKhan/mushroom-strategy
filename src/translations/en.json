@@ -1,24 +1,23 @@
 {
   "camera": {
-    "cameras": "Cameras",
-    "all_cameras": "All Cameras"
+    "all_cameras": "All Cameras",
+    "cameras": "Cameras"
   },
   "climate": {
-    "climates": "Climates",
-    "all_climates": "All Climates"
+    "all_climates": "All Climates",
+    "climates": "Climates"
   },
   "covers": {
-    "covers": "Covers",
-    "all_covers": "All Covers"
+    "all_covers": "All Covers",
+    "covers": "Covers"
   },
   "fan": {
-    "fans": "Fans",
-    "all_fans": "All Fans"
+    "all_fans": "All Fans",
+    "fans": "Fans"
   },
   "generic": {
-    "on": "On",
-    "open": "Open",
     "all": "All",
+    "areas": "Areas",
     "busy": "Busy",
     "good_afternoon": "Good afternoon",
     "good_evening": "Good evening",
@@ -27,14 +26,16 @@
     "home": "Home",
     "miscellaneous": "Miscellaneous",
     "numbers": "Numbers",
-    "off": "Off"
+    "off": "Off",
+    "on": "On",
+    "open": "Open"
   },
   "input_select": {
     "input_selects": "Input Selects"
   },
   "light": {
-    "lights": "Lights",
-    "all_lights": "All Lights"
+    "all_lights": "All Lights",
+    "lights": "Lights"
   },
   "lock": {
     "locks": "Locks"
@@ -46,15 +47,15 @@
     "selects": "Selects"
   },
   "sensor": {
-    "sensors": "Sensors",
-    "binary": "Binary"
+    "binary": "Binary",
+    "sensors": "Sensors"
   },
   "switch": {
-    "switches": "Switches",
-    "all_switches": "All Switches"
+    "all_switches": "All Switches",
+    "switches": "Switches"
   },
   "vacuum": {
-    "vacuums": "Vacuums",
-    "all_vacuums": "All Vacuums"
+    "all_vacuums": "All Vacuums",
+    "vacuums": "Vacuums"
   }
 }
