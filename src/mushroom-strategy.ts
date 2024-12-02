@@ -218,22 +218,10 @@ class MushroomStrategy extends HTMLTemplateElement {
 
     if (!Helper.strategyOptions.domains.default.hidden) {
       // Create cards for any other domain.
-      // Collect device entities of the current area.
-      const areaDevices = Helper.devices.filter((device) => device.area_id === area.area_id)
-        .map((device) => device.id);
-
-      // Collect the remaining entities of which all conditions below are met:
-      // 1. The entity is not hidden.
-      // 2. The entity's domain isn't exposed (entities of exposed domains are already included).
-      // 3. The entity is linked to a device which is linked to the current area,
-      //    or the entity itself is linked to the current area.
-      const miscellaneousEntities = Helper.entities.filter((entity) => {
-        const entityLinked = areaDevices.includes(entity.device_id ?? "null") || entity.area_id === area.area_id;
-        const entityUnhidden = entity.hidden_by === null && entity.disabled_by === null;
-        const domainExposed = exposedDomainIds.includes(entity.entity_id.split(".", 1)[0]);
-
-        return entityUnhidden && !domainExposed && entityLinked;
-      });
+      // Collect entities of the current area and unexposed domains.
+      const miscellaneousEntities = Helper.getDeviceEntities(area).filter(
+        entity => !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0])
+      );
 
       // Create a column of miscellaneous entity cards.
       if (miscellaneousEntities.length) {

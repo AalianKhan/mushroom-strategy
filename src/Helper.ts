@@ -271,12 +271,12 @@ class Helper {
    * The result excludes hidden and disabled entities.
    *
    * @param {AreaRegistryEntry} area Area entity.
-   * @param {string} domain The domain of the entity-id.
+   * @param {string} [domain] The domain of the entity-id.
    *
    * @return {EntityRegistryEntry[]} Array of device entities.
    * @static
    */
-  static getDeviceEntities(area: AreaRegistryEntry, domain: string): EntityRegistryEntry[] {
+  static getDeviceEntities(area: AreaRegistryEntry, domain?: string): EntityRegistryEntry[] {
     if (!this.isInitialized()) {
       console.warn("Helper class should be initialized before calling this method!");
     }
@@ -420,9 +420,9 @@ class Helper {
     const deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
 
     const entityUnhidden =
-            !cardOptions?.hidden && !deviceOptions?.hidden                        // Condition 1.
-            && entity.hidden_by === null && entity.disabled_by === null;          // Condition 2.
-    const domainMatches = entity.entity_id.startsWith(`${this.domain}.`); // Condition 3.
+            !cardOptions?.hidden && !deviceOptions?.hidden                                             // Condition 1.
+            && entity.hidden_by === null && entity.disabled_by === null;                               // Condition 2.
+    const domainMatches = this.domain === undefined || entity.entity_id.startsWith(`${this.domain}.`); // Condition 3.
     // Condition 4.
     const entityLinked = this.area.area_id === "undisclosed"
       // Undisclosed area.
