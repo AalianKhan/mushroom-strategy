@@ -29,7 +29,9 @@
     "strictNullChecks": true,
 
     /* Completeness */
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "resolveJsonModule": true,
   },
   "ts-node": {
     "compilerOptions": {

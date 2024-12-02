@@ -30,7 +30,7 @@ class LightView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Lights",
+    title: Helper.customLocalize("light.lights"),
     path: "lights",
     icon: "mdi:lightbulb-group",
     subview: false,
@@ -49,8 +49,10 @@ class LightView extends AbstractView {
    * @private
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Lights",
-    subtitle: Helper.getCountTemplate(LightView.#domain, "eq", "on") + " lights on",
+    title: Helper.customLocalize("light.all_lights"),
+    subtitle:
+      `${Helper.getCountTemplate(LightView.#domain, "eq", "on")} ${Helper.customLocalize("light.lights")} `
+      + Helper.customLocalize("generic.on"),
   };
 
   /**

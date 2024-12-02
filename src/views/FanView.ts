@@ -30,7 +30,7 @@ class FanView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Fans",
+    title: Helper.customLocalize("fan.fans"),
     path: "fans",
     icon: "mdi:fan",
     subview: false,
@@ -49,8 +49,10 @@ class FanView extends AbstractView {
    * @private
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Fans",
-    subtitle: Helper.getCountTemplate(FanView.#domain, "eq", "on") + " fans on",
+    title: Helper.customLocalize("fan.all_fans"),
+    subtitle:
+      `${Helper.getCountTemplate(FanView.#domain, "eq", "on")} ${Helper.customLocalize("fan.fans")} `
+      + Helper.customLocalize("generic.on"),
   };
 
   /**
