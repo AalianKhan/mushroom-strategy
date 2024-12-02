@@ -237,11 +237,6 @@ class MushroomStrategy extends HTMLTemplateElement {
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
               let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
 
-              // Don't include the entity if hidden in the strategy options.
-              if (cardOptions?.hidden || deviceOptions?.hidden) {
-                continue;
-              }
-
               // Don't include the config-entity if hidden in the strategy options
               if (entity.entity_category === "config" && Helper.strategyOptions.domains["_"].hide_config_entities) {
                 continue;
