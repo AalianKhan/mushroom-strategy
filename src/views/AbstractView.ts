@@ -133,7 +133,7 @@ abstract class AbstractView {
   async getView(): Promise<(ViewConfig)[]> {
     const msLabelsOfDomain = this.domain ? Helper.labelsOfDomain(this.domain) : [];
     const views = (await Promise.all(msLabelsOfDomain
-      .map(async label => await this.createViewCards(entity => entity.labels.includes(label.label_id), label.name.replace(this.prefix, ''),))))
+      .map(async label => await this.createViewCards(entity => entity.labels.includes(label.label_id), label.name.replace(this.prefix, '').replace('_', ' '),))))
       .map((cards, index) => {
         const label = msLabelsOfDomain[index];
         const title = label.name.replace(this.prefix, "");
