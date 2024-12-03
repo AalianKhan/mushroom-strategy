@@ -114,5 +114,6 @@ export const configurationDefaults: StrategyDefaults = {
     climate: {},
     camera: {},
     vacuum: {},
+    binary_sensor: {},
   }
 };
