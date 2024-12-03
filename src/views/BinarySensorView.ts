@@ -47,7 +47,7 @@ class BinarySensorView extends AbstractView {
    *
    * @return {cards.ControllerCardOptions}
    */
-  viewControllerCardConfig = (entities: EntityRegistryEntry[], groupName: string = "covers"): cards.ControllerCardOptions => ({
+  viewControllerCardConfig = (entities: EntityRegistryEntry[], groupName: string = "binary sensors"): cards.ControllerCardOptions => ({
     title: `All ${groupName}`,
     /*subtitle: Helper.getCountEntityTemplate(entities, "eq", "open") + ` ${groupName} open`,*/
   });
