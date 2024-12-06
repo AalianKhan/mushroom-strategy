@@ -136,7 +136,7 @@ abstract class AbstractView {
       .map(async label => await this.createViewCards(entity => entity.labels.includes(label.label_id), label.name.replace(this.prefix, '').replace('_', ' '),))))
       .map((cards, index) => {
         const label = msLabelsOfDomain[index];
-        const title = label.name.replace(this.prefix, "").replace('_', ' ');
+        const title = label.name.replace(this.prefix, "");
         return {
           title,
           ...this.defaultConfig,

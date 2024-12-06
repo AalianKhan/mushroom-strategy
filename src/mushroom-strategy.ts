@@ -142,7 +142,7 @@ class MushroomStrategy extends HTMLTemplateElement {
 
               if (groupedEntities.length) {
                 // Create a Controller card for the current domain.
-                const title = msLabelsOfDomain[index - 1]?.name?.replace(labelPrefix, "") ?? Helper.strategyOptions.domains[domain].title;
+                const title = msLabelsOfDomain[index - 1]?.name?.replace(labelPrefix, "").replace('_', ' ') ?? Helper.strategyOptions.domains[domain].title;
                 const titleCard = new ControllerCard(
                   Helper.toTargetEntities(groupedEntities),
                   {
@@ -312,7 +312,7 @@ class MushroomStrategy extends HTMLTemplateElement {
 
 customElements.define("ll-strategy-mushroom-strategy", MushroomStrategy);
 
-const version = "v2.1.0";
+const version = "v2.1.1";
 console.info(
   "%c Mushroom Strategy %c ".concat(version, " "),
   "color: white; background: coral; font-weight: 700;", "color: coral; background: white; font-weight: 700;"
