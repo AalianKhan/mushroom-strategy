@@ -212,9 +212,10 @@ class Helper {
    * Get a template string to define the number of a given domain's entities with a certain state.
    *
    * States are compared against a given value by a given operator.
+   * States `unavailable` and `unknown` are always excluded.
    *
    * @param {string} domain The domain of the entities.
-   * @param {string} operator The Comparison operator between state and value.
+   * @param {string} operator The comparison operator between state and value.
    * @param {string} value The value to which the state is compared against.
    *
    * @return {string} The template string.
@@ -259,7 +260,16 @@ class Helper {
       states.push(...newStates);
     }
 
-    return `{% set entities = [${states}] %} {{ entities | selectattr('state','${operator}','${value}') | list | count }}`;
+    return (
+      `{% set entities = [${states}] %}
+       {{ entities
+          | selectattr('state','${operator}','${value}')
+          | selectattr('state','ne','unavailable')
+          | selectattr('state','ne','unknown')
+          | list
+          | count
+        }}`
+    );
   }
 
   /**
