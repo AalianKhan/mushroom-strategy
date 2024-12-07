@@ -22,7 +22,7 @@ class CoverChip extends AbstractChip {
     type: "template",
     icon: "mdi:window-open",
     icon_color: "cyan",
-    content: Helper.getCountTemplate("cover", "eq", "open"),
+    content: Helper.getCountTemplate("cover", "search", "(open|opening|closing)"),
     tap_action: {
       action: "none",
     },
