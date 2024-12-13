@@ -1,5 +1,8 @@
 > [!NOTE]
+> Follow the instructions inside the brackets and remove them.
 > In the Title field above, Provide a succinct and descriptive title for the pull request, e.g., "Improve caching mechanism for API calls"
+>
+> Follow the commit guidelines as described at https://github.com/DigiLive/gitChangelog/wiki/1-Introduction
 
 ## Description
 
