@@ -28,7 +28,8 @@
     "numbers": "Numbers",
     "off": "Off",
     "on": "On",
-    "open": "Open"
+    "open": "Open",
+    "unclosed": "Unclosed"
   },
   "input_select": {
     "input_selects": "Input Selects"
