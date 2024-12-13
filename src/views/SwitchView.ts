@@ -30,7 +30,7 @@ class SwitchView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Switches",
+    title: Helper.customLocalize("switch.switches"),
     path: "switches",
     icon: "mdi:dip-switch",
     subview: false,
@@ -49,8 +49,10 @@ class SwitchView extends AbstractView {
    * @private
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Switches",
-    subtitle: Helper.getCountTemplate(SwitchView.#domain, "eq", "on") + " switches on",
+    title: Helper.customLocalize("switch.all_switches"),
+    subtitle:
+      `${Helper.getCountTemplate(SwitchView.#domain, "eq", "on")} ${Helper.customLocalize("switch.switches")} `
+      + Helper.customLocalize("generic.on"),
   };
 
   /**

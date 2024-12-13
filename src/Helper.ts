@@ -1,10 +1,11 @@
-import {configurationDefaults} from "./configurationDefaults";
+import {getConfigurationDefaults} from "./configurationDefaults";
 import {HassEntities, HassEntity} from "home-assistant-js-websocket";
 import deepmerge from "deepmerge";
 import {EntityRegistryEntry} from "./types/homeassistant/data/entity_registry";
 import {DeviceRegistryEntry} from "./types/homeassistant/data/device_registry";
 import {AreaRegistryEntry} from "./types/homeassistant/data/area_registry";
 import {generic} from "./types/strategy/generic";
+import setupCustomLocalize from "./localize";
 import StrategyArea = generic.StrategyArea;
 
 /**
@@ -68,6 +69,7 @@ class Helper {
    * @private
    */
   static #debug: boolean;
+  static customLocalize: Function;
 
   /**
    * Class constructor.
@@ -140,8 +142,12 @@ class Helper {
    */
   static async initialize(info: generic.DashBoardInfo): Promise<void> {
     // Initialize properties.
-    this.#hassStates = info.hass.states;
+    this.customLocalize = setupCustomLocalize(info.hass);
+
+    const configurationDefaults = getConfigurationDefaults(this.customLocalize)
     this.#strategyOptions = deepmerge(configurationDefaults, info.config?.strategy?.options ?? {});
+
+    this.#hassStates = info.hass.states;
     this.#debug = this.#strategyOptions.debug;
 
     try {
@@ -212,9 +218,10 @@ class Helper {
    * Get a template string to define the number of a given domain's entities with a certain state.
    *
    * States are compared against a given value by a given operator.
+   * States `unavailable` and `unknown` are always excluded.
    *
    * @param {string} domain The domain of the entities.
-   * @param {string} operator The Comparison operator between state and value.
+   * @param {string} operator The comparison operator between state and value.
    * @param {string} value The value to which the state is compared against.
    *
    * @return {string} The template string.
@@ -259,7 +266,16 @@ class Helper {
       states.push(...newStates);
     }
 
-    return `{% set entities = [${states}] %} {{ entities | selectattr('state','${operator}','${value}') | list | count }}`;
+    return (
+      `{% set entities = [${states}] %}
+       {{ entities
+          | selectattr('state','${operator}','${value}')
+          | selectattr('state','ne','unavailable')
+          | selectattr('state','ne','unknown')
+          | list
+          | count
+        }}`
+    );
   }
 
   /**
