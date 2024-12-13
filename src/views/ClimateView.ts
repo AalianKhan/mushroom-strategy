@@ -30,7 +30,7 @@ class ClimateView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Climates",
+    title: Helper.customLocalize("climate.climates"),
     path: "climates",
     icon: "mdi:thermostat",
     subview: false,
@@ -46,8 +46,10 @@ class ClimateView extends AbstractView {
    * @private
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Climates",
-    subtitle: Helper.getCountTemplate(ClimateView.#domain, "ne", "off") + " climates on",
+    title: Helper.customLocalize("climate.all_climates"),
+    subtitle:
+      `${Helper.getCountTemplate(ClimateView.#domain, "ne", "off")} ${Helper.customLocalize("climate.climates")} `
+      + Helper.customLocalize("generic.busy"),
   };
 
   /**

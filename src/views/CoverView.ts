@@ -30,7 +30,7 @@ class CoverView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Covers",
+    title: Helper.customLocalize("cover.covers"),
     path: "covers",
     icon: "mdi:window-open",
     subview: false,
@@ -49,8 +49,10 @@ class CoverView extends AbstractView {
    * @private
    */
   #viewControllerCardConfig: cards.ControllerCardOptions = {
-    title: "All Covers",
-    subtitle: Helper.getCountTemplate(CoverView.#domain, "eq", "open") + " covers open",
+    title: Helper.customLocalize("cover.all_covers"),
+    subtitle:
+      `${Helper.getCountTemplate(CoverView.#domain, "search", "(open|opening|closing)")} ${Helper.customLocalize("cover.covers")} `
+      + Helper.customLocalize("generic.unclosed"),
   };
 
   /**
