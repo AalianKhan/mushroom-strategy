@@ -30,7 +30,8 @@ _Put an `x` in all boxes that apply_
 
 ## Additional Information
 
-[Any additional information that reviewers should be aware of.]
+[Any additional information that reviewers should be aware of.]<br>
+[E.g.: Add (before/after) images when visual changes are applied.]
 
 ## Checklist
 
