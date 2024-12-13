@@ -36,7 +36,7 @@ _Put an `x` in all boxes that apply_
 ## Checklist
 
 _Put an `x` in all boxes that apply_
-- [ ] My code adheres to the [coding and style guidelines](CONTRIBUTING.md) of the project.
+- [ ] My code adheres to the [coding and style guidelines](https://github.com/AalianKhan/mushroom-strategy/blob/main/CONTRIBUTING.md) of the project.
 - [ ] I have performed a self-review of my own code.
 - [ ] I have commented my code, particularly in hard-to-understand areas.
 - [ ] I have made corresponding changes to the documentation.
