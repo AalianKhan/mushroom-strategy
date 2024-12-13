@@ -28,7 +28,8 @@
     "numbers": "Nummers",
     "off": "Uit",
     "on": "Aan",
-    "open": "Open"
+    "open": "Open",
+    "unclosed": "Ongesloten"
   },
   "input_select": {
     "input_selects": "Lijsten"
