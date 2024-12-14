@@ -1,5 +1,4 @@
 import {Helper} from "../Helper";
-import {ControllerCard} from "../cards/ControllerCard";
 import {AbstractView} from "./AbstractView";
 import {views} from "../types/strategy/views";
 import {cards} from "../types/strategy/cards";
@@ -59,14 +58,6 @@ class SceneView extends AbstractView {
     super(SceneView.#domain);
 
     this.config = Object.assign(this.config, this.#defaultConfig, options);
-
-    // Create a Controller card to switch all entities of the domain.
-    this.viewControllerCard = new ControllerCard(
-      this.targetDomain(SceneView.#domain),
-      {
-        ...this.#viewControllerCardConfig,
-        ...("controllerCardOptions" in this.config ? this.config.controllerCardOptions : {}) as cards.ControllerCardConfig,
-      }).createCard();
   }
 }
 
