@@ -38,11 +38,8 @@ export const configurationDefaults: StrategyDefaults = {
     },
     scene: {
       title: "Scenes",
-      showControls: true,
-      iconOn: "mdi:lightbulb",
-      iconOff: "mdi:lightbulb-off",
+      showControls: false,
       onService: "scene.turn_on",
-      offService: "scene.turn_off",
       hidden: false,
     },
     fan: {
