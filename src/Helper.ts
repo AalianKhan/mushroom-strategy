@@ -287,12 +287,12 @@ class Helper {
    * The result excludes hidden and disabled entities.
    *
    * @param {AreaRegistryEntry} area Area entity.
-   * @param {string} domain The domain of the entity-id.
+   * @param {string} [domain] The domain of the entity-id.
    *
    * @return {EntityRegistryEntry[]} Array of device entities.
    * @static
    */
-  static getDeviceEntities(area: AreaRegistryEntry, domain: string): EntityRegistryEntry[] {
+  static getDeviceEntities(area: AreaRegistryEntry, domain?: string): EntityRegistryEntry[] {
     if (!this.isInitialized()) {
       console.warn("Helper class should be initialized before calling this method!");
     }
@@ -414,12 +414,12 @@ class Helper {
    * Callback function for filtering entities.
    *
    * Entities of which all the conditions below are met are kept:
-   * 1. The entity is not hidden and is not disabled.
-   * 2. The entity's domain matches the given domain.
-   * 3. The entity itself or else the entity's linked device is linked to the given area.
-   *    (See variable areaMatch)
+   * 1. The entity is not hidden and the entity's device is not hidden by the strategy options.
+   * 2. The entity is not hidden and is not disabled by Hass.
+   * 3. The entity's domain matches the given domain.
+   * 4. The entity itself or else the entity's device is linked to the given area.
    *
-   * @param {EntityRegistryEntry} entity The current hass entity to evaluate.
+   * @param {EntityRegistryEntry} entity The current Hass entity to evaluate.
    * @this {AreaFilterContext}
    *
    * @return {boolean} True to keep the entity.
@@ -432,16 +432,20 @@ class Helper {
       domain: string,
     },
     entity: EntityRegistryEntry): boolean {
-    const entityUnhidden = entity.hidden_by === null && entity.disabled_by === null;
-    const domainMatches = entity.entity_id.startsWith(`${this.domain}.`);
+    const cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
+    const deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
+
+    const entityUnhidden =
+            !cardOptions?.hidden && !deviceOptions?.hidden                                             // Condition 1.
+            && entity.hidden_by === null && entity.disabled_by === null;                               // Condition 2.
+    const domainMatches = this.domain === undefined || entity.entity_id.startsWith(`${this.domain}.`); // Condition 3.
+    // Condition 4.
     const entityLinked = this.area.area_id === "undisclosed"
-      // Undisclosed area;
-      // nor the entity itself, neither the entity's linked device (if any) is linked to any area.
+      // Undisclosed area.
       ? !entity.area_id && (this.areaDeviceIds.includes(entity.device_id ?? "") || !entity.device_id)
-      // Area is a hass entity;
-      // The entity itself or the entity's device is linked to the given area.
-      // Note: entity.area_id is set to null when using device's area.
+      // Area is a hass entity. Note: entity.area_id is set to null when using device's area.
       : entity.area_id === this.area.area_id || (!entity.area_id && this.areaDeviceIds.includes(entity.device_id ?? ""));
+
     return (entityUnhidden && domainMatches && entityLinked);
   }
 
