@@ -186,13 +186,12 @@ export namespace generic {
    *
    * @property {AreaRegistryEntry} area Area Entity.
    * @property {string[]} areaDeviceIds The id of devices which are linked to the area entity.
-   * @property {string} domain Domain of the entity.
-   *                           Example: `light`.
+   * @property {string} [domain] Domain of the entity. Example: `light`.
    */
   export interface AreaFilterContext {
     area: AreaRegistryEntry;
     areaDeviceIds: string[];
-    domain: string;
+    domain?: string;
   }
 
   /**
