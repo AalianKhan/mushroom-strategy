@@ -366,6 +366,17 @@ class Helper {
   }
 
   /**
+   * Get the state object of a HASS entity.
+   *
+   * @param {EntityRegistryEntry} entity The entity for which to get the state.
+   * @returns {HassEntity | undefined} The state object of the entity, or undefined if not found.
+   * @static
+   */
+  static getEntityState(entity: EntityRegistryEntry): HassEntity | undefined {
+    return this.#hassStates[entity.entity_id];
+  }
+
+  /**
    * Sanitize a classname.
    *
    * The name is sanitized by capitalizing the first character of the name or after an underscore.
