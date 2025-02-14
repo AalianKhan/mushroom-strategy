@@ -44,6 +44,9 @@
   "media_player": {
     "media_players": "Mediaspelers"
   },
+  "scene": {
+    "scenes": "Scenes"
+  },
   "select": {
     "selects": "Statuslijsten"
   },

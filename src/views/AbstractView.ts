@@ -123,7 +123,7 @@ abstract class AbstractView {
     }
 
     // Add a Controller Card for all the entities in the view.
-    if (viewCards.length) {
+    if (this.viewControllerCard.cards.length && viewCards.length) {
       viewCards.unshift(this.viewControllerCard);
     }
 
