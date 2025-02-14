@@ -38,12 +38,9 @@ export const getConfigurationDefaults = (localize: Function): StrategyDefaults =
         hidden: false,
       },
       scene: {
-        title: "Scenes",
-        showControls: true,
-        iconOn: "mdi:lightbulb",
-        iconOff: "mdi:lightbulb-off",
+        title: localize("scene.scenes"),
+        showControls: false,
         onService: "scene.turn_on",
-        offService: "scene.turn_off",
         hidden: false,
       },
       fan: {

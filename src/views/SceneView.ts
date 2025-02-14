@@ -28,7 +28,7 @@ class SceneView extends AbstractView {
    * @private
    */
   #defaultConfig: views.ViewConfig = {
-    title: "Scenes",
+    title: Helper.customLocalize("scene.scenes"),
     path: "scenes",
     icon: "mdi:palette",
     subview: false,

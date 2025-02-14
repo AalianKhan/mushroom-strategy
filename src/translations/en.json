@@ -44,6 +44,9 @@
   "media_player": {
     "media_players": "Mediaplayers"
   },
+  "scene": {
+    "scenes": "Scenes"
+  },
   "select": {
     "selects": "Selects"
   },
