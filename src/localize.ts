@@ -1,11 +1,13 @@
 import {HomeAssistant} from "./types/homeassistant/types";
 import * as en from "./translations/en.json";
 import * as nl from "./translations/nl.json";
+import * as de from "./translations/de.json";
 
 /* Registry of currently supported languages */
 const languages: Record<string, unknown> = {
   en,
   nl,
+  de,
 };
 
 /* The fallback language if the user-defined language isn't defined */
