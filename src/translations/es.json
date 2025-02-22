@@ -4,12 +4,12 @@
     "cameras": "Cámaras"
   },
   "climate": {
-    "all_climates": "Todos los Aires Acondicionados",
-    "climates": "Aires Acondicionados"
+    "all_climates": "Todos los Termostatos",
+    "climates": "Termostatos"
   },
   "cover": {
-    "all_covers": "Todas las Cortinas",
-    "covers": "Cortinas"
+    "all_covers": "Todas las Cubiertas",
+    "covers": "Cubiertas"
   },
   "fan": {
     "all_fans": "Todos los Ventiladores",
@@ -39,7 +39,7 @@
     "lights": "Luces"
   },
   "lock": {
-    "locks": "Candado"
+    "locks": "Candados"
   },
   "media_player": {
     "media_players": "Reproductores Multimedia"
