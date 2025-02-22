@@ -1,6 +1,6 @@
 {
   "camera": {
-    "all_cameras": "Todas las Vámaras",
+    "all_cameras": "Todas las Cámaras",
     "cameras": "Cámaras"
   },
   "climate": {
@@ -24,11 +24,11 @@
     "good_morning": "Buenos días",
     "hello": "Hola",
     "home": "Inicio",
-    "miscellaneous": "Miscellaneous",
+    "miscellaneous": "Varios",
     "numbers": "Números",
-    "off": "Apagar",
-    "on": "Encender",
-    "open": "Abrir",
+    "off": "Apagado",
+    "on": "Encendido",
+    "open": "Abierto",
     "unclosed": "Sin Cerrar"
   },
   "input_select": {
