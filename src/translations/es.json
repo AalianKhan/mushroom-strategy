@@ -1,0 +1,62 @@
+{
+  "camera": {
+    "all_cameras": "Todas las Cámaras",
+    "cameras": "Cámaras"
+  },
+  "climate": {
+    "all_climates": "Todos los Termostatos",
+    "climates": "Termostatos"
+  },
+  "cover": {
+    "all_covers": "Todas las Cubiertas",
+    "covers": "Cubiertas"
+  },
+  "fan": {
+    "all_fans": "Todos los Ventiladores",
+    "fans": "Ventiladores"
+  },
+  "generic": {
+    "all": "Todo",
+    "areas": "Áreas",
+    "busy": "Ocupado",
+    "good_afternoon": "Buenas tardes",
+    "good_evening": "Buenas noches",
+    "good_morning": "Buenos días",
+    "hello": "Hola",
+    "home": "Inicio",
+    "miscellaneous": "Varios",
+    "numbers": "Números",
+    "off": "Apagado",
+    "on": "Encendido",
+    "open": "Abierto",
+    "unclosed": "Sin Cerrar"
+  },
+  "input_select": {
+    "input_selects": "Selecciones de Entrada"
+  },
+  "light": {
+    "all_lights": "Todas las Luces",
+    "lights": "Luces"
+  },
+  "lock": {
+    "locks": "Candados"
+  },
+  "media_player": {
+    "media_players": "Reproductores Multimedia"
+  },
+  "select": {
+    "selects": "Seleccionar"
+  },
+  "sensor": {
+    "binary": "Binario",
+    "sensors": "Sensores"
+  },
+  "switch": {
+    "all_switches": "Todos los Apagadores",
+    "switches": "Apagadores"
+  },
+  "vacuum": {
+    "all_vacuums": "Todas las Aspiradoras",
+    "vacuums": "Aspiradoras"
+  }
+}
