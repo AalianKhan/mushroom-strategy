@@ -1,0 +1,65 @@
+{
+  "camera": {
+    "all_cameras": "Alle Cameras",
+    "cameras": "Cameras"
+  },
+  "climate": {
+    "all_climates": "Alle Klimaatregelingen",
+    "climates": "Klimaatregelingen"
+  },
+  "cover": {
+    "all_covers": "Alle Bedekkingen",
+    "covers": "Bedekkingen"
+  },
+  "fan": {
+    "all_fans": "Alle Ventilatoren",
+    "fans": "Ventilatoren"
+  },
+  "generic": {
+    "all": "Alle",
+    "areas": "Ruimtes",
+    "busy": "Bezig",
+    "good_afternoon": "Goede middag",
+    "good_evening": "Goede avond",
+    "good_morning": "Goede morgen",
+    "hello": "Hallo",
+    "home": "Start",
+    "miscellaneous": "Overige",
+    "numbers": "Nummers",
+    "off": "Uit",
+    "on": "Aan",
+    "open": "Open",
+    "unclosed": "Ongesloten"
+  },
+  "input_select": {
+    "input_selects": "Lijsten"
+  },
+  "light": {
+    "all_lights": "Alle Lampen",
+    "lights": "Lampen"
+  },
+  "lock": {
+    "locks": "Sloten"
+  },
+  "media_player": {
+    "media_players": "Mediaspelers"
+  },
+  "scene": {
+    "scenes": "Scenes"
+  },
+  "select": {
+    "selects": "Statuslijsten"
+  },
+  "sensor": {
+    "binary": "Binaire",
+    "sensors": "Sensoren"
+  },
+  "switch": {
+    "all_switches": "Alle Schakelaars",
+    "switches": "Schakelaars"
+  },
+  "vacuum": {
+    "all_vacuums": "Alle Afzuiging",
+    "vacuums": "Afzuiging"
+  }
+}
