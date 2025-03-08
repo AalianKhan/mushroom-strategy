@@ -1,0 +1,65 @@
+{
+  "camera": {
+    "all_cameras": "Alle Kameras",
+    "cameras": "Kameras"
+  },
+  "climate": {
+    "all_climates": "Alle Klimaanlagen",
+    "climates": "Klimaanlagen"
+  },
+  "cover": {
+    "all_covers": "Alle Abdeckungen",
+    "covers": "Abdeckungen"
+  },
+  "fan": {
+    "all_fans": "Alle Ventilatoren",
+    "fans": "Ventilatoren"
+  },
+  "generic": {
+    "all": "Alle",
+    "areas": "Bereiche",
+    "busy": "Beschäftigt",
+    "good_afternoon": "Guten Nachmittag",
+    "good_evening": "Guten Abend",
+    "good_morning": "Guten Morgen",
+    "hello": "Hallo",
+    "home": "Start",
+    "miscellaneous": "Sonstiges",
+    "numbers": "Zahlen",
+    "off": "Aus",
+    "on": "Ein",
+    "open": "Offen",
+    "unclosed": "Nicht Geschlossen"
+  },
+  "input_select": {
+    "input_selects": "Auswahl-Eingaben"
+  },
+  "light": {
+    "all_lights": "Alle Leuchten",
+    "lights": "Leuchten"
+  },
+  "lock": {
+    "locks": "Schlösser"
+  },
+  "media_player": {
+    "media_players": "Wiedergabegeräte"
+  },
+  "scene": {
+    "scenes": "Szenen"
+  },
+  "select": {
+    "selects": "Auswahlen"
+  },
+  "sensor": {
+    "binary": "Binäre",
+    "sensors": "Sensoren"
+  },
+  "switch": {
+    "all_switches": "Alle Schalter",
+    "switches": "Schalter"
+  },
+  "vacuum": {
+    "all_vacuums": "Alle Staubsauger",
+    "vacuums": "Staubsauger"
+  }
+}
