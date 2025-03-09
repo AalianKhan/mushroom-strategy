@@ -69,17 +69,11 @@ abstract class AbstractView {
    */
   async createViewCards(): Promise<(StackCardConfig | TitleCardConfig)[]> {
     const viewCards: LovelaceCardConfig[] = [];
-    const configEntityHidden =
-            Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities
-            || Helper.strategyOptions.domains["_"].hide_config_entities;
-    const diagnosticEntityHidden =
-            Helper.strategyOptions.domains[this.#domain ?? "_"].hide_diagnostic_entities
-            || Helper.strategyOptions.domains["_"].hide_diagnostic_entities;
 
     // Create cards for each area.
     for (const area of Helper.areas) {
       const areaCards: abstractCardConfig[] = [];
-      const entities = Helper.getDeviceEntities(area, this.#domain ?? "");
+      let entities = Helper.getDeviceEntities(area, this.#domain ?? "");
       const className = Helper.sanitizeClassName(this.#domain + "Card");
       const cardModule = await import(`../cards/${className}`);
 
@@ -95,20 +89,21 @@ abstract class AbstractView {
         }
       }
 
+      // Don't include hidden Config and Diagnostic entities.
+      if (Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities) {
+        entities = entities.filter(obj => obj["entity_category"] !== "config");
+      }
+
+      if (Helper.strategyOptions.domains[this.#domain ?? "_"].hide_diagnostic_entities) {
+        entities = entities.filter(obj => obj["entity_category"] !== "diagnostic");
+      }
+
       // Create a card for each domain-entity of the current area.
       for (const entity of entities) {
         let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
         let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
 
         if (cardOptions?.hidden || deviceOptions?.hidden) {
-          continue;
-        }
-
-        if (entity.entity_category === "config" && configEntityHidden) {
-          continue;
-        }
-
-        if (entity.entity_category === "diagnostic" && diagnosticEntityHidden) {
           continue;
         }
 

@@ -112,20 +112,22 @@ class MushroomStrategy extends HTMLTemplateElement {
       try {
         domainCards = await import(`./cards/${className}`).then(cardModule => {
           let domainCards: EntityCardConfig[] = [];
-          const entities = Helper.getDeviceEntities(area, domain);
-          let configEntityHidden =
-                Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
-                || Helper.strategyOptions.domains["_"].hide_config_entities;
-
-          let diagnosticEntityHidden =
-                Helper.strategyOptions.domains[domain ?? "_"].hide_diagnostic_entities
-                || Helper.strategyOptions.domains["_"].hide_diagnostic_entities;
+          let entities = Helper.getDeviceEntities(area, domain);
 
           // Set the target for controller cards to entities without an area.
           if (area.area_id === "undisclosed") {
             target = {
               entity_id: entities.map(entity => entity.entity_id),
             }
+          }
+
+          // Don't include hidden Config and Diagnostic entities.
+          if (Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities) {
+            entities = entities.filter(obj => obj["entity_category"] !== "config");
+          }
+
+          if (Helper.strategyOptions.domains[domain ?? "_"].hide_diagnostic_entities) {
+            entities = entities.filter(obj => obj["entity_category"] !== "diagnostic");
           }
 
           if (entities.length) {
@@ -141,11 +143,6 @@ class MushroomStrategy extends HTMLTemplateElement {
               const sensorCards: EntityCardConfig[] = [];
 
               for (const sensor of entities) {
-                // Don't include the diagnostic-entity if hidden in the strategy options.
-                if (sensor.entity_category === "diagnostic" && diagnosticEntityHidden) {
-                  continue;
-                }
-
                 // Find the state of the current sensor.
                 const sensorState = sensorStates.find(state => state.entity_id === sensor.entity_id);
                 let cardOptions = Helper.strategyOptions.card_options?.[sensor.entity_id];
@@ -182,16 +179,6 @@ class MushroomStrategy extends HTMLTemplateElement {
 
               if (entity.device_id) {
                 deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
-              }
-
-              // Don't include the config-entity if hidden in the strategy options.
-              if (entity.entity_category === "config" && configEntityHidden) {
-                continue;
-              }
-
-              // Don't include the diagnostic-entity if hidden in the strategy options.
-              if (entity.entity_category === "diagnostic" && diagnosticEntityHidden) {
-                continue;
               }
 
               domainCards.push(new cardModule[className](entity, cardOptions).getCard());
@@ -233,9 +220,18 @@ class MushroomStrategy extends HTMLTemplateElement {
     if (!Helper.strategyOptions.domains.default.hidden) {
       // Create cards for any other domain.
       // Collect entities of the current area and unexposed domains.
-      const miscellaneousEntities = Helper.getDeviceEntities(area).filter(
+      let miscellaneousEntities = Helper.getDeviceEntities(area).filter(
         entity => !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0])
       );
+
+      // Don't include hidden Config and Diagnostic entities.
+      if (Helper.strategyOptions.domains["default" ?? "_"].hide_config_entities) {
+        miscellaneousEntities = miscellaneousEntities.filter(obj => obj["entity_category"] !== "config");
+      }
+
+      if (Helper.strategyOptions.domains["default" ?? "_"].hide_diagnostic_entities) {
+        miscellaneousEntities = miscellaneousEntities.filter(obj => obj["entity_category"] !== "diagnostic");
+      }
 
       // Create a column of miscellaneous entity cards.
       if (miscellaneousEntities.length) {
