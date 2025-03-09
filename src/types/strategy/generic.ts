@@ -38,8 +38,8 @@ export namespace generic {
    * @property {boolean} [hidden] True if the entity should be hidden from the dashboard.
    * @property {boolean} [hide_config_entities] True if the entity's categorie is "config" and should be hidden from the
    *                                            dashboard.
-   * @property {boolean} [hide_diagnostic_entities] True if the entity's categorie is "diagnostic" and should be hidden from the
-   *                                                dashboard.
+   * @property {boolean} [hide_diagnostic_entities] True if the entity's categorie is "diagnostic" and should be hidden
+   *                                                from the dashboard.
    */
   export interface DomainConfig extends Partial<cards.ControllerCardConfig> {
     hidden?: boolean;
