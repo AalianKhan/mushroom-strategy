@@ -228,7 +228,6 @@ class Helper {
    * @static
    */
   static getCountTemplate(domain: string, operator: string, value: string): string {
-    // noinspection JSMismatchedCollectionQueryUpdate (False positive per 17-04-2023)
     /**
      * Array of entity state-entries, filtered by domain.
      *
@@ -248,20 +247,18 @@ class Helper {
 
     // Get the ID of the devices which are linked to the given area.
     for (const area of this.#areas) {
-      const areaDeviceIds = this.#devices.filter((device) => {
-        return device.area_id === area.area_id;
-      }).map((device) => {
-        return device.id;
-      });
+      let entities = this.getDeviceEntities(area, domain);
 
-      // Get the entities of which all conditions of the callback function are met. @see areaFilterCallback.
-      const newStates = this.#entities.filter(
-        this.#areaFilterCallback, {
-          area: area,
-          domain: domain,
-          areaDeviceIds: areaDeviceIds,
-        })
-        .map((entity) => `states['${entity.entity_id}']`);
+      // Don't include hidden Config and Diagnostic entities.
+      if (Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities) {
+        entities = entities.filter(obj => obj["entity_category"] !== "config");
+      }
+
+      if (Helper.strategyOptions.domains[domain ?? "_"].hide_diagnostic_entities) {
+        entities = entities.filter(obj => obj["entity_category"] !== "diagnostic");
+      }
+
+        const newStates = entities.map((entity) => `states['${entity.entity_id}']`);
 
       states.push(...newStates);
     }
