@@ -6,6 +6,7 @@ import {LovelaceCardConfig, LovelaceConfig, LovelaceViewConfig} from "./types/ho
 import {StackCardConfig} from "./types/homeassistant/lovelace/cards/types";
 import {EntityCardConfig} from "./types/lovelace-mushroom/cards/entity-card-config";
 import {HassServiceTarget} from "home-assistant-js-websocket";
+import {applyEntityCategoryFilters} from "./utillties/filters";
 import StrategyArea = generic.StrategyArea;
 
 /**
@@ -114,20 +115,14 @@ class MushroomStrategy extends HTMLTemplateElement {
           let domainCards: EntityCardConfig[] = [];
           let entities = Helper.getDeviceEntities(area, domain);
 
+          // Exclude hidden Config and Diagnostic entities.
+          entities = applyEntityCategoryFilters(entities, domain);
+
           // Set the target for controller cards to entities without an area.
           if (area.area_id === "undisclosed") {
             target = {
               entity_id: entities.map(entity => entity.entity_id),
             }
-          }
-
-          // Don't include hidden Config and Diagnostic entities.
-          if (Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities) {
-            entities = entities.filter(obj => obj["entity_category"] !== "config");
-          }
-
-          if (Helper.strategyOptions.domains[domain ?? "_"].hide_diagnostic_entities) {
-            entities = entities.filter(obj => obj["entity_category"] !== "diagnostic");
           }
 
           if (entities.length) {
@@ -224,14 +219,8 @@ class MushroomStrategy extends HTMLTemplateElement {
         entity => !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0])
       );
 
-      // Don't include hidden Config and Diagnostic entities.
-      if (Helper.strategyOptions.domains["default" ?? "_"].hide_config_entities) {
-        miscellaneousEntities = miscellaneousEntities.filter(obj => obj["entity_category"] !== "config");
-      }
-
-      if (Helper.strategyOptions.domains["default" ?? "_"].hide_diagnostic_entities) {
-        miscellaneousEntities = miscellaneousEntities.filter(obj => obj["entity_category"] !== "diagnostic");
-      }
+      // Exclude hidden Config and Diagnostic entities.
+      miscellaneousEntities = applyEntityCategoryFilters(miscellaneousEntities, "default");
 
       // Create a column of miscellaneous entity cards.
       if (miscellaneousEntities.length) {

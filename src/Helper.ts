@@ -6,6 +6,7 @@ import {DeviceRegistryEntry} from "./types/homeassistant/data/device_registry";
 import {AreaRegistryEntry} from "./types/homeassistant/data/area_registry";
 import {generic} from "./types/strategy/generic";
 import setupCustomLocalize from "./localize";
+import {applyEntityCategoryFilters} from "./utillties/filters";
 import StrategyArea = generic.StrategyArea;
 
 /**
@@ -245,20 +246,14 @@ class Helper {
       console.warn("Helper class should be initialized before calling this method!");
     }
 
-    // Get the ID of the devices which are linked to the given area.
+    // Get the state of entities which are linked to the given area.
     for (const area of this.#areas) {
       let entities = this.getDeviceEntities(area, domain);
 
-      // Don't include hidden Config and Diagnostic entities.
-      if (Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities) {
-        entities = entities.filter(obj => obj["entity_category"] !== "config");
-      }
+      // Exclude hidden Config and Diagnostic entities.
+      entities = applyEntityCategoryFilters(entities, domain);
 
-      if (Helper.strategyOptions.domains[domain ?? "_"].hide_diagnostic_entities) {
-        entities = entities.filter(obj => obj["entity_category"] !== "diagnostic");
-      }
-
-        const newStates = entities.map((entity) => `states['${entity.entity_id}']`);
+      const newStates = entities.map((entity) => `states['${entity.entity_id}']`);
 
       states.push(...newStates);
     }

@@ -5,6 +5,7 @@ import {LovelaceCardConfig, LovelaceViewConfig} from "../types/homeassistant/dat
 import {cards} from "../types/strategy/cards";
 import {TitleCardConfig} from "../types/lovelace-mushroom/cards/title-card-config";
 import {HassServiceTarget} from "home-assistant-js-websocket";
+import {applyEntityCategoryFilters} from "../utillties/filters";
 import abstractCardConfig = cards.AbstractCardConfig;
 
 /**
@@ -73,7 +74,6 @@ abstract class AbstractView {
     // Create cards for each area.
     for (const area of Helper.areas) {
       const areaCards: abstractCardConfig[] = [];
-      let entities = Helper.getDeviceEntities(area, this.#domain ?? "");
       const className = Helper.sanitizeClassName(this.#domain + "Card");
       const cardModule = await import(`../cards/${className}`);
 
@@ -82,20 +82,15 @@ abstract class AbstractView {
         area_id: [area.area_id],
       };
 
+      let entities = Helper.getDeviceEntities(area, this.#domain ?? "");
+      // Exclude hidden Config and Diagnostic entities.
+      entities = applyEntityCategoryFilters(entities, this.#domain ?? "_");
+
       // Set the target for controller cards to entities without an area.
       if (area.area_id === "undisclosed") {
         target = {
           entity_id: entities.map(entity => entity.entity_id),
         }
-      }
-
-      // Don't include hidden Config and Diagnostic entities.
-      if (Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities) {
-        entities = entities.filter(obj => obj["entity_category"] !== "config");
-      }
-
-      if (Helper.strategyOptions.domains[this.#domain ?? "_"].hide_diagnostic_entities) {
-        entities = entities.filter(obj => obj["entity_category"] !== "diagnostic");
       }
 
       // Create a card for each domain-entity of the current area.
