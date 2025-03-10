@@ -28,12 +28,20 @@ export function applyEntityCategoryFilters(entities: EntityRegistryEntry[], doma
     ...Helper.strategyOptions.domains[domain],
   };
 
+  let filteredEntityCategory = [];
+
   if (domainOptions.hide_config_entities) {
     entities = filterEntitiesByPropertyValue(entities, "entity_category", "config");
+    filteredEntityCategory.push("Config");
   }
 
   if (domainOptions.hide_diagnostic_entities) {
     entities = filterEntitiesByPropertyValue(entities, "entity_category", "diagnostic");
+    filteredEntityCategory.push("Diagnostic");
+  }
+
+  if (Helper.debug && filteredEntityCategory.length > 0) {
+    console.warn(filteredEntityCategory.join(" & ") + "entities are filtered out.");
   }
 
   return entities;
