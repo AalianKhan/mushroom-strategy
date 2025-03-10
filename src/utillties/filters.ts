@@ -21,6 +21,10 @@ export function filterEntitiesByPropertyValue(
 }
 
 export function applyEntityCategoryFilters(entities: EntityRegistryEntry[], domain: string) {
+  if (!Helper.isInitialized()) {
+    throw new Error("The Helper module must be initialized before using this one.");
+  }
+
   const domainOptions = {
     ...Helper.strategyOptions.domains["_"],
     ...Helper.strategyOptions.domains[domain],
