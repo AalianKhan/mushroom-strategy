@@ -17,9 +17,7 @@ export function filterEntitiesByPropertyValue(
   value: any,
   exclude: boolean = true
 ) {
-  return entities.filter(entity => (
-    exclude && entity[property] !== value) || (!exclude && entity[property] === value)
-  );
+  return entities.filter(entity => exclude ? entity[property] !== value : entity[property] === value);
 }
 
 export function applyEntityCategoryFilters(entities: EntityRegistryEntry[], domain: string) {
