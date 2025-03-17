@@ -82,9 +82,9 @@ abstract class AbstractView {
         area_id: [area.area_id],
       };
 
-      let entities = Helper.getDeviceEntities(area, this.#domain ?? "");
+      let entities = Helper.getDeviceEntities(area, this.#domain);
       // Exclude hidden Config and Diagnostic entities.
-      entities = applyEntityCategoryFilters(entities, this.#domain ?? "_");
+      entities = applyEntityCategoryFilters(entities, this.#domain);
 
       // Set the target for controller cards to entities without an area.
       if (area.area_id === "undisclosed") {
