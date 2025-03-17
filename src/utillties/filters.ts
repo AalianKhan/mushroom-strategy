@@ -43,7 +43,7 @@ export function applyEntityCategoryFilters(entities: EntityRegistryEntry[], doma
   }
 
   if (Helper.debug && filteredEntityCategory.length > 0) {
-    console.warn(filteredEntityCategory.join(" & ") + "entities are filtered out.");
+    console.warn(filteredEntityCategory.join(" & ") + " entities are filtered out.");
   }
 
   return entities;
