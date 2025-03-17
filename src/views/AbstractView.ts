@@ -43,24 +43,22 @@ abstract class AbstractView {
    * @private
    * @readonly
    */
-  readonly #domain?: string;
+  readonly #domain: string;
 
   /**
    * Class constructor.
    *
-   * @param {string} [domain] The domain which the view is representing.
+   * @param {string} domain The domain which the view is representing.
    *
    * @throws {Error} If trying to instantiate this class.
    * @throws {Error} If the Helper module isn't initialized.
    */
-  protected constructor(domain: string = "") {
+  protected constructor(domain: string) {
     if (!Helper.isInitialized()) {
       throw new Error("The Helper module must be initialized before using this one.");
     }
 
-    if (domain) {
-      this.#domain = domain;
-    }
+    this.#domain = domain;
   }
 
   /**

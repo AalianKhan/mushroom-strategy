@@ -39,7 +39,7 @@ class HomeView extends AbstractView {
    * @param {views.ViewConfig} [options={}] Options for the view.
    */
   constructor(options: views.ViewConfig = {}) {
-    super();
+    super("home");
 
     this.config = Object.assign(this.config, this.#defaultConfig, options);
   }
