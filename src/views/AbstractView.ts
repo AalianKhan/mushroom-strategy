@@ -5,6 +5,7 @@ import {LovelaceCardConfig, LovelaceViewConfig} from "../types/homeassistant/dat
 import {cards} from "../types/strategy/cards";
 import {TitleCardConfig} from "../types/lovelace-mushroom/cards/title-card-config";
 import {HassServiceTarget} from "home-assistant-js-websocket";
+import {applyEntityCategoryFilters} from "../utillties/filters";
 import abstractCardConfig = cards.AbstractCardConfig;
 
 /**
@@ -42,24 +43,22 @@ abstract class AbstractView {
    * @private
    * @readonly
    */
-  readonly #domain?: string;
+  readonly #domain: string;
 
   /**
    * Class constructor.
    *
-   * @param {string} [domain] The domain which the view is representing.
+   * @param {string} domain The domain which the view is representing.
    *
    * @throws {Error} If trying to instantiate this class.
    * @throws {Error} If the Helper module isn't initialized.
    */
-  protected constructor(domain: string = "") {
+  protected constructor(domain: string) {
     if (!Helper.isInitialized()) {
       throw new Error("The Helper module must be initialized before using this one.");
     }
 
-    if (domain) {
-      this.#domain = domain;
-    }
+    this.#domain = domain;
   }
 
   /**
@@ -69,14 +68,10 @@ abstract class AbstractView {
    */
   async createViewCards(): Promise<(StackCardConfig | TitleCardConfig)[]> {
     const viewCards: LovelaceCardConfig[] = [];
-    const configEntityHidden =
-          Helper.strategyOptions.domains[this.#domain ?? "_"].hide_config_entities
-          || Helper.strategyOptions.domains["_"].hide_config_entities;
 
     // Create cards for each area.
     for (const area of Helper.areas) {
       const areaCards: abstractCardConfig[] = [];
-      const entities = Helper.getDeviceEntities(area, this.#domain ?? "");
       const className = Helper.sanitizeClassName(this.#domain + "Card");
       const cardModule = await import(`../cards/${className}`);
 
@@ -84,6 +79,10 @@ abstract class AbstractView {
       let target: HassServiceTarget = {
         area_id: [area.area_id],
       };
+
+      let entities = Helper.getDeviceEntities(area, this.#domain);
+      // Exclude hidden Config and Diagnostic entities.
+      entities = applyEntityCategoryFilters(entities, this.#domain);
 
       // Set the target for controller cards to entities without an area.
       if (area.area_id === "undisclosed") {
@@ -98,10 +97,6 @@ abstract class AbstractView {
         let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
 
         if (cardOptions?.hidden || deviceOptions?.hidden) {
-          continue;
-        }
-
-        if (entity.entity_category === "config" && configEntityHidden) {
           continue;
         }
 

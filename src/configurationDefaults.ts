@@ -21,7 +21,8 @@ export const getConfigurationDefaults = (localize: Function): StrategyDefaults =
     debug: false,
     domains: {
       _: {
-        hide_config_entities: false,
+        hide_config_entities: true,
+        hide_diagnostic_entities: true,
       },
       default: {
         title: localize("generic.miscellaneous"),

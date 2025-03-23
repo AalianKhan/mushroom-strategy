@@ -6,6 +6,7 @@ import {DeviceRegistryEntry} from "./types/homeassistant/data/device_registry";
 import {AreaRegistryEntry} from "./types/homeassistant/data/area_registry";
 import {generic} from "./types/strategy/generic";
 import setupCustomLocalize from "./localize";
+import {applyEntityCategoryFilters} from "./utillties/filters";
 import StrategyArea = generic.StrategyArea;
 
 /**
@@ -228,7 +229,6 @@ class Helper {
    * @static
    */
   static getCountTemplate(domain: string, operator: string, value: string): string {
-    // noinspection JSMismatchedCollectionQueryUpdate (False positive per 17-04-2023)
     /**
      * Array of entity state-entries, filtered by domain.
      *
@@ -246,22 +246,14 @@ class Helper {
       console.warn("Helper class should be initialized before calling this method!");
     }
 
-    // Get the ID of the devices which are linked to the given area.
+    // Get the state of entities which are linked to the given area.
     for (const area of this.#areas) {
-      const areaDeviceIds = this.#devices.filter((device) => {
-        return device.area_id === area.area_id;
-      }).map((device) => {
-        return device.id;
-      });
+      let entities = this.getDeviceEntities(area, domain);
 
-      // Get the entities of which all conditions of the callback function are met. @see areaFilterCallback.
-      const newStates = this.#entities.filter(
-        this.#areaFilterCallback, {
-          area: area,
-          domain: domain,
-          areaDeviceIds: areaDeviceIds,
-        })
-        .map((entity) => `states['${entity.entity_id}']`);
+      // Exclude hidden Config and Diagnostic entities.
+      entities = applyEntityCategoryFilters(entities, domain);
+
+      const newStates = entities.map((entity) => `states['${entity.entity_id}']`);
 
       states.push(...newStates);
     }

@@ -6,6 +6,7 @@ import {LovelaceCardConfig, LovelaceConfig, LovelaceViewConfig} from "./types/ho
 import {StackCardConfig} from "./types/homeassistant/lovelace/cards/types";
 import {EntityCardConfig} from "./types/lovelace-mushroom/cards/entity-card-config";
 import {HassServiceTarget} from "home-assistant-js-websocket";
+import {applyEntityCategoryFilters} from "./utillties/filters";
 import StrategyArea = generic.StrategyArea;
 
 /**
@@ -112,10 +113,10 @@ class MushroomStrategy extends HTMLTemplateElement {
       try {
         domainCards = await import(`./cards/${className}`).then(cardModule => {
           let domainCards: EntityCardConfig[] = [];
-          const entities = Helper.getDeviceEntities(area, domain);
-          let configEntityHidden =
-                Helper.strategyOptions.domains[domain ?? "_"].hide_config_entities
-                || Helper.strategyOptions.domains["_"].hide_config_entities;
+          let entities = Helper.getDeviceEntities(area, domain);
+
+          // Exclude hidden Config and Diagnostic entities.
+          entities = applyEntityCategoryFilters(entities, domain);
 
           // Set the target for controller cards to entities without an area.
           if (area.area_id === "undisclosed") {
@@ -175,11 +176,6 @@ class MushroomStrategy extends HTMLTemplateElement {
                 deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id];
               }
 
-              // Don't include the config-entity if hidden in the strategy options.
-              if (entity.entity_category === "config" && configEntityHidden) {
-                continue;
-              }
-
               domainCards.push(new cardModule[className](entity, cardOptions).getCard());
             }
 
@@ -219,9 +215,12 @@ class MushroomStrategy extends HTMLTemplateElement {
     if (!Helper.strategyOptions.domains.default.hidden) {
       // Create cards for any other domain.
       // Collect entities of the current area and unexposed domains.
-      const miscellaneousEntities = Helper.getDeviceEntities(area).filter(
+      let miscellaneousEntities = Helper.getDeviceEntities(area).filter(
         entity => !exposedDomainIds.includes(entity.entity_id.split(".", 1)[0])
       );
+
+      // Exclude hidden Config and Diagnostic entities.
+      miscellaneousEntities = applyEntityCategoryFilters(miscellaneousEntities, "default");
 
       // Create a column of miscellaneous entity cards.
       if (miscellaneousEntities.length) {
@@ -236,11 +235,6 @@ class MushroomStrategy extends HTMLTemplateElement {
             for (const entity of miscellaneousEntities) {
               let cardOptions = Helper.strategyOptions.card_options?.[entity.entity_id];
               let deviceOptions = Helper.strategyOptions.card_options?.[entity.device_id ?? "null"];
-
-              // Don't include the config-entity if hidden in the strategy options
-              if (entity.entity_category === "config" && Helper.strategyOptions.domains["_"].hide_config_entities) {
-                continue;
-              }
 
               miscellaneousCards.push(new cardModule.MiscellaneousCard(entity, cardOptions).getCard());
             }
